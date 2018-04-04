@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+
+
+    <CheckBox
+        android:id="@+id/staff_recycler_list_item_check_box"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:text="Staff ID 1"
+        />
+
+
+</RelativeLayout>

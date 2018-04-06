@@ -24,22 +24,18 @@ public class TokenMananger {
     }
 
     public static String getToken() {
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
         rawtoken = sharedPreferences.getString("TOKEN", "");
-
         token = "Token " + rawtoken;
-
-
 //        Timber.i(token);
-        Log.d(TAG, "getToken: "+token);
+        Log.d(TAG, "getToken: '" + token + "'");
         return token;
     }
 
 
-    public static void saveToken(String token){
+    public static void saveToken(String token) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
-        sharedPreferences.edit().putString("TOKEN",token).apply();
+        sharedPreferences.edit().putString("TOKEN", token).apply();
     }
 }
 

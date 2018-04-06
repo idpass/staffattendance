@@ -18,18 +18,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIClient {
 
     private static final String TAG = "APIClient";
-
     public static final String BASE_URL = "http://app.fieldsight.org/";
+
     private static Retrofit retrofit = null;
     private static OkHttpClient okHttpClient;
 
     public static ApiInterface getAPIService(Context context) {
-        return APIClient.getClient(context).create(ApiInterface.class);
+        return APIClient.getUploadClient().create(ApiInterface.class);
     }
 
 
-    public static Retrofit getClient(Context context) {
-
+    public static Retrofit getUploadClient() {
 
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
@@ -38,14 +37,11 @@ public class APIClient {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-
-
         return retrofit;
     }
 
 
     private static OkHttpClient createOkHttpClient() {
-        Dispatcher dispatcher = new Dispatcher();
 
         Interceptor authorization = new Interceptor() {
             @Override
@@ -56,24 +52,15 @@ public class APIClient {
             }
         };
 
-        okHttpClient = new OkHttpClient.Builder()
-                .dispatcher(dispatcher)
-                .connectTimeout(4,TimeUnit.MINUTES)
-                .readTimeout(4,TimeUnit.MINUTES)
-                .addInterceptor(authorization)
-                .build();
+        OkHttpClient.Builder okHttpClientBuidler = new OkHttpClient.Builder()
+                .connectTimeout(4, TimeUnit.MINUTES)
+                .readTimeout(4, TimeUnit.MINUTES);
 
+        if (!TokenMananger.getToken().equalsIgnoreCase("token ")) {
+            okHttpClientBuidler.addInterceptor(authorization);
+        }
 
-        okHttpClient.dispatcher().setIdleCallback(new Runnable() {
-            @Override
-            public void run() {
-//                Timber.i("the number of running calls has reached zero");
-                Log.d(TAG, "run: "+ "the number of running calls has reached zero");
-            }
-        });
-
-
-        return okHttpClient;
+        return okHttpClientBuidler.build();
     }
 
 

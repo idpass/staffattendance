@@ -5,13 +5,11 @@ package np.com.naxa.staffattendance.POJO;
  */
 
 public class AttendancePOJO {
+
     String date;
     String staffID;
     String staffName;
-    String submitted_by ;
-
-
-
+    String submitted_by;
 
     public AttendancePOJO(String date, String staffID, String staffName, String submitted_by) {
         this.date = date;

@@ -26,4 +26,5 @@
     <dimen name="spacing_large">16dp</dimen>
     <dimen name="spacing_xlarge">32dp</dimen>
     <dimen name="spacing_xxlarge">64dp</dimen>
+    <dimen name="recycler_item_corner_radius">5dp</dimen>
 </resources>

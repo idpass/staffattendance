@@ -12,7 +12,7 @@ import np.com.naxa.staffattendance.application.StaffAttendance;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static DatabaseHelper databaseHelper ;
+    public static DatabaseHelper databaseHelper;
 
     // Logcat tag
     public static final String LOG = "DatabaseHelper";
@@ -60,15 +60,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-
-
-    public static synchronized DatabaseHelper getDatabaseHelper( ){
-        if (databaseHelper == null){
+    public static synchronized DatabaseHelper getDatabaseHelper() {
+        if (databaseHelper == null) {
             return new DatabaseHelper(StaffAttendance.getStaffAttendance());
         }
         return databaseHelper;
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {

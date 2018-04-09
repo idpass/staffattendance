@@ -2,22 +2,16 @@ package np.com.naxa.staffattendance.login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import java.security.PrivateKey;
-
 import np.com.naxa.staffattendance.R;
-import np.com.naxa.staffattendance.ViewPagerActivity;
+import np.com.naxa.staffattendance.WeeklyAttendenceVPActivity;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.LoginResponse;
@@ -43,11 +37,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tokenMananger = new TokenMananger();
         initUI();
 
-//        tvUserName.setText("arunb@unops.org");
-//        tvPassword.setText("arubhan");
+        tvUserName.setText("arunb@unops.org");
+        tvPassword.setText("arubhan");
 
-        tvUserName.setText("nishon.tan@gmail.com");
-        tvPassword.setText("12345678");
+//        tvUserName.setText("nishon.tan@gmail.com");
+//        tvPassword.setText("12345678");
 
 
     }
@@ -67,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (validate()) {
                     dialog.show();
 //                    sendDataToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
-                    startActivity(new Intent(LoginActivity.this, ViewPagerActivity.class));
+                    startActivity(new Intent(LoginActivity.this, WeeklyAttendenceVPActivity.class));
                     dialog.dismiss();
                 } else {
                     Toast.makeText(this, "Enter valid credentials..", Toast.LENGTH_SHORT).show();
@@ -86,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful()) {
 //                    Log.d(TAG, "Successfully uploaded " + response.body().getToken());
-                    startActivity(new Intent(LoginActivity.this, ViewPagerActivity.class));
+                    startActivity(new Intent(LoginActivity.this, WeeklyAttendenceVPActivity.class));
                 } else {
                     Log.d(TAG, "Problem problem");
                 }

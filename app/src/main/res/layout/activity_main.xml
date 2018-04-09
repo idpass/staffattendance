@@ -35,21 +35,12 @@
             <include
                 android:id="@+id/layout_staff_data_edit"
                 layout="@layout/staff_data_edit_form"
-                android:visibility="visible" />
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                tools:ignore="IncludeLayoutParam" />
         </android.support.v7.widget.CardView>
 
 
     </android.support.v4.widget.NestedScrollView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_activate_edit_mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:elevation="8dp"
-        android:src="@drawable/ic_check_blue_24dp"
-        app:layout_anchor="@id/card_staff_edit_form"
-        app:layout_anchorGravity="top|right|end"
-        tools:ignore="RtlHardcoded" />
 
 </android.support.design.widget.CoordinatorLayout>

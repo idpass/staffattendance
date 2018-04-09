@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import np.com.naxa.staffattendance.MainActivity;
+import np.com.naxa.staffattendance.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.WeeklyAttendenceVPActivity;
 import np.com.naxa.staffattendance.data.APIClient;
@@ -40,10 +42,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tvUserName.setText("arunb@unops.org");
         tvPassword.setText("arubhan");
 
-//        tvUserName.setText("nishon.tan@gmail.com");
-//        tvPassword.setText("12345678");
-
-
     }
 
     private void initUI() {
@@ -60,8 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 ProgressDialog dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
                 if (validate()) {
                     dialog.show();
-//                    sendDataToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
-                    startActivity(new Intent(LoginActivity.this, WeeklyAttendenceVPActivity.class));
+                    sendDataToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
                     dialog.dismiss();
                 } else {
                     Toast.makeText(this, "Enter valid credentials..", Toast.LENGTH_SHORT).show();
@@ -78,26 +75,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful()) {
-//                    Log.d(TAG, "Successfully uploaded " + response.body().getToken());
-                    startActivity(new Intent(LoginActivity.this, WeeklyAttendenceVPActivity.class));
+                if (response.body() != null) {
+                    TokenMananger.saveToken(response.body().getToken());
+                    Log.d(TAG, "onResponse: " + response.body().getToken());
+                    startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
                 } else {
-                    Log.d(TAG, "Problem problem");
-                }
-                if (response.body() == null) {
                     Log.d(TAG, "onResponse: " + " null response");
                     Toast.makeText(LoginActivity.this, "Login failed!!", Toast.LENGTH_SHORT).show();
-                    return;
                 }
-
-                TokenMananger.saveToken(response.body().getToken());
-                Log.d(TAG, "onResponse: " + response.body().getToken());
-                Toast.makeText(LoginActivity.this, "Login Success.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Login failed!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Invalid Credentials.", Toast.LENGTH_SHORT).show();
             }
         });
 

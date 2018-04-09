@@ -29,7 +29,6 @@ public class APIClient {
 
 
     public static Retrofit getUploadClient() {
-
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .client(createOkHttpClient())
@@ -57,9 +56,8 @@ public class APIClient {
                 .readTimeout(4, TimeUnit.MINUTES);
 
         if (!TokenMananger.getToken().equalsIgnoreCase("token ")) {
-            okHttpClientBuidler.addInterceptor(authorization);
+//            okHttpClientBuidler.addInterceptor(authorization);
         }
-
         return okHttpClientBuidler.build();
     }
 

@@ -36,12 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     Map<String, Integer> staffNameIDHashMap;
 
-    @BindView(R.id.staff_name_editable)
-    TextInputLayout tvStaffNameEditable;
-    @BindView(R.id.staff_type_spinner)
-    Spinner staffTypeSpinner;
-    @BindView(R.id.fab_activate_edit_mode)
-    FloatingActionButton fabActivateEditMode;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         initStaffHashMap();
 
-        initSpinner();
+//        initSpinner();
 
 
 
@@ -86,22 +81,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void initSpinner(){
-        ArrayAdapter<String> staffTypeArray = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, staffType());
-        staffTypeArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        staffTypeSpinner.setAdapter(staffTypeArray);
-    }
-
-    @OnItemSelected(R.id.staff_type_spinner)
-    public void onSpinnerStaffTypeClicked() {
-
-        if (staffTypeSpinner.getSelectedItem().toString().equals("Select Staff Type")) {
-            Toast.makeText(this, "Please select staff type", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(this, "ID of selected staff type is "+getValuesFromStaffNameIDHashMap(staffTypeSpinner.getSelectedItem().toString()), Toast.LENGTH_SHORT).show();
-        }
-
-    }
+//    public void initSpinner(){
+//        ArrayAdapter<String> staffTypeArray = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, staffType());
+//        staffTypeArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        staffTypeSpinner.setAdapter(staffTypeArray);
+//    }
+//
+//    @OnItemSelected(R.id.staff_type_spinner)
+//    public void onSpinnerStaffTypeClicked() {
+//
+//        if (staffTypeSpinner.getSelectedItem().toString().equals("Select Staff Type")) {
+//            Toast.makeText(this, "Please select staff type", Toast.LENGTH_SHORT).show();
+//        }else {
+//            Toast.makeText(this, "ID of selected staff type is "+getValuesFromStaffNameIDHashMap(staffTypeSpinner.getSelectedItem().toString()), Toast.LENGTH_SHORT).show();
+//        }
+//
+//    }
 
     public String getValuesFromStaffNameIDHashMap (String staffType){
         int spinnerPosition = staffNameIDHashMap.get(staffType);
@@ -109,21 +104,21 @@ public class MainActivity extends AppCompatActivity {
         return spinnerPosition+"";
 
     }
-
-    @OnClick(R.id.fab_activate_edit_mode)
-    public void onViewClicked() {
-
-        if(validateText(tvStaffNameEditable) && validateSpinner(staffTypeSpinner)) {
-
-            staff = new Staff(tvStaffNameEditable.getEditText().getText().toString(), getValuesFromStaffNameIDHashMap(staffTypeSpinner.getSelectedItem().toString()));
-
-            Log.d(TAG, "onViewClicked: " + staffDao.saveStaff(staff));
-
-            Intent intent = new Intent(MainActivity.this, AttendanceFormEditActivity.class);
-            startActivity(intent);
-        }
-
-    }
+//
+//    @OnClick(R.id.fab_activate_edit_mode)
+//    public void onViewClicked() {
+//
+//        if(validateText(tvStaffNameEditable) && validateSpinner(staffTypeSpinner)) {
+//
+//            staff = new Staff(tvStaffNameEditable.getEditText().getText().toString(), getValuesFromStaffNameIDHashMap(staffTypeSpinner.getSelectedItem().toString()));
+//
+//            Log.d(TAG, "onViewClicked: " + staffDao.saveStaff(staff));
+//
+//            Intent intent = new Intent(MainActivity.this, AttendanceFormEditActivity.class);
+//            startActivity(intent);
+//        }
+//
+//    }
 
     private boolean validateText(TextInputLayout textInputLayout){
         if(TextUtils.isEmpty(textInputLayout.getEditText().getText())){

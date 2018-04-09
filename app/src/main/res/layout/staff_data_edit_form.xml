@@ -5,7 +5,7 @@
 
     <android.support.design.widget.TextInputLayout
 
-        android:id="@+id/staff_name_editable"
+        android:id="@+id/staff_first_name"
         style="@style/OfflineSiteEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,12 +14,97 @@
 
         <android.support.design.widget.TextInputEditText
 
+            style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Full name"
+            android:hint="First Name"
             android:inputType="text"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_last_name"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Last Name"
+            android:inputType="text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_dob"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="Date of Birth"
+            android:inputType="text"
+            android:longClickable="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gender" />
+
+        <RadioGroup
+            android:id="@+id/staff_gender"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/spacing_large"
+            android:paddingRight="@dimen/spacing_large"
+            android:weightSum="3">
+
+            <RadioButton
+                android:id="@+id/rb_male"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Male" />
+
+            <RadioButton
+                android:id="@+id/rb_female"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Female" />
+
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Others" />
+        </RadioGroup>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,7 +119,7 @@
             android:text="Staff Type" />
 
         <Spinner
-            android:id="@+id/staff_type_spinner"
+            android:id="@+id/staff_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp">
@@ -42,5 +127,173 @@
         </Spinner>
     </LinearLayout>
 
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_ethinicity"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ethinicity"
+            android:inputType="text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bank" />
+
+        <Spinner
+            android:id="@+id/staff_bank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+
+        </Spinner>
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_bank_account"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp"
+        android:visibility="gone">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="Account Number"
+            android:inputType="text"
+            android:longClickable="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_contact_number"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contact Number"
+            android:inputType="number"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_email"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_contract_start_date"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="Contract Start Date"
+            android:inputType="text"
+            android:longClickable="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+
+        android:id="@+id/staff_contract_end_date"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="Contract End Date"
+            android:inputType="text"
+            android:longClickable="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/OfflineSiteEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Designation" />
+
+        <Spinner
+            android:id="@+id/staff_designation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+
+        </Spinner>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/staff_create"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create" />
 
 </LinearLayout>

@@ -46,9 +46,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table Create Statements
     // staff table create statement
     private static final String CREATE_TABLE_STAFF = "CREATE TABLE "
-            + TABLE_STAFF + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_STAFF_FULL_NAME + " TEXT," +
-            KEY_STAFF_TYPE + " INTEGER," + KEY_CREATED_BY + " INTEGER," + KEY_CREATED_AT + " DATETIME,"
-            + KEY_UPDATED_AT + " DATETIME" + ")";
+            + TABLE_STAFF + "(" +
+            KEY_ID + " INTEGER PRIMARY KEY," +
+            KEY_STAFF_FULL_NAME + " TEXT," +
+            KEY_STAFF_TYPE + " INTEGER," +
+            KEY_CREATED_BY + " INTEGER," +
+            KEY_CREATED_AT + " DATETIME," +
+            KEY_UPDATED_AT + " DATETIME" + ")";
 
     // Attendance table create statement
     private static final String CREATE_TABLE_ATTENDANCE = "CREATE TABLE "

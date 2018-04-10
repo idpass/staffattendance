@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import np.com.naxa.staffattendance.MainActivity;
 import np.com.naxa.staffattendance.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.WeeklyAttendenceVPActivity;

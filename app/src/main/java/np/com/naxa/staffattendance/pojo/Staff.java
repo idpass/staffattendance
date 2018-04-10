@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance.POJO;
+package np.com.naxa.staffattendance.pojo;
 
 /**
  * Created by user on 4/1/2018.

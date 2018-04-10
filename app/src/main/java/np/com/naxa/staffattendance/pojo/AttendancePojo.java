@@ -1,17 +1,17 @@
-package np.com.naxa.staffattendance.POJO;
+package np.com.naxa.staffattendance.pojo;
 
 /**
  * Created by samir on 4/1/2018.
  */
 
-public class AttendancePOJO {
+public class AttendancePojo {
 
     String date;
     String staffID;
     String staffName;
     String submitted_by;
 
-    public AttendancePOJO(String date, String staffID, String staffName, String submitted_by) {
+    public AttendancePojo(String date, String staffID, String staffName, String submitted_by) {
         this.date = date;
         this.staffID = staffID;
         this.staffName = staffName;

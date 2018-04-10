@@ -2,7 +2,7 @@ package np.com.naxa.staffattendance.database;
 
 import android.content.ContentValues;
 
-import np.com.naxa.staffattendance.POJO.Staff;
+import np.com.naxa.staffattendance.pojo.Staff;
 
 /**
  * Created by samir on 4/1/2018.

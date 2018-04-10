@@ -8,7 +8,7 @@ import android.widget.CheckBox;
 
 import java.util.List;
 
-import np.com.naxa.staffattendance.POJO.AttendancePOJO;
+import np.com.naxa.staffattendance.pojo.AttendancePojo;
 
 /**
  * Created by samir on 4/1/2018.
@@ -16,7 +16,7 @@ import np.com.naxa.staffattendance.POJO.AttendancePOJO;
 
 public class AttandanceStaffRecyclerAdapter extends RecyclerView.Adapter<AttandanceStaffRecyclerAdapter.MyViewHolder> {
 
-    private List<AttendancePOJO> staffList;
+    private List<AttendancePojo> staffList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         CheckBox staffName ;
@@ -28,7 +28,7 @@ public class AttandanceStaffRecyclerAdapter extends RecyclerView.Adapter<Attanda
     }
 
 
-    public AttandanceStaffRecyclerAdapter(List<AttendancePOJO> staffList) {
+    public AttandanceStaffRecyclerAdapter(List<AttendancePojo> staffList) {
         this.staffList = staffList;
     }
 
@@ -44,7 +44,7 @@ public class AttandanceStaffRecyclerAdapter extends RecyclerView.Adapter<Attanda
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        AttendancePOJO attendancePOJO = staffList.get(position);
+        AttendancePojo attendancePOJO = staffList.get(position);
         holder.staffName.setText(attendancePOJO.getStaffName());
     }
 

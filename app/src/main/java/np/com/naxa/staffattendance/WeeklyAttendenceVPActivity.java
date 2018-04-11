@@ -28,13 +28,13 @@ public class WeeklyAttendenceVPActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment = null;
-            fragment = new DailyAttendenceFragment();
+            fragment = new DailyAttendanceFragment();
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 7;
+            return 1;
         }
 
         @Override
@@ -51,18 +51,17 @@ public class WeeklyAttendenceVPActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weekly_attendence);
-
-        initUI();
-        setUpToolbar();
+        bindUI();
+        setuptoolbar();
     }
 
-    private void setUpToolbar() {
+    private void setuptoolbar() {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Attendance");
         setSupportActionBar(toolbar);
     }
 
-    private void initUI() {
+    private void bindUI() {
         viewPager = findViewById(R.id.veiw_pager);
         tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);

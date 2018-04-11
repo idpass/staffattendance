@@ -40,10 +40,10 @@ public interface ApiInterface {
             @Part("address") RequestBody back_door,
             @Part("phone_number") RequestBody left_floor,
             @Part("bank_name") RequestBody right_door,
-            @Part("account_number") RequestBody front_window,
-            @Part("contract_start") RequestBody front_window,
-            @Part("contract_end") RequestBody front_window,
-            @Part("bank") RequestBody front_window,
+            @Part("account_number") RequestBody account_number,
+            @Part("contract_start") RequestBody contract_start,
+            @Part("contract_end") RequestBody contract_end,
+            @Part("bank") RequestBody bank,
             @Part MultipartBody.Part photo
     );
 }

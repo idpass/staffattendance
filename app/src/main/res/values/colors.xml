@@ -7,4 +7,6 @@
     <color name="background_grey">#fafafafa</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <color name="row_activated">@color/white</color>
+    <color name="item_disabled_color">#e0e0e0</color>
 </resources>

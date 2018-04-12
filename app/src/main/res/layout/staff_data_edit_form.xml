@@ -326,10 +326,14 @@
 
     <Button
         android:id="@+id/staff_photo"
+        android:drawableLeft="@android:drawable/ic_menu_camera"
+        android:drawablePadding="8dp"
+        android:drawableStart="@android:drawable/ic_menu_camera"
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Take Photo" />
+
 
     <Button
         android:id="@+id/staff_create"

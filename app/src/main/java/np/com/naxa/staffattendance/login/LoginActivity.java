@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.FormCall;
+import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
@@ -71,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onSuccess() {
                 startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
+                new MyTeamRepository().fetchMyTeam();
             }
 
             @Override

@@ -17,7 +17,7 @@ import java.util.Locale;
 import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
 
-public class WeeklyAttendenceVPActivity extends AppCompatActivity {
+public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;

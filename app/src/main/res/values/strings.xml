@@ -2,5 +2,6 @@
     <string name="app_name">Staff Attendance</string>
 
     <string name="default_option">Select an option</string>
+    <string name="not_avaliable">%s not available</string>
 
 </resources>

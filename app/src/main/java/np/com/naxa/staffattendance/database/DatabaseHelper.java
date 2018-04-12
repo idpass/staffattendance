@@ -35,6 +35,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Staff column names
     public static final String KEY_STAFF_FULL_NAME = "full_name";
+    public static final String KEY_STAFF_TEAM_NAME = "team_name";
+    public static final String KEY_STAFF_TEAM_ID = "team_id";
     public static final String KEY_STAFF_TYPE = "staff_type";
     public static final String KEY_CREATED_BY = "created_by";
 
@@ -49,6 +51,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_STAFF = "CREATE TABLE "
             + TABLE_STAFF + "(" +
             KEY_ID + " INTEGER PRIMARY KEY," +
+            KEY_STAFF_TEAM_ID + " TEXT," +//todo if team will have more attr than name and id, make new team table
+            KEY_STAFF_TEAM_NAME + " TEXT," +
             KEY_STAFF_FULL_NAME + " TEXT," +
             KEY_STAFF_TYPE + " INTEGER," +
             KEY_CREATED_BY + " INTEGER," +

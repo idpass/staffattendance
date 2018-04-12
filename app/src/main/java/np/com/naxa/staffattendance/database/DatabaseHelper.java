@@ -48,7 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STAFF_DOB = "dob";
     public static final String KEY_STAFF_GENDER = "gender";
     public static final String KEY_STAFF_ETHNICITY = "ethnicity";
-    public static final String KEY_STAFF_BANK = "bank";
+    public static final String KEY_STAFF_BANK_NAME = "bank_name";
     public static final String KEY_STAFF_ACCOUNT_NUMBER = "account_number";
     public static final String KEY_STAFF_CONTACT_NUMBER = "contact_number";
     public static final String KEY_STAFF_EMAIL = "email";
@@ -56,7 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STAFF_CONTRACT_START_DATE = "contract_start_date";
     public static final String KEY_STAFF_CONTRACT_END_DATE = "contract_end_date";
     public static final String KEY_STAFF_PHOTO = "photo";
-    public static final String KEY_STAFF_BANK_OTHER = "bank_other";
+    public static final String KEY_STAFF_BANK_ID = "bank_id";
     public static final String KEY_STAFF_DETAIL_STATUS = "status";
 
     // Attendance column names
@@ -94,16 +94,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //New staff table create statement
     private static final String CREATE_TABLE_NEW_STAFF = "CREATE TABLE " +
-            TABLE_NEW_STAFF+
+            TABLE_NEW_STAFF +
             "(" +
             KEY_ID + " INTEGER PRIMARY KEY," +
-            KEY_STAFF_DESIGNATION + " TEXT," +
+            KEY_STAFF_DESIGNATION + " INTEGER," +
             KEY_STAFF_FIRST_NAME + " TEXT," +
             KEY_STAFF_LAST_NAME + " TEXT," +
             KEY_STAFF_DOB + " TEXT," +
-            KEY_STAFF_GENDER + " TEXT," +
+            KEY_STAFF_GENDER + " INTEGER," +
             KEY_STAFF_ETHNICITY + " TEXT," +
-            KEY_STAFF_BANK + " TEXT," +
+            KEY_STAFF_BANK_ID + " INTEGER," +
+            KEY_STAFF_BANK_NAME + " TEXT," +
             KEY_STAFF_ACCOUNT_NUMBER + " TEXT," +
             KEY_STAFF_CONTACT_NUMBER + " TEXT," +
             KEY_STAFF_EMAIL + " TEXT," +
@@ -111,7 +112,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             KEY_STAFF_CONTRACT_START_DATE + " TEXT," +
             KEY_STAFF_CONTRACT_END_DATE + " TEXT," +
             KEY_STAFF_PHOTO + " TEXT," +
-            KEY_STAFF_BANK_OTHER + " TEXT," +
             KEY_STAFF_DETAIL_STATUS + " TEXT," +
             KEY_CREATED_AT + " DATETIME," +
             KEY_UPDATED_AT + " DATETIME" +

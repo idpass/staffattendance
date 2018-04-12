@@ -60,7 +60,7 @@ public class APIClient {
                 .readTimeout(4, TimeUnit.MINUTES);
 
         if (!TokenMananger.getToken().equalsIgnoreCase("token ")) {
-            okHttpClientBuidler.addInterceptor(authorization);
+//            okHttpClientBuidler.addInterceptor(authorization);
         }
         return okHttpClientBuidler.build();
     }

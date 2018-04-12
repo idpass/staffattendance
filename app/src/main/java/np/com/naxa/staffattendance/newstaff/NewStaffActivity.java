@@ -63,26 +63,31 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void spinnerValues() {
-        designationList.add(getResources().getString(R.string.default_option));
-        new FormCall().getDesignation(new FormCall.DesignationListener() {
-            @Override
-            public void designation(ArrayList<ArrayList<String>> arrayLists) {
-                for (ArrayList<String> list : arrayLists) {
-                    designationList.add(list.get(1));
+        if (designationList.isEmpty()) {
+            designationList.add(getResources().getString(R.string.default_option));
+            new FormCall().getDesignation(new FormCall.DesignationListener() {
+                @Override
+                public void designation(ArrayList<ArrayList<String>> arrayLists) {
+                    for (ArrayList<String> list : arrayLists) {
+                        designationList.add(list.get(1));
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        bankList.add(getResources().getString(R.string.default_option));
-        new FormCall().getBankList(new FormCall.BankListListener() {
-            @Override
-            public void bankList(ArrayList<ArrayList<String>> arrayLists) {
-                for (ArrayList<String> list : arrayLists) {
-                    bankList.add(list.get(1));
+        if (bankList.isEmpty()) {
+            bankList.add(getResources().getString(R.string.default_option));
+            new FormCall().getBankList(new FormCall.BankListListener() {
+                @Override
+                public void bankList(ArrayList<ArrayList<String>> arrayLists) {
+                    for (ArrayList<String> list : arrayLists) {
+                        bankList.add(list.get(1));
+                    }
                 }
-            }
-        });
-        bankList.add(getString(R.string.bank_other));
+            });
+            bankList.add(getString(R.string.bank_other));
+        }
+
 
     }
 
@@ -248,7 +253,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
     public NewStaffPojo getNewStaffDetail() {
-        
+
         return new NewStaffPojo(
                 designation.getSelectedItem().toString(),
                 firstName.getEditText().getText().toString(),
@@ -268,7 +273,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 NewStaffDao.SAVED
         );
     }
-
 
 
     private void showImageOptionsDialog() {

@@ -19,13 +19,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LOG = "DatabaseHelper";
 
     // Database Version
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     // Database Name
-    public static final String DATABASE_NAME = "staffManager";
+    public static final String DATABASE_NAME = "staffManager2";
 
     // Table Names
     public static final String TABLE_STAFF = "staff_table";
+    public static final String TABLE_NEW_STAFF = "new_staff_table";
     public static final String TABLE_ATTENDANCE = "attendance_table";
 
     // Common column names
@@ -40,6 +41,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STAFF_TYPE = "staff_type";
     public static final String KEY_CREATED_BY = "created_by";
 
+    //New Staff Column names
+    public static final String KEY_STAFF_DESIGNATION = "designation";
+    public static final String KEY_STAFF_FIRST_NAME = "first_name";
+    public static final String KEY_STAFF_LAST_NAME = "last_name";
+    public static final String KEY_STAFF_DOB = "dob";
+    public static final String KEY_STAFF_GENDER = "gender";
+    public static final String KEY_STAFF_ETHNICITY = "ethnicity";
+    public static final String KEY_STAFF_BANK_NAME = "bank_name";
+    public static final String KEY_STAFF_ACCOUNT_NUMBER = "account_number";
+    public static final String KEY_STAFF_CONTACT_NUMBER = "contact_number";
+    public static final String KEY_STAFF_EMAIL = "email";
+    public static final String KEY_STAFF_ADDRESS = "address";
+    public static final String KEY_STAFF_CONTRACT_START_DATE = "contract_start_date";
+    public static final String KEY_STAFF_CONTRACT_END_DATE = "contract_end_date";
+    public static final String KEY_STAFF_PHOTO = "photo";
+    public static final String KEY_STAFF_BANK_ID = "bank_id";
+    public static final String KEY_STAFF_DETAIL_STATUS = "status";
+
     // Attendance column names
     public static final String KEY_ATTENDACE_DATE = "date";
     public static final String KEY_STAFFS_IDS = "staffs_ids";
@@ -48,8 +67,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Table Create Statements
     // staff table create statement
-    private static final String CREATE_TABLE_STAFF = "CREATE TABLE "
-            + TABLE_STAFF + "(" +
+    private static final String CREATE_TABLE_STAFF = "CREATE TABLE " +
+            TABLE_STAFF +
+            "(" +
             KEY_ID + " INTEGER PRIMARY KEY," +
             KEY_STAFF_TEAM_ID + " TEXT," +//todo if team will have more attr than name and id, make new team table
             KEY_STAFF_TEAM_NAME + " TEXT," +
@@ -61,13 +81,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ")";
 
     // Attendance table create statement
-    private static final String CREATE_TABLE_ATTENDANCE = "CREATE TABLE "
-            + TABLE_ATTENDANCE + "(" +
+    private static final String CREATE_TABLE_ATTENDANCE = "CREATE TABLE " +
+            TABLE_ATTENDANCE +
+            "(" +
             KEY_ID + " INTEGER PRIMARY KEY," +
             KEY_ATTENDACE_DATE + " DATETIME," +
             KEY_STAFFS_IDS + " TEXT," +
             KEY_SUBMITTED_BY + " INTEGER," +
             KEY_CREATED_AT + " DATETIME" + "," +
+            KEY_UPDATED_AT + " DATETIME" +
+            ")";
+
+    //New staff table create statement
+    private static final String CREATE_TABLE_NEW_STAFF = "CREATE TABLE " +
+            TABLE_NEW_STAFF +
+            "(" +
+            KEY_ID + " INTEGER PRIMARY KEY," +
+            KEY_STAFF_DESIGNATION + " INTEGER," +
+            KEY_STAFF_FIRST_NAME + " TEXT," +
+            KEY_STAFF_LAST_NAME + " TEXT," +
+            KEY_STAFF_DOB + " TEXT," +
+            KEY_STAFF_GENDER + " INTEGER," +
+            KEY_STAFF_ETHNICITY + " TEXT," +
+            KEY_STAFF_BANK_ID + " INTEGER," +
+            KEY_STAFF_BANK_NAME + " TEXT," +
+            KEY_STAFF_ACCOUNT_NUMBER + " TEXT," +
+            KEY_STAFF_CONTACT_NUMBER + " TEXT," +
+            KEY_STAFF_EMAIL + " TEXT," +
+            KEY_STAFF_ADDRESS + " TEXT," +
+            KEY_STAFF_CONTRACT_START_DATE + " TEXT," +
+            KEY_STAFF_CONTRACT_END_DATE + " TEXT," +
+            KEY_STAFF_PHOTO + " TEXT," +
+            KEY_STAFF_DETAIL_STATUS + " TEXT," +
+            KEY_CREATED_AT + " DATETIME," +
             KEY_UPDATED_AT + " DATETIME" +
             ")";
 
@@ -87,6 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // creating required tables
         db.execSQL(CREATE_TABLE_STAFF);
+        db.execSQL(CREATE_TABLE_NEW_STAFF);
         db.execSQL(CREATE_TABLE_ATTENDANCE);
     }
 
@@ -94,6 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAFF);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NEW_STAFF);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
 
         // create new tables

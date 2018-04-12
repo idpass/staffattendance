@@ -1,47 +1,67 @@
 package np.com.naxa.staffattendance.pojo;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class NewStaffPojo {
 
-    private String designation,
-            firstName,
-            LastName,
-            dob,
-            gender,
-            ethnicity,
-            bank,
-            accountNumber,
-            email,
-            address,
-            contractStartDate,
-            contractEndDate,
-            photoLocation,
-            bank_name;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("first_name")
+    @Expose
+    private String firstName;
+    @SerializedName("last_name")
+    @Expose
+    private String lastName;
+    @SerializedName("email")
+    @Expose
+    private String email;
+    @SerializedName("gender")
+    @Expose
+    private Integer gender;
+    @SerializedName("ethnicity")
+    @Expose
+    private String ethnicity;
+    @SerializedName("address")
+    @Expose
+    private String address;
+    @SerializedName("phone_number")
+    @Expose
+    private String phoneNumber;
+    @SerializedName("bank_name")
+    @Expose
+    private String bankName;
+    @SerializedName("account_number")
+    @Expose
+    private String accountNumber;
+    @SerializedName("photo")
+    @Expose
+    private String photo;
+    @SerializedName("designation")
+    @Expose
+    private Integer designation;
+    @SerializedName("date_of_birth")
+    @Expose
+    private String dateOfBirth;
+    @SerializedName("contract_start")
+    @Expose
+    private String contractStart;
+    @SerializedName("contract_end")
+    @Expose
+    private String contractEnd;
+    @SerializedName("bank")
+    @Expose
+    private Integer bank;
 
-    public NewStaffPojo() {
+    private String status;
+
+    public Integer getId() {
+        return id;
     }
 
-    public String getDesignation() {
-        return designation;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getBank_name() {
-        return bank_name;
-    }
-
-    public void setBank_name(String bank_name) {
-        this.bank_name = bank_name;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -53,26 +73,26 @@ public class NewStaffPojo {
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
-    public String getDob() {
-        return dob;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDob(String dob) {
-        this.dob = dob;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getGender() {
+    public Integer getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 
@@ -84,12 +104,28 @@ public class NewStaffPojo {
         this.ethnicity = ethnicity;
     }
 
-    public String getBank() {
-        return bank;
+    public String getAddress() {
+        return address;
     }
 
-    public void setBank(String bank) {
-        this.bank = bank;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
     public String getAccountNumber() {
@@ -100,35 +136,60 @@ public class NewStaffPojo {
         this.accountNumber = accountNumber;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
-    public String getContractStartDate() {
-        return contractStartDate;
+    public Integer getDesignation() {
+        return designation;
     }
 
-    public void setContractStartDate(String contractStartDate) {
-        this.contractStartDate = contractStartDate;
+    public void setDesignation(Integer designation) {
+        this.designation = designation;
     }
 
-    public String getContractEndDate() {
-        return contractEndDate;
+    public String getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setContractEndDate(String contractEndDate) {
-        this.contractEndDate = contractEndDate;
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
-    public String getPhotoLocation() {
-        return photoLocation;
+    public String getContractStart() {
+        return contractStart;
     }
 
-    public void setPhotoLocation(String photoLocation) {
-        this.photoLocation = photoLocation;
+    public void setContractStart(String contractStart) {
+        this.contractStart = contractStart;
     }
+
+    public String getContractEnd() {
+        return contractEnd;
+    }
+
+    public void setContractEnd(String contractEnd) {
+        this.contractEnd = contractEnd;
+    }
+
+    public Integer getBank() {
+        return bank;
+    }
+
+    public void setBank(Integer bank) {
+        this.bank = bank;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

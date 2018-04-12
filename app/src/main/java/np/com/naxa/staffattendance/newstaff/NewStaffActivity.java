@@ -9,6 +9,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -25,6 +26,8 @@ import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.database.NewStaffDao;
+import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -32,8 +35,8 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Spinner bank, designation;
-    private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address;
-    private EditText dob, contractStartDate, contractEndDate;
+    private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
+    private EditText dob, contractStartDate, contractEndDate, bankNameOther;
     private Button photo, create;
     private List<String> designationList = new ArrayList<>();
     private List<String> bankList = new ArrayList<>();
@@ -60,25 +63,31 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void spinnerValues() {
-        designationList.add(getResources().getString(R.string.default_option));
-        new FormCall().getDesignation(new FormCall.DesignationListener() {
-            @Override
-            public void designation(ArrayList<ArrayList<String>> arrayLists) {
-                for (ArrayList<String> list : arrayLists) {
-                    designationList.add(list.get(1));
+        if (designationList.isEmpty()) {
+            designationList.add(getResources().getString(R.string.default_option));
+            new FormCall().getDesignation(new FormCall.DesignationListener() {
+                @Override
+                public void designation(ArrayList<ArrayList<String>> arrayLists) {
+                    for (ArrayList<String> list : arrayLists) {
+                        designationList.add(list.get(1));
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        bankList.add(getResources().getString(R.string.default_option));
-        new FormCall().getBankList(new FormCall.BankListListener() {
-            @Override
-            public void bankList(ArrayList<ArrayList<String>> arrayLists) {
-                for (ArrayList<String> list : arrayLists) {
-                    bankList.add(list.get(1));
+        if (bankList.isEmpty()) {
+            bankList.add(getResources().getString(R.string.default_option));
+            new FormCall().getBankList(new FormCall.BankListListener() {
+                @Override
+                public void bankList(ArrayList<ArrayList<String>> arrayLists) {
+                    for (ArrayList<String> list : arrayLists) {
+                        bankList.add(list.get(1));
+                    }
                 }
-            }
-        });
+            });
+            bankList.add(getString(R.string.bank_other));
+        }
+
 
     }
 
@@ -89,6 +98,27 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, bankList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String choice = adapterView.getItemAtPosition(i).toString();
+                if (choice.equals(getResources().getString(R.string.default_option))) {
+                    accountNumber.setVisibility(View.GONE);
+                    bankNameOther.setVisibility(View.GONE);
+                } else if (choice.equals(getResources().getString(R.string.bank_other))) {
+                    accountNumber.setVisibility(View.VISIBLE);
+                    bankNameOther.setVisibility(View.VISIBLE);
+                } else {
+                    accountNumber.setVisibility(View.VISIBLE);
+                    bankNameOther.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         bank.setAdapter(this.spinnerAdapter);
     }
 
@@ -118,6 +148,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         gender = findViewById(R.id.staff_gender);
         ethinicity = findViewById(R.id.staff_ethinicity);
         bank = findViewById(R.id.staff_bank);
+        accountNumber = findViewById(R.id.staff_bank_account);
+        bankNameOther = findViewById(R.id.staff_bank_other);
         contactNumber = findViewById(R.id.staff_contact_number);
         email = findViewById(R.id.staff_email);
         address = findViewById(R.id.staff_address);
@@ -160,7 +192,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.staff_create:
                 if (validate()) {
-                    ToastUtils.showShort("Validated");
+                    ToastUtils.showShort("Saving to database");
+                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
                 }
                 break;
         }
@@ -185,6 +218,15 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 //        else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
 //            ToastUtils.showShort("Select Bank");
 //        }
+//        else if (bankNameOther.getVisibility() == View.VISIBLE) {
+//            if (bankNameOther.getText().toString().isEmpty()) {
+//                ToastUtils.showShort("Enter other bank name");
+//            }
+//        } else if (accountNumber.getVisibility() == View.VISIBLE) {
+//            if (accountNumber.getEditText().getText().toString().isEmpty()) {
+//                ToastUtils.showShort("Enter account number");
+//            }
+//        }
         else if (contactNumber.getEditText().getText().toString().isEmpty()) {
             ToastUtils.showShort("Enter contact number");
         } else if (email.getEditText().getText().toString().isEmpty()) {
@@ -208,6 +250,30 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 calendar.get(Calendar.DAY_OF_MONTH)).show();
         updateDateOnView((EditText) view);
     }
+
+
+    public NewStaffPojo getNewStaffDetail() {
+
+        return new NewStaffPojo(
+                designation.getSelectedItem().toString(),
+                firstName.getEditText().getText().toString(),
+                lastName.getEditText().getText().toString(),
+                dob.getText().toString(),
+                findViewById(gender.getCheckedRadioButtonId()).toString(),
+                ethinicity.getEditText().getText().toString(),
+                bank.getSelectedItem().toString(),
+                accountNumber.getEditText().getText().toString(),
+                contactNumber.getEditText().getText().toString(),
+                email.getEditText().getText().toString(),
+                address.getEditText().getText().toString(),
+                contractStartDate.getText().toString(),
+                contractEndDate.getText().toString(),
+                "",
+                bankNameOther.getText().toString(),
+                NewStaffDao.SAVED
+        );
+    }
+
 
     private void showImageOptionsDialog() {
 

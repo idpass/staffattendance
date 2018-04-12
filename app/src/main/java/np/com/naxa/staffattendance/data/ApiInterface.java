@@ -38,19 +38,19 @@ public interface ApiInterface {
     @POST("staff/api/staff/1")
     Observable<NewStaffPojo> uploadNewStaff(
 
-            @Part("designation") RequestBody designation,
+            @Part("designation") Integer designation,
             @Part("first_name") RequestBody firstName,
             @Part("last_name") RequestBody lastName,
             @Part("date_of_birth") RequestBody dob,
-            @Part("gender") RequestBody gender,
+            @Part("gender") Integer gender,
             @Part("ethnicity") RequestBody ethnicity,
-            @Part("bank") RequestBody bankName,
+            @Part("bank") Integer bankId,
+            @Part("bank_name") RequestBody bankName,
             @Part("account_number") RequestBody accountNumber,
             @Part("phone_number") RequestBody phoneNumber,
             @Part("email") RequestBody email,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
-            @Part("bank_name") RequestBody bankNameOther,
 
             @Part MultipartBody.Part photo
     );

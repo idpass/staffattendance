@@ -1,8 +1,10 @@
 package np.com.naxa.staffattendance.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import np.com.naxa.staffattendance.application.StaffAttendance;
@@ -16,26 +18,28 @@ import static android.content.ContentValues.TAG;
 
 public class TokenMananger {
     private static final String TAG = "TokenManager";
-    private static String token, rawtoken;
-    static SharedPreferences sharedPreferences;
+    private static String token;
+    private static SharedPreferences sharedPreferences;
 
-    public TokenMananger() {
 
-    }
 
     public static String getToken() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
-        rawtoken = sharedPreferences.getString("TOKEN", "");
-        token = "Token " + rawtoken;
-//        Timber.i(token);
-        Log.d(TAG, "getToken: '" + token + "'");
-        return token;
+        String rawtoken = sharedPreferences.getString("TOKEN", "");
+
+        if(!TextUtils.isEmpty(rawtoken)){
+            rawtoken = "Token " + rawtoken;
+        }
+
+        Log.d(TAG, "TokenMananger: '" + token + "'");
+        return rawtoken;
     }
 
 
+    @SuppressLint("ApplySharedPref")
     public static void saveToken(String token) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
-        sharedPreferences.edit().putString("TOKEN", token).apply();
+        sharedPreferences.edit().putString("TOKEN", token).commit();
     }
 }
 

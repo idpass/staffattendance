@@ -1,9 +1,12 @@
 package np.com.naxa.staffattendance.newstaff;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +17,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +29,8 @@ import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,6 +44,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Calendar calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener date;
     private ArrayAdapter<String> spinnerAdapter;
+    private File photoFileToUpload;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -174,6 +181,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.staff_photo:
+                photo.setError(null);
+                showImageOptionsDialog();
                 break;
 
             case R.id.staff_create:
@@ -237,6 +246,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         updateDateOnView((EditText) view);
     }
 
+
     public NewStaffPojo getNewStaffDetail() {
         
         return new NewStaffPojo(
@@ -259,5 +269,46 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         );
     }
 
+
+
+    private void showImageOptionsDialog() {
+
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Dismiss"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Photo");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int itemId) {
+                dialog.dismiss();
+
+                if (options[itemId].equals("Take Photo")) {
+                    EasyImage.openCamera(NewStaffActivity.this, 0);
+                } else if (options[itemId].equals("Choose from Gallery")) {
+                    EasyImage.openChooserWithGallery(NewStaffActivity.this, "Select Staff Photo", 0);
+                }
+            }
+        });
+        builder.show();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+
+                photo.setError("");
+            }
+
+            @Override
+            public void onImagePicked(File photoFileToUpload, EasyImage.ImageSource source, int type) {
+                NewStaffActivity.this.photoFileToUpload = photoFileToUpload;
+                photo.setText("Change Photo");
+            }
+        });
+    }
 
 }

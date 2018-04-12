@@ -25,7 +25,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".attendence.WeeklyAttendenceVPActivity"></activity>
+
+        <activity
+            android:exported="true"
+            android:name=".attendence.WeeklyAttendanceVPActivity"/>
+
 
         <activity android:name=".newstaff.NewStaffActivity"></activity>
     </application>

@@ -14,9 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
 
-public class WeeklyAttendenceVPActivity extends AppCompatActivity {
+public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -30,13 +31,13 @@ public class WeeklyAttendenceVPActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment = null;
-            fragment = new DailyAttendenceFragment();
+            fragment = new DailyAttendanceFragment();
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 7;
+            return 1;
         }
 
         @Override
@@ -53,21 +54,21 @@ public class WeeklyAttendenceVPActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weekly_attendence);
-
-        initUI();
-        setUpToolbar();
+        bindUI();
+        setuptoolbar();
+        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager()));
     }
 
-    private void setUpToolbar() {
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Attendance");
+    private void setuptoolbar() {
+
         setSupportActionBar(toolbar);
     }
 
-    private void initUI() {
+    private void bindUI() {
         viewPager = findViewById(R.id.veiw_pager);
         tabLayout = findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(viewPager);
-        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager()));
+        toolbar = findViewById(R.id.toolbar_general);
+
     }
 }

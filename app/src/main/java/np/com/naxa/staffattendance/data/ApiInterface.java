@@ -3,6 +3,7 @@ package np.com.naxa.staffattendance.data;
 
 import java.util.ArrayList;
 
+import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import okhttp3.MultipartBody;
@@ -14,6 +15,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import rx.Observable;
 
 /**
@@ -33,6 +35,7 @@ public interface ApiInterface {
     @Multipart
     @POST("staff/api/staff/1")
     Observable<NewStaffPojo> uploadNewStaff(
+
             @Part("designation") RequestBody designation,
             @Part("first_name") RequestBody firstName,
             @Part("last_name") RequestBody lastName,
@@ -46,6 +49,7 @@ public interface ApiInterface {
             @Part("email") RequestBody email,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
+
             @Part MultipartBody.Part photo
     );
 
@@ -55,6 +59,11 @@ public interface ApiInterface {
     @GET("staff/api/banks/")
     Observable<ArrayList<ArrayList<String>>> getBankist();
 
+    @GET("/staff/api/myteam/")
+    Observable<ArrayList<MyTeamResponse>> getMyTeam();
 
+
+    @GET("/staff/api/staff/{team_id}")
+    Observable<ArrayList<TeamMemberResposne>> getTeamMember(@Path(value = "team_id", encoded = true) String teamID);
 
 }

@@ -3,7 +3,6 @@ package np.com.naxa.staffattendance;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +37,6 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.listener = listener;
         selectedItems = new SparseBooleanArray();
         animationItemsIndex = new SparseBooleanArray();
-
     }
 
 
@@ -54,10 +52,12 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         Staff staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
-        staffVH.siteName.setText(staff.getName());
-        staffVH.siteAddress.setText(staff.getStaffType());
+        staffVH.staffName.setText(staff.getName());
+        staffVH.staffType.setText(staff.getStaffType());
+        staffVH.iconText.setVisibility(View.VISIBLE);
         applyIconAnimation(staffVH, holder.getAdapterPosition());
-
+        staffVH.imgProfile.setImageResource(R.drawable.circle_blue);
+        staffVH.iconText.setText(staff.getName().substring(0,1));
 
         staffVH.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +66,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
-        staffVH.rootLayout.setActivated(true);
+       // staffVH.rootLayout.setActivated(false);
     }
 
     @Override
@@ -75,6 +75,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void toggleSelection(int pos) {
+
         currentSelectedIndex = pos;
         if (selectedItems.get(pos, false)) {
             selectedItems.delete(pos);
@@ -88,7 +89,6 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void applyIconAnimation(StaffVH holder, int position) {
         if (selectedItems.get(position, false)) {
-            Log.i("Mia","If");
             holder.iconFront.setVisibility(View.GONE);
             resetIconYAxis(holder.iconBack);
             holder.iconBack.setVisibility(View.VISIBLE);
@@ -129,7 +129,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     public class StaffVH extends RecyclerView.ViewHolder {
-        private TextView siteName, siteAddress, sitePhone, siteIdentifier, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
+        private TextView staffName, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
         private ImageView iconImp, imgProfile;
         private RelativeLayout iconContainer, iconBack, iconFront;
         private RelativeLayout rootLayout;
@@ -143,12 +143,12 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             iconContainer = view.findViewById(R.id.icon_container);
             rootLayout = view.findViewById(R.id.root_layout);
 
-            siteName = view.findViewById(R.id.site_list_row_site_name);
-            siteAddress = view.findViewById(R.id.site_list_row_site_address);
-            sitePhone = view.findViewById(R.id.site_list_row_site_phone);
-            siteIdentifier = view.findViewById(R.id.tv_site_identifier);
+            staffName = view.findViewById(R.id.staff_list_row_name);
+            siteAddress = view.findViewById(R.id.staff_list_row_email);
+            sitePhone = view.findViewById(R.id.staff_list_row_phone);
+            staffType = view.findViewById(R.id.staff_list_row_type);
             iconText = view.findViewById(R.id.icon_text);
-            tvTagOfflineSite = view.findViewById(R.id.tv_tag_offline_site);
+            tvTagOfflineSite = view.findViewById(R.id.staff_list_row_status);
             imgProfile = view.findViewById(R.id.icon_profile);
         }
     }

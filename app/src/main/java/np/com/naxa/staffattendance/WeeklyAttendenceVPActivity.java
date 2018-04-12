@@ -34,7 +34,7 @@ public class WeeklyAttendenceVPActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 1;
+            return 7;
         }
 
         @Override
@@ -53,18 +53,19 @@ public class WeeklyAttendenceVPActivity extends AppCompatActivity {
         setContentView(R.layout.activity_weekly_attendence);
         bindUI();
         setuptoolbar();
+        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager()));
     }
 
     private void setuptoolbar() {
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Attendance");
+
         setSupportActionBar(toolbar);
     }
 
     private void bindUI() {
         viewPager = findViewById(R.id.veiw_pager);
         tabLayout = findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(viewPager);
-        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager()));
+        toolbar = findViewById(R.id.toolbar_general);
+
     }
 }

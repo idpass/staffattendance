@@ -1,20 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar"
+<android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/appbar_general"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/toolbar_gradient"
-    android:minHeight="?attr/actionBarSize"
+    android:theme="@style/Base.ThemeOverlay.AppCompat.Dark">
 
-    android:theme="@style/AppTheme"
-    local:theme="@style/AppTheme">
 
-    <TextView
-        android:id="@+id/toolbar_title"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_general"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:layout_below="@id/toolbar"
+        android:background="@android:color/background_light"
+        app:tabGravity="center"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/white"
+        app:tabTextColor="@color/colorAccent" />
 
-</android.support.v7.widget.Toolbar>
+</android.support.design.widget.AppBarLayout>

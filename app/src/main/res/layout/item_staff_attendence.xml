@@ -19,7 +19,8 @@
         <include layout="@layout/item_text_circle" />
 
         <TextView
-            android:id="@+id/site_list_row_site_name"
+            android:text="Nishon Tandukar"
+            android:id="@+id/staff_list_row_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -29,33 +30,33 @@
 
 
         <TextView
-            android:id="@+id/tv_site_identifier"
+            android:id="@+id/staff_list_row_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/site_list_row_site_name"
+            android:layout_below="@id/staff_list_row_name"
 
             android:textSize="@dimen/material_text_caption" />
 
         <TextView
-            android:id="@+id/site_list_row_site_address"
+            android:id="@+id/staff_list_row_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_site_identifier"
+            android:layout_below="@+id/staff_list_row_type"
 
             android:ellipsize="end"
             android:lines="1" />
 
         <TextView
-            android:id="@+id/site_list_row_site_phone"
+            android:id="@+id/staff_list_row_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/site_list_row_site_address"
+            android:layout_below="@+id/staff_list_row_email"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:lines="1" />
 
         <TextView
-            android:id="@+id/tv_tag_offline_site"
+            android:id="@+id/staff_list_row_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

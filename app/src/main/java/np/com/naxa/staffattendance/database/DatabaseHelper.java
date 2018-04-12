@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -88,4 +89,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+
+    public static String getStringFromCursor(Cursor cursor, String columnName) {
+        return cursor.getString(cursor.getColumnIndex(columnName));
+    }
 }

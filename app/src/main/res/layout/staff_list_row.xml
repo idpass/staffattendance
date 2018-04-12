@@ -2,7 +2,6 @@
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_site_lst_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,7 +19,8 @@
         <include layout="@layout/item_text_circle" />
 
         <TextView
-            android:id="@+id/site_list_row_site_name"
+            android:textColor="@color/text_black"
+            android:id="@+id/staff_list_row_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/icon_container"
@@ -28,43 +28,48 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:minLines="1"
-            android:textColor="@color/black" />
+            android:text="Nishon Tandukar"
+            android:textSize="@dimen/material_text_body1" />
 
 
         <TextView
-            android:id="@+id/tv_site_identifier"
+
+            android:id="@+id/staff_list_row_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/site_list_row_site_name"
+            android:layout_below="@id/staff_list_row_name"
             android:layout_toEndOf="@id/icon_container"
             android:layout_toRightOf="@id/icon_container"
-            android:textSize="@dimen/material_text_caption" />
+            android:text="Staff Mananger"
+            android:textSize="@dimen/material_text_subhead" />
 
         <TextView
-            android:id="@+id/site_list_row_site_address"
+            android:id="@+id/staff_list_row_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_site_identifier"
+            android:layout_below="@+id/staff_list_row_type"
             android:layout_toEndOf="@id/icon_container"
             android:layout_toRightOf="@id/icon_container"
             android:ellipsize="end"
             android:lines="1"
-            android:textSize="@dimen/material_text_button" />
+            android:textSize="@dimen/material_text_button"
+            android:visibility="gone" />
 
         <TextView
-            android:id="@+id/site_list_row_site_phone"
+            android:id="@+id/staff_list_row_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/site_list_row_site_address"
+            android:layout_below="@+id/staff_list_row_email"
             android:layout_toEndOf="@id/icon_container"
             android:layout_toRightOf="@id/icon_container"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:lines="1"
-            android:textSize="@dimen/material_text_button" />
+            android:textSize="@dimen/material_text_button"
+            android:visibility="gone" />
 
         <TextView
-            android:id="@+id/tv_tag_offline_site"
+            android:id="@+id/staff_list_row_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

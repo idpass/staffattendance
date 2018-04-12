@@ -9,16 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import np.com.naxa.staffattendance.NewStaffActivity;
+
+import java.util.ArrayList;
+
+import np.com.naxa.staffattendance.FormCall;
+import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
-import np.com.naxa.staffattendance.WeeklyAttendenceVPActivity;
-import np.com.naxa.staffattendance.data.APIClient;
-import np.com.naxa.staffattendance.data.ApiInterface;
-import np.com.naxa.staffattendance.data.LoginResponse;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -56,40 +56,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 ProgressDialog dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
                 if (validate()) {
                     dialog.show();
-                    sendDataToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
+                    loginToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(this, "Enter valid credentials..", Toast.LENGTH_SHORT).show();
+                    ToastUtils.showShort("Enter valid credentials..");
                 }
                 break;
         }
     }
 
 
-    public void sendDataToServer(String username, String password) {
-        ApiInterface apiService = APIClient.getUploadClient().create(ApiInterface.class);
-
-        Call<LoginResponse> call = apiService.getLoginDetails(username, password);
-        call.enqueue(new Callback<LoginResponse>() {
+    private void loginToServer(final String username, final String password) {
+        new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.body() != null) {
-                    TokenMananger.saveToken(response.body().getToken());
-                    Log.d(TAG, "onResponse: " + response.body().getToken());
-                    startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
-                } else {
-                    Log.d(TAG, "onResponse: " + " null response");
-                    Toast.makeText(LoginActivity.this, "Login failed!!", Toast.LENGTH_SHORT).show();
-                }
+            public void onSuccess() {
+                startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Invalid Credentials.", Toast.LENGTH_SHORT).show();
+            public void onError() {
             }
         });
-
-
     }
 
     private boolean validate() {

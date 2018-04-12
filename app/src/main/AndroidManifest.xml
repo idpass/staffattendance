@@ -33,11 +33,13 @@
             </intent-filter>
         </activity>
 
+
         <activity
             android:exported="true"
             android:name=".WeeklyAttendenceVPActivity"/>
 
-        <activity android:name=".NewStaffActivity"></activity>
+
+        <activity android:name=".newstaff.NewStaffActivity"></activity>
     </application>
 
 </manifest>

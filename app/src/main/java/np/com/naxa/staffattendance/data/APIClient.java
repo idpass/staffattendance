@@ -13,7 +13,9 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.schedulers.Schedulers;
 
 public class APIClient {
 
@@ -22,6 +24,7 @@ public class APIClient {
 
     private static Retrofit retrofit = null;
     private static OkHttpClient okHttpClient;
+    private static RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
     public static ApiInterface getAPIService(Context context) {
         return APIClient.getUploadClient().create(ApiInterface.class);
@@ -33,6 +36,7 @@ public class APIClient {
             retrofit = new Retrofit.Builder()
                     .client(createOkHttpClient())
                     .baseUrl(BASE_URL)
+                    .addCallAdapterFactory(rxAdapter)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

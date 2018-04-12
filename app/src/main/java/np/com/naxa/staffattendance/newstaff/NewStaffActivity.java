@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance.newstaff;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +30,7 @@ import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
+import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -192,8 +195,19 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.staff_create:
                 if (validate()) {
-                    ToastUtils.showShort("Saving to database");
-                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
+                    final ProgressDialog progressDialog = new ProgressDialogUtils().getProgressDialog(this, "Logging in...");
+                    progressDialog.show();
+                    new NewStaffCall().upload(getNewStaffDetail(), new NewStaffCall.NewStaffCallListener() {
+                        @Override
+                        public void onError() {
+                            progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onSuccess() {
+                            progressDialog.dismiss();
+                        }
+                    });
                 }
                 break;
         }
@@ -254,22 +268,31 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     public NewStaffPojo getNewStaffDetail() {
 
+        int bankId;
+        if (bank.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
+            bankId = 1;
+        } else {
+            bankId = 0;
+        }
+
+
+
         return new NewStaffPojo(
-                designation.getSelectedItem().toString(),
+                designation.getSelectedItemPosition(),
                 firstName.getEditText().getText().toString(),
                 lastName.getEditText().getText().toString(),
                 dob.getText().toString(),
-                findViewById(gender.getCheckedRadioButtonId()).toString(),
+                0,
                 ethinicity.getEditText().getText().toString(),
-                bank.getSelectedItem().toString(),
+                bankId,
+                bankNameOther.getText().toString(),
                 accountNumber.getEditText().getText().toString(),
                 contactNumber.getEditText().getText().toString(),
                 email.getEditText().getText().toString(),
                 address.getEditText().getText().toString(),
                 contractStartDate.getText().toString(),
                 contractEndDate.getText().toString(),
-                "",
-                bankNameOther.getText().toString(),
+               "",
                 NewStaffDao.SAVED
         );
     }
@@ -284,7 +307,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onClick(DialogInterface dialog, int itemId) {
                 dialog.dismiss();
-
                 if (options[itemId].equals("Take Photo")) {
                     EasyImage.openCamera(NewStaffActivity.this, 0);
                 } else if (options[itemId].equals("Choose from Gallery")) {
@@ -303,7 +325,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
             public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-
                 photo.setError("");
             }
 
@@ -314,5 +335,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
+
 
 }

@@ -10,7 +10,7 @@ public class TeamMemberResposne {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
     @SerializedName("first_name")
     @Expose
     private String firstName;
@@ -57,7 +57,7 @@ public class TeamMemberResposne {
     @Expose
     private Object bank;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
@@ -74,11 +74,32 @@ public class TeamMemberResposne {
 
     }
 
+    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName, Object email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth, Object contractStart, Object contractEnd, Object bank) {
+        this.teamID = teamID;
+        this.teamName = teamName;
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.gender = gender;
+        this.ethnicity = ethnicity;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.photo = photo;
+        this.designation = designation;
+        this.dateOfBirth = dateOfBirth;
+        this.contractStart = contractStart;
+        this.contractEnd = contractEnd;
+        this.bank = bank;
+    }
+
     public void setTeamID(String teamID) {
         this.teamID = teamID;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

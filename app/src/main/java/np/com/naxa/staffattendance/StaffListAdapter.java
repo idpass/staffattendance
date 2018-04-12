@@ -13,13 +13,14 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.pojo.Staff;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
 
 public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
-    private List<Staff> filetredsitelist;
-    private List<Staff> staffList;
+    private List<TeamMemberResposne> filetredsitelist;
+    private List<TeamMemberResposne> staffList;
     private OnStaffItemClickListener listener;
     private SparseBooleanArray selectedItems;
     // array used to perform multiple animation at once
@@ -30,7 +31,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static int currentSelectedIndex = -1;
 
 
-    StaffListAdapter(Context mContext, List<Staff> staffList, OnStaffItemClickListener listener) {
+    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
@@ -50,14 +51,14 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        Staff staff = staffList.get(position);
+        TeamMemberResposne staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
-        staffVH.staffName.setText(staff.getName());
-        staffVH.staffType.setText(staff.getStaffType());
+        staffVH.staffName.setText(staff.getFirstName());
+        staffVH.staffType.setText(staff.getTeamName());
         staffVH.iconText.setVisibility(View.VISIBLE);
         applyIconAnimation(staffVH, holder.getAdapterPosition());
         staffVH.imgProfile.setImageResource(R.drawable.circle_blue);
-        staffVH.iconText.setText(staff.getName().substring(0,1));
+        staffVH.iconText.setText(staff.getFirstName().substring(0, 1));
 
         staffVH.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +67,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
-       // staffVH.rootLayout.setActivated(false);
+        // staffVH.rootLayout.setActivated(false);
     }
 
     @Override

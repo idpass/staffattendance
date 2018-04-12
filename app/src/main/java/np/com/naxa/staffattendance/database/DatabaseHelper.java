@@ -85,8 +85,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             TABLE_ATTENDANCE +
             "(" +
             KEY_ID + " INTEGER PRIMARY KEY," +
-            KEY_ATTENDACE_DATE + " DATETIME," +
             KEY_STAFFS_IDS + " TEXT," +
+            KEY_ATTENDACE_DATE + " DATETIME," +
+            KEY_STAFF_TEAM_ID + " TEXT," +
             KEY_SUBMITTED_BY + " INTEGER," +
             KEY_CREATED_AT + " DATETIME" + "," +
             KEY_UPDATED_AT + " DATETIME" +

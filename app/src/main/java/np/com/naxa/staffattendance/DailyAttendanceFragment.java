@@ -16,12 +16,15 @@ import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.database.StaffDao;
+import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.Staff;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
 
     private RecyclerView recyclerView;
     private StaffListAdapter stafflistAdapter;
+    private TeamDao teamDao;
+    private StaffDao staffDao;
 
     public DailyAttendanceFragment() {
     }
@@ -30,6 +33,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_daily_attendence, container, false);
+        teamDao = new TeamDao();
+        staffDao = new StaffDao();
+
         bindUI(rootView);
         setupRecyclerView();
         return rootView;
@@ -37,9 +43,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
     private void setupRecyclerView() {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        String teamId = teamDao.getOneTeamIdForDemo();
 
-        List<TeamMemberResposne> staffs = new ArrayList<>();
-        staffs.addAll(new StaffDao().getStaffByTeamId("1"));
+        List<TeamMemberResposne> staffs = new StaffDao().getStaffByTeamId(teamId);
 
         stafflistAdapter = new StaffListAdapter(getActivity(), staffs, this);
         recyclerView.setLayoutManager(mLayoutManager);

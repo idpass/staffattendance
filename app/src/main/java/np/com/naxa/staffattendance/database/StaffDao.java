@@ -31,6 +31,7 @@ public class StaffDao {
         try {
             db.beginTransaction();
             for (TeamMemberResposne staff : staffs) {
+
                 ContentValues values = getContentValuesFronSaff(staff);
                 saveStaff(db, values);
             }
@@ -44,7 +45,7 @@ public class StaffDao {
     }
 
 
-    public ContentValues getContentValuesFronSaff(TeamMemberResposne staff) {
+    private ContentValues getContentValuesFronSaff(TeamMemberResposne staff) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.KEY_STAFF_FULL_NAME, staff.getFirstName().concat(" ").concat(staff.getLastName()));
         contentValues.put(DatabaseHelper.KEY_STAFF_TYPE, StaffAttendance.getStaffAttendance().getString(R.string.not_avaliable, "Staff type"));
@@ -73,6 +74,7 @@ public class StaffDao {
         }
 
         while (cursor.moveToNext()) {
+
             String teamID = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_ID);
             String teamName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_NAME);
             String staffId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID);

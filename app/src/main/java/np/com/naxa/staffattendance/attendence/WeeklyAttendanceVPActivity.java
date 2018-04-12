@@ -37,7 +37,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 7;
+            return 1;
         }
 
         @Override

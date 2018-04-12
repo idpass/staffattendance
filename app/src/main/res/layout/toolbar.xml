@@ -22,7 +22,7 @@
         android:background="@android:color/background_light"
         app:tabGravity="center"
         app:tabMode="scrollable"
-        app:tabSelectedTextColor="@color/white"
-        app:tabTextColor="@color/colorAccent" />
+        app:tabSelectedTextColor="@color/colorAccent"
+        app:tabTextColor="@color/colorPrimaryDark" />
 
 </android.support.design.widget.AppBarLayout>

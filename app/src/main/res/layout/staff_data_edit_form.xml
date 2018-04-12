@@ -39,9 +39,9 @@
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=""
             android:hint="First Name"
             android:inputType="text"
+            android:text=""
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     </android.support.design.widget.TextInputLayout>
 
@@ -183,6 +183,19 @@
         </Spinner>
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/staff_bank_other"
+        style="@style/OfflineSiteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:hint="Enter Bank Name"
+        android:inputType="text"
+        android:longClickable="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:visibility="gone" />
+
     <android.support.design.widget.TextInputLayout
 
         android:id="@+id/staff_bank_account"
@@ -198,12 +211,12 @@
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false"
             android:hint="Account Number"
             android:inputType="text"
             android:longClickable="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     </android.support.design.widget.TextInputLayout>
+
 
     <android.support.design.widget.TextInputLayout
 

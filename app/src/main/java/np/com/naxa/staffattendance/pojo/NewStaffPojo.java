@@ -4,20 +4,58 @@ public class NewStaffPojo {
 
     private String designation,
             firstName,
-            LastName,
+            lastName,
             dob,
             gender,
             ethnicity,
-            bank,
+            bankName,
             accountNumber,
+            contactNumber,
             email,
             address,
             contractStartDate,
             contractEndDate,
             photoLocation,
-            bank_name;
+            bankId,
+            status;
 
     public NewStaffPojo() {
+    }
+
+    public NewStaffPojo(String designation, String firstName, String lastName, String dob, String gender, String ethnicity, String bankName, String accountNumber, String contactNumber, String email, String address, String contractStartDate, String contractEndDate, String photoLocation, String bankId, String status) {
+        this.designation = designation;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dob = dob;
+        this.gender = gender;
+        this.ethnicity = ethnicity;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.contactNumber = contactNumber;
+        this.email = email;
+        this.address = address;
+        this.contractStartDate = contractStartDate;
+        this.contractEndDate = contractEndDate;
+        this.photoLocation = photoLocation;
+        this.bankId = bankId;
+        this.status = status;
+    }
+
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getDesignation() {
@@ -32,12 +70,12 @@ public class NewStaffPojo {
         this.address = address;
     }
 
-    public String getBank_name() {
-        return bank_name;
+    public String getBankId() {
+        return bankId;
     }
 
-    public void setBank_name(String bank_name) {
-        this.bank_name = bank_name;
+    public void setBankId(String bankId) {
+        this.bankId = bankId;
     }
 
     public void setDesignation(String designation) {
@@ -53,11 +91,11 @@ public class NewStaffPojo {
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
     public String getDob() {
@@ -84,12 +122,12 @@ public class NewStaffPojo {
         this.ethnicity = ethnicity;
     }
 
-    public String getBank() {
-        return bank;
+    public String getBankName() {
+        return bankName;
     }
 
-    public void setBank(String bank) {
-        this.bank = bank;
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
     public String getAccountNumber() {

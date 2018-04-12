@@ -39,13 +39,13 @@ public interface ApiInterface {
             @Part("date_of_birth") RequestBody dob,
             @Part("gender") RequestBody gender,
             @Part("ethnicity") RequestBody ethnicity,
-            @Part("bank") RequestBody bankName,
+            @Part("bank") RequestBody bankId,
+            @Part("bank_name") RequestBody bankName,
             @Part("account_number") RequestBody accountNumber,
             @Part("phone_number") RequestBody phoneNumber,
             @Part("email") RequestBody email,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
-            @Part("bank_name") RequestBody bankNameOther,
             @Part MultipartBody.Part photo
     );
 

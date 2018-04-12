@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance;
+package np.com.naxa.staffattendance.attendence;
 
 
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import np.com.naxa.staffattendance.R;
 
 public class DailyAttendenceFragment extends Fragment {
 

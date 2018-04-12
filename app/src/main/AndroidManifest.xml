@@ -33,9 +33,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".WeeklyAttendenceVPActivity"></activity>
+        <activity android:name=".attendence.WeeklyAttendenceVPActivity"></activity>
 
-        <activity android:name=".NewStaffActivity"></activity>
+        <activity android:name=".newstaff.NewStaffActivity"></activity>
     </application>
 
 </manifest>

@@ -52,16 +52,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             KEY_STAFF_TYPE + " INTEGER," +
             KEY_CREATED_BY + " INTEGER," +
             KEY_CREATED_AT + " DATETIME," +
-            KEY_UPDATED_AT + " DATETIME" + ")";
+            KEY_UPDATED_AT + " DATETIME" +
+            ")";
 
     // Attendance table create statement
     private static final String CREATE_TABLE_ATTENDANCE = "CREATE TABLE "
-            + TABLE_ATTENDANCE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_ATTENDACE_DATE + " DATETIME," +
-            KEY_STAFFS_IDS + " TEXT," + KEY_SUBMITTED_BY + " INTEGER," + KEY_CREATED_AT + " DATETIME" + ","
-            + KEY_UPDATED_AT + " DATETIME" + ")";
+            + TABLE_ATTENDANCE + "(" +
+            KEY_ID + " INTEGER PRIMARY KEY," +
+            KEY_ATTENDACE_DATE + " DATETIME," +
+            KEY_STAFFS_IDS + " TEXT," +
+            KEY_SUBMITTED_BY + " INTEGER," +
+            KEY_CREATED_AT + " DATETIME" + "," +
+            KEY_UPDATED_AT + " DATETIME" +
+            ")";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
     }
 
     public static synchronized DatabaseHelper getDatabaseHelper() {

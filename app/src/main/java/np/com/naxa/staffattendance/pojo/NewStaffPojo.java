@@ -2,10 +2,42 @@ package np.com.naxa.staffattendance.pojo;
 
 public class NewStaffPojo {
 
-    private String designation, firstName, LastName, dob, gender, ethnicity, bank, accountNumber, email, contractStartDate, contractEndDate, photo;
+    private String designation,
+            firstName,
+            LastName,
+            dob,
+            gender,
+            ethnicity,
+            bank,
+            accountNumber,
+            email,
+            address,
+            contractStartDate,
+            contractEndDate,
+            photoLocation,
+            bank_name;
+
+    public NewStaffPojo() {
+    }
 
     public String getDesignation() {
         return designation;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getBank_name() {
+        return bank_name;
+    }
+
+    public void setBank_name(String bank_name) {
+        this.bank_name = bank_name;
     }
 
     public void setDesignation(String designation) {
@@ -92,11 +124,11 @@ public class NewStaffPojo {
         this.contractEndDate = contractEndDate;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getPhotoLocation() {
+        return photoLocation;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhotoLocation(String photoLocation) {
+        this.photoLocation = photoLocation;
     }
 }

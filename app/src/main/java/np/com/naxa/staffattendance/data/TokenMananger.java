@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -18,11 +19,9 @@ import static android.content.ContentValues.TAG;
 public class TokenMananger {
     private static final String TAG = "TokenManager";
     private static String token;
-    static SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
 
-    public TokenMananger() {
 
-    }
 
     public static String getToken() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
@@ -37,6 +36,7 @@ public class TokenMananger {
     }
 
 
+    @SuppressLint("ApplySharedPref")
     public static void saveToken(String token) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
         sharedPreferences.edit().putString("TOKEN", token).commit();

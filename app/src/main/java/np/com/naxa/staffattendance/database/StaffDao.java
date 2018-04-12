@@ -12,6 +12,10 @@ import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by samir on 4/1/2018.
@@ -100,6 +104,27 @@ public class StaffDao {
     private long saveStaff(SQLiteDatabase database, ContentValues contentValues) {
         return database.replace(DatabaseHelper.TABLE_STAFF, null, contentValues);
     }
+
+
+    public Observable<List<String>> getStaffIdFromObject(ArrayList<TeamMemberResposne> staffs) {
+        return Observable.just(staffs)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMapIterable(new Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
+                    @Override
+                    public Iterable<TeamMemberResposne> call(ArrayList<TeamMemberResposne> teamMemberResposnes) {
+                        return teamMemberResposnes;
+                    }
+                }).flatMap(new Func1<TeamMemberResposne, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(TeamMemberResposne teamMemberResposne) {
+                        return Observable.just(teamMemberResposne.getId());
+                    }
+                }).toList();
+    }
+
+
+
 
 
 }

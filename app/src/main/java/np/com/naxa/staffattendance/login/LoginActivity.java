@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText tvUserName, tvPassword;
     private Button btnLogin;
     private TokenMananger tokenMananger;
+    private MyTeamRepository myTeamRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login_page);
 
         tokenMananger = new TokenMananger();
+        myTeamRepository = new MyTeamRepository();
         initUI();
 
         tvUserName.setText("arunb@unops.org");
@@ -72,7 +74,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onSuccess() {
                 startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
-                new MyTeamRepository().fetchMyTeam();
+                myTeamRepository.fetchMyTeam();
+
             }
 
             @Override

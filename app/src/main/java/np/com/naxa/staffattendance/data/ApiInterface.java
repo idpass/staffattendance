@@ -2,7 +2,9 @@ package np.com.naxa.staffattendance.data;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
+import np.com.naxa.staffattendance.attendence.AttedanceResponse;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
@@ -65,4 +67,15 @@ public interface ApiInterface {
     @GET("/staff/api/staff/{team_id}")
     Observable<ArrayList<TeamMemberResposne>> getTeamMember(@Path(value = "team_id", encoded = true) String teamID);
 
+    @FormUrlEncoded
+    @POST("/staff/api/attendance/{team_id}/")
+    Observable<AttedanceResponse> postAttendanceForTeam(@Path(value = "team_id", encoded = true) String teamID,
+                                                        @Field("attendance_date") String date,
+                                                        @Field("staffs") List<String> staff_ids
+    );
+
+
+    @GET("/staff/api/attendance/{team_id}/")
+    Observable<ArrayList<AttedanceResponse>> getPastAttendanceList(@Path(value = "team_id", encoded = true) String teamID
+    );
 }

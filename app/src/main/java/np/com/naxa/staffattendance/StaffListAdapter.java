@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
@@ -67,6 +68,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
+
         // staffVH.rootLayout.setActivated(false);
     }
 
@@ -90,6 +92,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void applyIconAnimation(StaffVH holder, int position) {
         if (selectedItems.get(position, false)) {
+            holder.rootLayout.setActivated(true);
             holder.iconFront.setVisibility(View.GONE);
             resetIconYAxis(holder.iconBack);
             holder.iconBack.setVisibility(View.VISIBLE);
@@ -99,7 +102,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
-
+            holder.rootLayout.setActivated(false);
             holder.iconBack.setVisibility(View.GONE);
             resetIconYAxis(holder.iconFront);
             holder.iconFront.setVisibility(View.VISIBLE);
@@ -126,6 +129,16 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void resetCurrentIndex() {
         currentSelectedIndex = -1;
+    }
+
+
+    public ArrayList<TeamMemberResposne> getSelected() {
+        ArrayList<TeamMemberResposne> items = new ArrayList<>(selectedItems.size());
+        for (int i = 0; i < selectedItems.size(); i++) {
+            items.add(staffList.get(i));
+        }
+
+        return items;
     }
 
 

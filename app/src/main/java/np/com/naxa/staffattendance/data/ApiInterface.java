@@ -74,4 +74,9 @@ public interface ApiInterface {
                                                         @Field("attendance_date") String date,
                                                         @Field("staffs") List<String> staff_ids
     );
+
+
+    @GET("/staff/api/attendance/{team_id}/")
+    Observable<ArrayList<AttedanceResponse>> getPastAttendanceList(@Path(value = "team_id", encoded = true) String teamID
+    );
 }

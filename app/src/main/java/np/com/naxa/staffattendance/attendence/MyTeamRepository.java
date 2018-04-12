@@ -6,7 +6,9 @@ import java.util.List;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
+import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
+import np.com.naxa.staffattendance.database.TeamDao;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -17,9 +19,12 @@ import rx.schedulers.Schedulers;
 public class MyTeamRepository {
 
     private StaffDao staffDao;
+    private AttendanceDao attendanceDao;
+
 
     public MyTeamRepository() {
         staffDao = new StaffDao();
+        attendanceDao = new AttendanceDao();
     }
 
     public void fetchMyTeam() {
@@ -27,7 +32,9 @@ public class MyTeamRepository {
                 .subscribe(new Observer<List<TeamMemberResposne>>() {
                     @Override
                     public void onCompleted() {
-
+                        //todo  do not do this, make this request tied with rx in future
+                        String teamId = new TeamDao().getOneTeamIdForDemo();
+                        new MyTeamRepository().fetchPastAttendance(teamId);
                     }
 
                     @Override
@@ -37,7 +44,6 @@ public class MyTeamRepository {
 
                     @Override
                     public void onNext(List<TeamMemberResposne> teamMemberResposnes) {
-
                         staffDao.saveStafflist(teamMemberResposnes);
                     }
                 });
@@ -110,5 +116,29 @@ public class MyTeamRepository {
 
     }
 
+    public void fetchPastAttendance(String teamID) {
+        final ApiInterface apiInterface = APIClient
+                .getUploadClient()
+                .create(ApiInterface.class);
+
+        apiInterface.getPastAttendanceList(teamID)
+                .subscribe(new Observer<ArrayList<AttedanceResponse>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<AttedanceResponse> attedanceResponses) {
+                        attendanceDao.saveAttendance(attedanceResponses);
+                    }
+                });
+
+    }
 
 }

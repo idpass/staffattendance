@@ -13,10 +13,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+
 public class MyTeamRepository {
 
     private StaffDao staffDao;
 
+    public MyTeamRepository() {
+        staffDao = new StaffDao();
+    }
 
     public void fetchMyTeam() {
         myTeamObserable()
@@ -33,7 +37,7 @@ public class MyTeamRepository {
 
                     @Override
                     public void onNext(List<TeamMemberResposne> teamMemberResposnes) {
-                        staffDao = new StaffDao();
+
                         staffDao.saveStafflist(teamMemberResposnes);
                     }
                 });
@@ -74,4 +78,37 @@ public class MyTeamRepository {
                 }).toList();
 
     }
+
+    public void uploadAttendance(final String teamId, final String date, final ArrayList<TeamMemberResposne> stafflist) {
+        final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
+
+        staffDao.getStaffIdFromObject(stafflist)
+                .flatMap(new Func1<List<String>, Observable<AttedanceResponse>>() {
+                    @Override
+                    public Observable<AttedanceResponse> call(List<String> stafflist) {
+                        return apiInterface.postAttendanceForTeam(teamId, date, stafflist);
+                    }
+                })
+                .subscribe(new Observer<AttedanceResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(AttedanceResponse staff) {
+                        if (staff != null) {
+
+                        }
+                    }
+                });
+
+    }
+
+
 }

@@ -3,16 +3,36 @@
     android:id="@+id/appbar_general"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:background="@drawable/toolbar_gradient"
     android:theme="@style/Base.ThemeOverlay.AppCompat.Dark">
 
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_general"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:layout_height="wrap_content">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_general"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+        <Button
+            android:visibility="gone"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="4dp"
+            android:drawableEnd="@android:drawable/ic_menu_send"
+            android:drawablePadding="8dp"
+            android:drawableRight="@android:drawable/ic_menu_send"
+            android:text="Mark Present"
+            android:textColor="@color/white" />
+    </RelativeLayout>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"

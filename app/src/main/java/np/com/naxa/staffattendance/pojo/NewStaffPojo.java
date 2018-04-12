@@ -56,6 +56,25 @@ public class NewStaffPojo {
 
     private String status;
 
+    public NewStaffPojo(Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender, String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email, String address, String contractStart, String contractEnd, String photo, String status) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.gender = gender;
+        this.ethnicity = ethnicity;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.photo = photo;
+        this.designation = designation;
+        this.dateOfBirth = dateOfBirth;
+        this.contractStart = contractStart;
+        this.contractEnd = contractEnd;
+        this.bank = bank;
+        this.status = status;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -32,7 +32,7 @@ public class NewStaffDao {
         values.put(DatabaseHelper.KEY_STAFF_ADDRESS, pojo.getAddress());
         values.put(DatabaseHelper.KEY_STAFF_CONTRACT_START_DATE, pojo.getContractStart());
         values.put(DatabaseHelper.KEY_STAFF_CONTRACT_END_DATE, pojo.getContractEnd());
-        values.put(DatabaseHelper.KEY_STAFF_PHOTO, pojo.getPhotoLocation());
+        values.put(DatabaseHelper.KEY_STAFF_PHOTO, pojo.getPhoto());
         values.put(DatabaseHelper.KEY_STAFF_DETAIL_STATUS, pojo.getStatus());
         return values;
     }

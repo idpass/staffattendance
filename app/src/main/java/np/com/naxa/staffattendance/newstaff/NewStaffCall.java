@@ -12,6 +12,7 @@ import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -20,11 +21,12 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class NewStaffCall {
 
-    public void upload(final NewStaffPojo pojo) {
-        newStaffObservable(pojo).subscribeOn(Scheduler.io())
+    public void upload(final NewStaffPojo pojo, final NewStaffCallListener listener) {
+        newStaffObservable(pojo).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NewStaffPojo>() {
                     @Override
@@ -34,12 +36,14 @@ public class NewStaffCall {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        ToastUtils.showShort("Error");
+                        listener.onError();
                     }
 
                     @Override
                     public void onNext(NewStaffPojo newStaffPojo) {
-
+                        ToastUtils.showShort("Success");
+                        listener.onSuccess();
                     }
                 });
     }
@@ -66,13 +70,15 @@ public class NewStaffCall {
     }
 
     private MultipartBody.Part getImageFile(String photo) {
-        File file = new File(photo);
-        String name = null;
-        Context context = StaffAttendance.getStaffAttendance();
-        Uri ImageToBeUploaded = FileProvider.getUriForFile(
-                context,
-                context.getString(R.string.android_file_provider_fieldsight), file);
 
-        git
+
+        return null;
     }
+
+    public interface NewStaffCallListener {
+        void onError();
+
+        void onSuccess();
+    }
+
 }

@@ -44,7 +44,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         ArrayList<AttedanceResponse> list = generateSevenDaysAttendanceSheet();
 
         //todo stop loading old attedance history
-        list.clear();
+        //list.clear();
 
         if (attendanceDao.getTodaysAddedance("") != null) {
             list.addAll(attendanceDao.getTodaysAddedance(""));

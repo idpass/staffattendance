@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
+import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -40,7 +41,7 @@ public class FormCall {
         apiService.getBankist()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<ArrayList<String>>>() {
+                .subscribe(new Subscriber<ArrayList<BankPojo>>() {
                     @Override
                     public void onCompleted() {
 
@@ -52,7 +53,7 @@ public class FormCall {
                     }
 
                     @Override
-                    public void onNext(ArrayList<ArrayList<String>> arrayLists) {
+                    public void onNext(ArrayList<BankPojo> arrayLists) {
                                               listener.bankList(arrayLists);
                     }
                 });
@@ -64,6 +65,6 @@ public class FormCall {
     }
 
     public interface BankListListener {
-        void bankList(ArrayList<ArrayList<String>> arrayLists);
+        void bankList(ArrayList<BankPojo> arrayLists);
     }
 }

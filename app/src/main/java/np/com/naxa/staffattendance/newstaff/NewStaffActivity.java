@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
@@ -29,6 +30,7 @@ import java.util.Locale;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.NewStaffDao;
+import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -44,6 +46,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private List<String> designationList = new ArrayList<>();
     private List<String> bankList = new ArrayList<>();
     private RadioGroup gender;
+    private RadioButton male,female,other;
     private Calendar calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener date;
     private ArrayAdapter<String> spinnerAdapter;
@@ -82,9 +85,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             bankList.add(getResources().getString(R.string.default_option));
             new FormCall().getBankList(new FormCall.BankListListener() {
                 @Override
-                public void bankList(ArrayList<ArrayList<String>> arrayLists) {
-                    for (ArrayList<String> list : arrayLists) {
-                        bankList.add(list.get(1));
+                public void bankList(ArrayList<BankPojo> arrayLists) {
+                    for (BankPojo list : arrayLists) {
+                        bankList.add(list.getName());
                     }
                 }
             });
@@ -149,6 +152,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         lastName = findViewById(R.id.staff_last_name);
         dob = findViewById(R.id.staff_dob_date);
         gender = findViewById(R.id.staff_gender);
+        male=findViewById(R.id.gender_male);
+        female=findViewById(R.id.gender_female);
+        other=findViewById(R.id.gender_other);
         ethinicity = findViewById(R.id.staff_ethinicity);
         bank = findViewById(R.id.staff_bank);
         accountNumber = findViewById(R.id.staff_bank_account);
@@ -197,7 +203,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 if (validate()) {
                     final ProgressDialog progressDialog = new ProgressDialogUtils().getProgressDialog(this, "Logging in...");
                     progressDialog.show();
-                    new NewStaffCall().upload(getNewStaffDetail(), new NewStaffCall.NewStaffCallListener() {
+                    new NewStaffCall().upload(getNewStaffDetail(),photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
@@ -268,21 +274,14 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     public NewStaffPojo getNewStaffDetail() {
 
-        int bankId;
-        if (bank.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
-            bankId = 1;
-        } else {
-            bankId = 0;
-        }
-
         return new NewStaffPojo(
                 designation.getSelectedItemPosition(),
                 firstName.getEditText().getText().toString(),
                 lastName.getEditText().getText().toString(),
                 dob.getText().toString(),
-                1,
+                getGender(),
                 ethinicity.getEditText().getText().toString(),
-                bankId,
+                getBankId(),
                 bankNameOther.getText().toString(),
                 accountNumber.getEditText().getText().toString(),
                 contactNumber.getEditText().getText().toString(),
@@ -290,9 +289,33 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 address.getEditText().getText().toString(),
                 contractStartDate.getText().toString(),
                 contractEndDate.getText().toString(),
-               "",
+                getPhotoLocation(),
                 NewStaffDao.SAVED
         );
+    }
+
+    private String getPhotoLocation() {
+        if(photoFileToUpload!=null){
+            return photoFileToUpload.getAbsolutePath();
+        }
+        return null;
+    }
+
+    private Integer getGender() {
+        if(male.isChecked()){
+            return 1;
+        }else if(female.isChecked()){
+            return 2;
+        }
+        return 3;
+    }
+
+    private Integer getBankId() {
+        int bankId = 2;
+        if (bank.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
+            bankId = 1;
+        }
+        return bankId;
     }
 
 

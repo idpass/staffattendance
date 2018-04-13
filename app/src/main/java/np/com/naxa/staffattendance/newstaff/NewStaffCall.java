@@ -25,8 +25,8 @@ import rx.schedulers.Schedulers;
 
 public class NewStaffCall {
 
-    public void upload(final NewStaffPojo pojo, final NewStaffCallListener listener) {
-        newStaffObservable(pojo).subscribeOn(Schedulers.io())
+    public void upload(final NewStaffPojo pojo, File photoFileToUpload, final NewStaffCallListener listener) {
+        newStaffObservable(pojo, photoFileToUpload).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NewStaffPojo>() {
                     @Override
@@ -49,7 +49,7 @@ public class NewStaffCall {
                 });
     }
 
-    private Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo) {
+    private Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo, File photoFileToUpload) {
         Context context = StaffAttendance.getStaffAttendance();
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         return apiInterface.uploadNewStaff(
@@ -64,16 +64,22 @@ public class NewStaffCall {
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getAccountNumber()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getPhoneNumber()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getEmail()),
+                RequestBody.create(MediaType.parse("text/plain"), pojo.getAddress()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractStart()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractEnd()),
-                getImageFile(pojo.getPhoto())
+                getImageFile(photoFileToUpload)
         );
     }
 
-    private MultipartBody.Part getImageFile(String photo) {
+    private MultipartBody.Part getImageFile(File photo) {
+        if (photo == null) {
+            return null;
+        }
 
+        RequestBody imageRequestBody = RequestBody.create(MediaType.parse("image/*"), photo);
+        MultipartBody.Part image = MultipartBody.Part.createFormData("photo", photo.getName(), imageRequestBody);
 
-        return null;
+        return image;
     }
 
     public interface NewStaffCallListener {

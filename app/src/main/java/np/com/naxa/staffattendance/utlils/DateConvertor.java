@@ -13,9 +13,6 @@ public class DateConvertor {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(cDate);
     }
 
-
-
-
     public static Date stringToDate(String dateString) {
         // SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -26,6 +23,5 @@ public class DateConvertor {
             e.printStackTrace();
         }
         return date;
-
     }
 }

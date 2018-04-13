@@ -29,8 +29,6 @@ public class TokenMananger {
         if (!TextUtils.isEmpty(rawtoken)) {
             rawtoken = "Token " + rawtoken;
         }
-
-
         return rawtoken;
     }
 

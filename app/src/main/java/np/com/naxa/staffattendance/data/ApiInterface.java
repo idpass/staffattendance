@@ -7,6 +7,7 @@ import java.util.List;
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
+import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -48,6 +49,7 @@ public interface ApiInterface {
             @Part("account_number") RequestBody accountNumber,
             @Part("phone_number") RequestBody phoneNumber,
             @Part("email") RequestBody email,
+            @Part("address") RequestBody address,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
 
@@ -58,7 +60,7 @@ public interface ApiInterface {
     Observable<ArrayList<ArrayList<String>>> getDesignation();
 
     @GET("staff/api/banks/")
-    Observable<ArrayList<ArrayList<String>>> getBankist();
+    Observable<ArrayList<BankPojo>> getBankist();
 
     @GET("/staff/api/myteam/")
     Observable<ArrayList<MyTeamResponse>> getMyTeam();

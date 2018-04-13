@@ -275,8 +275,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             bankId = 0;
         }
 
-
-
         return new NewStaffPojo(
                 designation.getSelectedItemPosition(),
                 firstName.getEditText().getText().toString(),

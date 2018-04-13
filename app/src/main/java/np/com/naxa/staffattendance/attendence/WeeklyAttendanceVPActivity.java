@@ -10,54 +10,38 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.database.AttendanceDao;
+import np.com.naxa.staffattendance.database.TeamDao;
 
 public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
+    private AttendanceDao attendanceDao;
 
-    public class YoFragmentPagerAdapter extends FragmentPagerAdapter {
-        public YoFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public Fragment getItem(int position) {
-            Fragment fragment = null;
-            fragment = new DailyAttendanceFragment();
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            return 1;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            String date = new SimpleDateFormat("yyyy-MM-", Locale.ENGLISH).format(new Date());
-            int day = Integer
-                    .parseInt(
-                            new SimpleDateFormat("dd", Locale.ENGLISH).format(new Date())) - (7 - position);
-            return date + day;
-        }
+    private ArrayList<AttedanceResponse> generateSevenDaysAttendanceSheet() {
+        String teamID = new TeamDao().getOneTeamIdForDemo();
+        ArrayList<AttedanceResponse> list = attendanceDao.getAttendanceSheetForTeam(teamID);
+        return list;
     }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weekly_attendence);
+        attendanceDao = new AttendanceDao();
         bindUI();
         setuptoolbar();
+        ArrayList<AttedanceResponse> list = generateSevenDaysAttendanceSheet();
         tabLayout.setupWithViewPager(viewPager);
-        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager(), list));
     }
 
     private void setuptoolbar() {
@@ -70,5 +54,38 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tab_layout);
         toolbar = findViewById(R.id.toolbar_general);
 
+    }
+
+    public class YoFragmentPagerAdapter extends FragmentPagerAdapter {
+        private ArrayList<AttedanceResponse> attedanceResponses;
+
+        public YoFragmentPagerAdapter(FragmentManager fm, ArrayList<AttedanceResponse> attedanceResponses) {
+            super(fm);
+            this.attedanceResponses = attedanceResponses;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            DailyAttendanceFragment fragment = null;
+            for (AttedanceResponse attedance : attedanceResponses) {
+                fragment = new DailyAttendanceFragment();
+                fragment.setAttedanceIds(attedance.getStaffs());
+            }
+
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return attedanceResponses.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+
+            return attedanceResponses.get(position).getAttendanceDate();
+
+        }
     }
 }

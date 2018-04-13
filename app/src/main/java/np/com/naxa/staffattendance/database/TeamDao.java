@@ -21,6 +21,8 @@ public class TeamDao {
             cursor = db.query(true, TABLE_NAME, null, null, null, null, null, null, null);
             cursor.moveToFirst();
             teamId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_ID);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
 
             if (cursor != null) {

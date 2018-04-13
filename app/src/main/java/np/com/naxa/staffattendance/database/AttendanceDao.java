@@ -5,13 +5,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import np.com.naxa.staffattendance.R;
-import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
 
 public class AttendanceDao {
     private final String TABLE_NAME = DatabaseHelper.TABLE_ATTENDANCE;
@@ -55,18 +53,21 @@ public class AttendanceDao {
         }
 
         while (cursor.moveToNext()) {
-
-            String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
-
             AttedanceResponse attedanceResponse = new AttedanceResponse();
+            String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
             attedanceResponse.setAttendanceDate(attendanceDate);
 
+            String staffIDs = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
+            String[] staffIDlist = staffIDs.replace("[","").replace("]","").split(",");
+            attedanceResponse.setStaffs(Arrays.asList(staffIDlist));
+
+
             attedanceResponses.add(attedanceResponse);
+
         }
 
         return attedanceResponses;
     }
-
 
 
     public Cursor getCursor(String selection, String[] selectionArgs) {
@@ -84,5 +85,12 @@ public class AttendanceDao {
         if (db != null) {
             db.close();
         }
+    }
+
+    public ArrayList<AttedanceResponse> getAttendanceSheetForTeam(String teamId) {
+        Cursor cursor = getCursor(null, null);
+        ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+        closeCursor(cursor);
+        return list;
     }
 }

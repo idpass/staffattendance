@@ -34,9 +34,14 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private TeamDao teamDao;
     private StaffDao staffDao;
     private FloatingActionButton fabUploadAttedance;
+    private List<String> attedanceIds;
 
     public DailyAttendanceFragment() {
 
+    }
+
+    public void setAttedanceIds(List<String> attedanceIds) {
+        this.attedanceIds = attedanceIds;
     }
 
     @Nullable
@@ -72,7 +77,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
         List<TeamMemberResposne> staffs = new StaffDao().getStaffByTeamId(teamId);
 
-        stafflistAdapter = new StaffListAdapter(getActivity(), staffs, this);
+        stafflistAdapter = new StaffListAdapter(getActivity(), staffs, attedanceIds, this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(stafflistAdapter);

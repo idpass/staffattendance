@@ -3,6 +3,7 @@ package np.com.naxa.staffattendance;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
-import np.com.naxa.staffattendance.pojo.Staff;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
 
 public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private List<TeamMemberResposne> filetredsitelist;
     private List<TeamMemberResposne> staffList;
+    private List<String> attedanceIds;
     private OnStaffItemClickListener listener;
     private SparseBooleanArray selectedItems;
     // array used to perform multiple animation at once
@@ -32,10 +33,11 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static int currentSelectedIndex = -1;
 
 
-    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, OnStaffItemClickListener listener) {
+    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, List<String> attedanceIds, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
+        this.attedanceIds = attedanceIds;
         this.listener = listener;
         selectedItems = new SparseBooleanArray();
         animationItemsIndex = new SparseBooleanArray();
@@ -50,14 +52,41 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return new StaffVH(itemView);
     }
 
+
+    private boolean contains(List<String> list, String comparable) {
+        //todo why did list.containts(string) not work?
+
+        for (String string : list) {
+            if (string.trim().contains(comparable)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         TeamMemberResposne staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
+        boolean isPresent = contains(attedanceIds,staff.getId());
+        Log.i("StaffListAdapter", String.format("Checking if %s contains %s hmmm %s", attedanceIds.toString(), staff.getId(), isPresent));
+
+        Context context = staffVH.rootLayout.getContext();
+
+        if (isPresent) {
+            selectedItems.put(holder.getAdapterPosition(), true);
+            animationItemsIndex.put(holder.getAdapterPosition(), true);
+            applyAnimToPastAttedanceItems(staffVH,holder.getAdapterPosition());
+            staffVH.rootLayout.setEnabled(false);
+            staffVH.staffStatus.setText(context.getString(R.string.attedance_present));
+        }else {
+            applyAnimToTodayAttedanceItems(staffVH,holder.getAdapterPosition());
+            staffVH.staffStatus.setText(context.getString(R.string.attedance_absent));
+        }
+
         staffVH.staffName.setText(staff.getFirstName());
         staffVH.staffType.setText(staff.getTeamName());
         staffVH.iconText.setVisibility(View.VISIBLE);
-        applyIconAnimation(staffVH, holder.getAdapterPosition());
         staffVH.imgProfile.setImageResource(R.drawable.circle_blue);
         staffVH.iconText.setText(staff.getFirstName().substring(0, 1));
 
@@ -67,9 +96,6 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 listener.onStaffClick(holder.getAdapterPosition());
             }
         });
-
-
-        // staffVH.rootLayout.setActivated(false);
     }
 
     @Override
@@ -90,9 +116,18 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyItemChanged(pos);
     }
 
-    private void applyIconAnimation(StaffVH holder, int position) {
+
+    private void applyAnimToTodayAttedanceItems(StaffVH holder, int position){
+        applyIconAnimation(holder,position,true);
+    }
+
+    private void applyAnimToPastAttedanceItems(StaffVH holder, int position){
+        applyIconAnimation(holder,position,false);
+    }
+
+    private void applyIconAnimation(StaffVH holder, int position,boolean shouldHightlight) {
         if (selectedItems.get(position, false)) {
-            holder.rootLayout.setActivated(true);
+            holder.rootLayout.setActivated(shouldHightlight);
             holder.iconFront.setVisibility(View.GONE);
             resetIconYAxis(holder.iconBack);
             holder.iconBack.setVisibility(View.VISIBLE);
@@ -102,7 +137,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
-            holder.rootLayout.setActivated(false);
+            holder.rootLayout.setActivated(!shouldHightlight);
             holder.iconBack.setVisibility(View.GONE);
             resetIconYAxis(holder.iconFront);
             holder.iconFront.setVisibility(View.VISIBLE);
@@ -143,7 +178,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     public class StaffVH extends RecyclerView.ViewHolder {
-        private TextView staffName, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
+        private TextView staffName,staffStatus, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
         private ImageView iconImp, imgProfile;
         private RelativeLayout iconContainer, iconBack, iconFront;
         private RelativeLayout rootLayout;
@@ -156,6 +191,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             iconFront = view.findViewById(R.id.icon_front);
             iconContainer = view.findViewById(R.id.icon_container);
             rootLayout = view.findViewById(R.id.root_layout);
+            staffStatus = view.findViewById(R.id.staff_list_row_status);
 
             staffName = view.findViewById(R.id.staff_list_row_name);
             siteAddress = view.findViewById(R.id.staff_list_row_email);

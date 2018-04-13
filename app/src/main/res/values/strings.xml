@@ -6,6 +6,8 @@
     <string name="bank_other">Other</string>
 
     <string name="not_avaliable">%s not available</string>
+    <string name="attedance_present">Marked Present</string>
+    <string name="attedance_absent">Marked Absent</string>
 
 
 </resources>

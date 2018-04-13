@@ -22,7 +22,7 @@ public class AttedanceResponse {
     private Boolean isDeleted;
     @SerializedName("staffs")
     @Expose
-    private List<Integer> staffs = null;
+    private List<String> staffs = null;
 
     public Integer getId() {
         return id;
@@ -48,11 +48,11 @@ public class AttedanceResponse {
         this.isDeleted = isDeleted;
     }
 
-    public List<Integer> getStaffs() {
+    public List<String> getStaffs() {
         return staffs;
     }
 
-    public void setStaffs(List<Integer> staffs) {
+    public void setStaffs(List<String> staffs) {
         this.staffs = staffs;
     }
 

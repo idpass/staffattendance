@@ -22,19 +22,22 @@ public class TokenMananger {
     private static SharedPreferences sharedPreferences;
 
 
-
     public static String getToken() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
         String rawtoken = sharedPreferences.getString("TOKEN", "");
 
-        if(!TextUtils.isEmpty(rawtoken)){
+        if (!TextUtils.isEmpty(rawtoken)) {
             rawtoken = "Token " + rawtoken;
         }
 
-        Log.d(TAG, "TokenMananger: '" + token + "'");
+
         return rawtoken;
     }
 
+
+    public static boolean doesTokenExist() {
+        return !TokenMananger.getToken().isEmpty();
+    }
 
     @SuppressLint("ApplySharedPref")
     public static void saveToken(String token) {

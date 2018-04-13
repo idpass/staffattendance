@@ -35,7 +35,7 @@ public interface ApiInterface {
     );
 
     @Multipart
-    @POST("staff/api/staff/1")
+    @POST("staff/api/staff/1/")
     Observable<NewStaffPojo> uploadNewStaff(
             @Part("designation") Integer designation,
             @Part("first_name") RequestBody firstName,

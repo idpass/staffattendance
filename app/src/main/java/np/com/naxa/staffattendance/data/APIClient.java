@@ -59,7 +59,7 @@ public class APIClient {
                 .connectTimeout(4, TimeUnit.MINUTES)
                 .readTimeout(4, TimeUnit.MINUTES);
 
-        if (!TokenMananger.getToken().equalsIgnoreCase("token ")) {
+        if (TokenMananger.doesTokenExist()) {
             okHttpClientBuidler.addInterceptor(authorization);
         }
         return okHttpClientBuidler.build();

@@ -138,7 +138,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void updateDateOnView(final EditText view) {
-        String myFormat = "yyyy/MM/dd"; //In which you need put here
+        String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
         view.setText(sdf.format(calendar.getTime()));
     }
@@ -280,7 +280,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 firstName.getEditText().getText().toString(),
                 lastName.getEditText().getText().toString(),
                 dob.getText().toString(),
-                0,
+                1,
                 ethinicity.getEditText().getText().toString(),
                 bankId,
                 bankNameOther.getText().toString(),

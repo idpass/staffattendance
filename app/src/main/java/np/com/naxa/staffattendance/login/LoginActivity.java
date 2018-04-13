@@ -36,7 +36,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
-        tokenMananger = new TokenMananger();
+
+        if(TokenMananger.doesTokenExist()){
+            startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
+        }
+
         myTeamRepository = new MyTeamRepository();
         initUI();
 

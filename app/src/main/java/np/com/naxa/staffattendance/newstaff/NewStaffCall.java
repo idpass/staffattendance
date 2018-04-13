@@ -36,6 +36,7 @@ public class NewStaffCall {
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         ToastUtils.showShort("Error");
                         listener.onError();
                     }

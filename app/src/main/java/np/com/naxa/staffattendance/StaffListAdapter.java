@@ -55,6 +55,9 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private boolean contains(List<String> list, String comparable) {
         //todo why did list.containts(string) not work?
+        if(list == null || list.size() <= 0){
+            return false;
+        }
 
         for (String string : list) {
             if (string.trim().contains(comparable)) {
@@ -69,7 +72,6 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         TeamMemberResposne staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
         boolean isPresent = contains(attedanceIds,staff.getId());
-        Log.i("StaffListAdapter", String.format("Checking if %s contains %s hmmm %s", attedanceIds.toString(), staff.getId(), isPresent));
 
         Context context = staffVH.rootLayout.getContext();
 
@@ -78,10 +80,10 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             animationItemsIndex.put(holder.getAdapterPosition(), true);
             applyAnimToPastAttedanceItems(staffVH,holder.getAdapterPosition());
             staffVH.rootLayout.setEnabled(false);
-            staffVH.staffStatus.setText(context.getString(R.string.attedance_present));
+
         }else {
             applyAnimToTodayAttedanceItems(staffVH,holder.getAdapterPosition());
-            staffVH.staffStatus.setText(context.getString(R.string.attedance_absent));
+
         }
 
         staffVH.staffName.setText(staff.getFirstName());
@@ -128,6 +130,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private void applyIconAnimation(StaffVH holder, int position,boolean shouldHightlight) {
         if (selectedItems.get(position, false)) {
             holder.rootLayout.setActivated(shouldHightlight);
+            holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_present));
             holder.iconFront.setVisibility(View.GONE);
             resetIconYAxis(holder.iconBack);
             holder.iconBack.setVisibility(View.VISIBLE);
@@ -137,6 +140,8 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
+            holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_absent));
+
             holder.rootLayout.setActivated(!shouldHightlight);
             holder.iconBack.setVisibility(View.GONE);
             resetIconYAxis(holder.iconFront);

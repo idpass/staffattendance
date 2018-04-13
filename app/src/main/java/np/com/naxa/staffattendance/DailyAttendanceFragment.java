@@ -24,6 +24,7 @@ import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.Staff;
+import np.com.naxa.staffattendance.utlils.DateConvertor;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -59,10 +60,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
             public void onClick(View view) {
                 ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
                 String teamId = teamDao.getOneTeamIdForDemo();
-                Date cDate = new Date();
-                String fDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(cDate);
 
-                new MyTeamRepository().uploadAttendance(teamId, fDate, stafflist);
+                new MyTeamRepository().uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
 
             }
         });

@@ -3,13 +3,17 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
+import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class AttendanceDao {
     private final String TABLE_NAME = DatabaseHelper.TABLE_ATTENDANCE;
@@ -58,7 +62,7 @@ public class AttendanceDao {
             attedanceResponse.setAttendanceDate(attendanceDate);
 
             String staffIDs = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
-            String[] staffIDlist = staffIDs.replace("[","").replace("]","").split(",");
+            String[] staffIDlist = staffIDs.replace("[", "").replace("]", "").split(",");
             attedanceResponse.setStaffs(Arrays.asList(staffIDlist));
 
 
@@ -87,10 +91,37 @@ public class AttendanceDao {
         }
     }
 
+    public List<AttedanceResponse> getTodaysAddedance(String teamId) {
+        return getAttedanceByDate(teamId, DateConvertor.getCurrentDate());
+    }
+
+    public List<AttedanceResponse> getAttedanceByDate(String teamId, String date) {
+        Cursor cursor = getCursor(DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{date});
+        return getAttendanceFromCursor(cursor);
+    }
+
+
     public ArrayList<AttedanceResponse> getAttendanceSheetForTeam(String teamId) {
         Cursor cursor = getCursor(null, null);
         ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+        ArrayList<AttedanceResponse> attedanceResponses = new ArrayList<>();
+        Date todaysDate = new Date();
+
+        attedanceResponses.addAll(list);
+//        for (AttedanceResponse attedanceResponse : list) {
+//            String dateString = attedanceResponse.getAttendanceDate();
+//            Date oldDate = DateConvertor.stringToDate(dateString);
+//
+//            if (todaysDate.compareTo(oldDate) != 0){
+//
+//                AttedanceResponse todayAttedanceSheet = new AttedanceResponse();
+//                attedanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
+//                attedanceResponses.add(todayAttedanceSheet);
+//            }
+//        }
+
+
         closeCursor(cursor);
-        return list;
+        return attedanceResponses;
     }
 }

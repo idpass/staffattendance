@@ -13,6 +13,14 @@ public class AttedanceResponse {
     @Expose
     private Integer id;
 
+    public AttedanceResponse(String attendanceDate, List<String> staffs) {
+        this.attendanceDate = attendanceDate;
+        this.staffs = staffs;
+    }
+
+    public AttedanceResponse() {
+
+    }
 
     @SerializedName("attendance_date")
     @Expose

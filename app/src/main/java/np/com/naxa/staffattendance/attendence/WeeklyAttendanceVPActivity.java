@@ -11,11 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
@@ -40,6 +42,15 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         bindUI();
         setuptoolbar();
         ArrayList<AttedanceResponse> list = generateSevenDaysAttendanceSheet();
+
+        //todo stop loading old attedance history
+        list.clear();
+
+        if (attendanceDao.getTodaysAddedance("") != null) {
+            list.addAll(attendanceDao.getTodaysAddedance(""));
+        } else {
+            list.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
+        }
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager(), list));
     }

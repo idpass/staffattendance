@@ -109,7 +109,9 @@ public class MyTeamRepository {
                     @Override
                     public void onNext(AttedanceResponse staff) {
                         if (staff != null) {
-
+                            ArrayList<AttedanceResponse> list =new ArrayList<>();
+                            list.add(staff);
+                            attendanceDao.saveAttendance(list);
                         }
                     }
                 });

@@ -49,7 +49,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         myTeamRepository = new MyTeamRepository();
     }
 
-
     public void setAttedanceIds(List<String> attedanceIds) {
         this.attedanceIds = attedanceIds;
         if (attedanceIds != null && attedanceIds.size() > 0) {
@@ -68,10 +67,10 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         setupRecyclerView();
 
         fabUploadAttedance.setEnabled(!isShowingPastAttedance);
+        fabUploadAttedance.hide();
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 showMarkPresentDialog();
 
             }
@@ -90,7 +89,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
                         final String teamId = teamDao.getOneTeamIdForDemo();
-                        //myTeamRepository.uploadAttendance(teamId,stafflist);
+                        Log.i("DailyAttendacneFragment","Uploading for "+DateConvertor.getCurrentDate());
+                        myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
                     }
                 }).setNegativeButton("Dismiss", null).show();
     }
@@ -118,6 +118,11 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     @Override
     public void onStaffClick(int pos) {
         stafflistAdapter.toggleSelection(pos);
+        if (stafflistAdapter.getSelected().size() > 0){
+            fabUploadAttedance.show();
+        }else {
+            fabUploadAttedance.hide();
+        }
     }
 
     @Override

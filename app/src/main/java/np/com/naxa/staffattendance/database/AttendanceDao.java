@@ -21,7 +21,15 @@ public class AttendanceDao {
     private ContentValues getContentValuesForAttedance(AttedanceResponse attedance) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.KEY_ID, attedance.getId());
-        contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, attedance.getAttendanceDate());
+
+        String date;
+        if (attedance.getAttendanceDate().equalsIgnoreCase("Today")) {
+            date = DateConvertor.getCurrentDate();
+        }else {
+            date= attedance.getAttendanceDate();
+        }
+
+        contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE,date);
         contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, attedance.getStaffs().toString());
         return contentValues;
     }

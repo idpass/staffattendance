@@ -32,6 +32,9 @@
 
 
         <activity android:name=".newstaff.NewStaffActivity"></activity>
+        <activity
+            android:exported="true"
+            android:name=".OnBoardingActivity" />
     </application>
 
 </manifest>

@@ -30,7 +30,7 @@ public class TokenMananger {
             rawtoken = "Token " + rawtoken;
         }
 
-
+        Log.i("TokenMananger",rawtoken);
         return rawtoken;
     }
 

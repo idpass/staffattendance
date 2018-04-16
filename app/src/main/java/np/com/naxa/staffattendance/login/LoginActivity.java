@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
+import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
@@ -30,6 +31,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button btnLogin;
     private TokenMananger tokenMananger;
     private MyTeamRepository myTeamRepository;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +39,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login_page);
 
 
-        if(TokenMananger.doesTokenExist()){
-            startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
+        if (TokenMananger.doesTokenExist()) {
+
+            startActivity(new Intent(LoginActivity.this, WeeklyAttendanceVPActivity.class));
+            finish();
         }
 
         myTeamRepository = new MyTeamRepository();
@@ -60,11 +64,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
-                ProgressDialog dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
+                dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
                 if (validate()) {
-                    dialog.show();
+
                     loginToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
-                    dialog.dismiss();
+
                 } else {
                     ToastUtils.showShort("Enter valid credentials..");
                 }
@@ -74,16 +78,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     private void loginToServer(final String username, final String password) {
+        dialog.show();
         new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
             @Override
             public void onSuccess() {
-                startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
-                myTeamRepository.fetchMyTeam();
+                WeeklyAttendanceVPActivity.start(LoginActivity.this);
+                dialog.dismiss();
 
             }
 
             @Override
             public void onError() {
+                dialog.dismiss();
                 ToastUtils.showShort("Login Error");
             }
         });

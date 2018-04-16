@@ -1,5 +1,7 @@
 package np.com.naxa.staffattendance.attendence;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -22,8 +24,9 @@ import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
+
 
 public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
@@ -33,6 +36,11 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
     private AttendanceDao attendanceDao;
     private MyTeamRepository myTeamRepository;
 
+
+    public static void start(Context context){
+        Intent  intent = new Intent(context, WeeklyAttendanceVPActivity.class);
+        context.startActivity(intent);
+    }
 
     private ArrayList<AttedanceResponse> getAcessedAttedance() {
         String teamID = new TeamDao().getOneTeamIdForDemo();
@@ -51,12 +59,9 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         myTeamRepository = new MyTeamRepository();
 
         List<AttedanceResponse> todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
-        if (todaysAttedanceSheet != null && todaysAttedanceSheet.size() == 1) {
-
-        } else if (todaysAttedanceSheet != null && todaysAttedanceSheet.size() > 0) {
-
+        if (todaysAttedanceSheet != null && (todaysAttedanceSheet.size() == 1 || todaysAttedanceSheet.size() > 0)) {
+            //not implemented
         } else {
-
             attedanceResponseArrayList.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
         }
 
@@ -110,6 +115,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             DailyAttendanceFragment fragment = null;
+
             for (AttedanceResponse attedance : attedanceResponses) {
                 fragment = new DailyAttendanceFragment();
                 fragment.setAttedanceIds(attedance.getStaffs());

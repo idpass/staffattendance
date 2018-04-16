@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.attendence;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -43,14 +44,16 @@ public class AttedanceResponse {
     }
 
     public String getAttendanceDate() {
-        if (attendanceDate.equals(DateConvertor.getCurrentDate())){
+        if (attendanceDate.equals(DateConvertor.getCurrentDate())) {
             return "Today";
         }
         return attendanceDate;
     }
 
     public void setAttendanceDate(String attendanceDate) {
+
         this.attendanceDate = attendanceDate;
+
     }
 
     public Boolean getIsDeleted() {

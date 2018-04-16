@@ -98,7 +98,7 @@ public class MyTeamRepository {
                 .subscribe(new Observer<AttedanceResponse>() {
                     @Override
                     public void onCompleted() {
-
+                        fetchMyTeam();
                     }
 
                     @Override

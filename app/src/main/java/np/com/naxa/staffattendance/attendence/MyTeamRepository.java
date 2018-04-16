@@ -34,12 +34,12 @@ public class MyTeamRepository {
                     public void onCompleted() {
                         //todo  do not do this, make this request tied with rx in future
                         String teamId = new TeamDao().getOneTeamIdForDemo();
-                        new MyTeamRepository().fetchPastAttendance(teamId);
+                        fetchPastAttendance(teamId);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        e.printStackTrace();
                     }
 
                     @Override
@@ -109,7 +109,7 @@ public class MyTeamRepository {
                     @Override
                     public void onNext(AttedanceResponse staff) {
                         if (staff != null) {
-                            ArrayList<AttedanceResponse> list =new ArrayList<>();
+                            ArrayList<AttedanceResponse> list = new ArrayList<>();
                             list.add(staff);
                             attendanceDao.saveAttendance(list);
                         }

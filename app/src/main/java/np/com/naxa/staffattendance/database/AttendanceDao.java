@@ -79,18 +79,6 @@ public class AttendanceDao {
         return db.query(TABLE_NAME, null, selection, selectionArgs, null, null, null, null);
     }
 
-    private void closeCursor(Cursor cursor) {
-        if (cursor != null) {
-            cursor.close();
-        }
-    }
-
-    private void closeDB(SQLiteDatabase db) {
-        if (db != null) {
-            db.close();
-        }
-    }
-
     public List<AttedanceResponse> getTodaysAddedance(String teamId) {
         return getAttedanceByDate(teamId, DateConvertor.getCurrentDate());
     }
@@ -104,24 +92,21 @@ public class AttendanceDao {
     public ArrayList<AttedanceResponse> getAttendanceSheetForTeam(String teamId) {
         Cursor cursor = getCursor(null, null);
         ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
-        ArrayList<AttedanceResponse> attedanceResponses = new ArrayList<>();
-        Date todaysDate = new Date();
-
-        attedanceResponses.addAll(list);
-//        for (AttedanceResponse attedanceResponse : list) {
-//            String dateString = attedanceResponse.getAttendanceDate();
-//            Date oldDate = DateConvertor.stringToDate(dateString);
-//
-//            if (todaysDate.compareTo(oldDate) != 0){
-//
-//                AttedanceResponse todayAttedanceSheet = new AttedanceResponse();
-//                attedanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
-//                attedanceResponses.add(todayAttedanceSheet);
-//            }
-//        }
-
-
         closeCursor(cursor);
-        return attedanceResponses;
+        return list;
     }
+
+
+    private void closeCursor(Cursor cursor) {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
+    private void closeDB(SQLiteDatabase db) {
+        if (db != null) {
+            db.close();
+        }
+    }
+
 }

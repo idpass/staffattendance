@@ -18,20 +18,17 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-
-
-
-
     <android.support.design.widget.FloatingActionButton
-
         android:id="@+id/fab_attedance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="32dp"
         android:elevation="8dp"
-        android:src="@drawable/ic_check_blue_24dp"
+        app:elevation="8dp"
+        android:layout_margin="25dp"
+        android:src="@android:drawable/stat_sys_upload"
         app:layout_anchor="@id/veiw_pager"
-        app:layout_anchorGravity="top|right|end"
+        app:layout_anchorGravity="bottom|right|end"
         tools:ignore="RtlHardcoded" />
 
 

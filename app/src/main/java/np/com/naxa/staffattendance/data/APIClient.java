@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +58,7 @@ public class APIClient {
         };
 
         OkHttpClient.Builder okHttpClientBuidler = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(4, TimeUnit.MINUTES)
                 .readTimeout(4, TimeUnit.MINUTES);
 

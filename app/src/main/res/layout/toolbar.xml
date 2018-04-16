@@ -20,17 +20,18 @@
 
 
         <Button
-            android:visibility="gone"
+
             style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:drawableTint="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_margin="4dp"
-            android:drawableEnd="@android:drawable/ic_menu_send"
+            android:drawableEnd="@android:drawable/ic_input_add"
             android:drawablePadding="8dp"
-            android:drawableRight="@android:drawable/ic_menu_send"
-            android:text="Mark Present"
+            android:drawableRight="@android:drawable/ic_input_add"
+            android:text="Add Member"
             android:textColor="@color/white" />
     </RelativeLayout>
 

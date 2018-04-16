@@ -21,4 +21,9 @@
         <item name="android:textColor">#00000000</item>
     </style>
 
+    <style name="RiseUpDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+
+
+    </style>
+
 </resources>

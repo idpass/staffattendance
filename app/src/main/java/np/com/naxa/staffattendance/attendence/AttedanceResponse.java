@@ -5,6 +5,8 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import np.com.naxa.staffattendance.utlils.DateConvertor;
+
 public class AttedanceResponse {
 
     private List<TeamMemberResposne> teamMemberResposnes = null;
@@ -41,6 +43,9 @@ public class AttedanceResponse {
     }
 
     public String getAttendanceDate() {
+        if (attendanceDate.equals(DateConvertor.getCurrentDate())){
+            return "Today";
+        }
         return attendanceDate;
     }
 

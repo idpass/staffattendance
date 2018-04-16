@@ -1,7 +1,9 @@
 package np.com.naxa.staffattendance;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.Staff;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+import np.com.naxa.staffattendance.utlils.DialogFactory;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -36,13 +42,19 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private StaffDao staffDao;
     private FloatingActionButton fabUploadAttedance;
     private List<String> attedanceIds;
+    private MyTeamRepository myTeamRepository;
+    private boolean isShowingPastAttedance;
 
     public DailyAttendanceFragment() {
-
+        myTeamRepository = new MyTeamRepository();
     }
+
 
     public void setAttedanceIds(List<String> attedanceIds) {
         this.attedanceIds = attedanceIds;
+        if (attedanceIds != null && attedanceIds.size() > 0) {
+            isShowingPastAttedance = true;
+        }
     }
 
     @Nullable
@@ -55,18 +67,32 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         bindUI(rootView);
         setupRecyclerView();
 
+        fabUploadAttedance.setEnabled(!isShowingPastAttedance);
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
-                String teamId = teamDao.getOneTeamIdForDemo();
 
-                new MyTeamRepository().uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
+                showMarkPresentDialog();
 
             }
         });
 
         return rootView;
+    }
+
+    private void showMarkPresentDialog() {
+        String title = "Mark selected as present?";
+        String msg = "You won't be able to change this once confirmed.";
+
+        DialogFactory.createActionDialog(getActivity(), title, msg)
+                .setPositiveButton("Mark Present", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
+                        final String teamId = teamDao.getOneTeamIdForDemo();
+                        //myTeamRepository.uploadAttendance(teamId,stafflist);
+                    }
+                }).setNegativeButton("Dismiss", null).show();
     }
 
 
@@ -76,7 +102,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
         List<TeamMemberResposne> staffs = new StaffDao().getStaffByTeamId(teamId);
 
-        stafflistAdapter = new StaffListAdapter(getActivity(), staffs, attedanceIds, this);
+        stafflistAdapter = new StaffListAdapter(getActivity(), staffs, isShowingPastAttedance, attedanceIds, this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(stafflistAdapter);
@@ -92,7 +118,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     @Override
     public void onStaffClick(int pos) {
         stafflistAdapter.toggleSelection(pos);
-
     }
 
     @Override

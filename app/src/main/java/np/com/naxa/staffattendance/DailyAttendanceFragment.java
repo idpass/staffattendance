@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public void setAttedanceIds(List<String> attedanceIds) {
         this.attedanceIds = attedanceIds;
 
-        if (attedanceIds != null && attedanceIds.size() > 0) {
-
+        if (attedanceIds != null && attedanceIds.size() >= 0) {
             enablePersonSelection = true;
         }
     }
@@ -92,9 +92,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         attedanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
                         ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
-                        attedanceDao.saveAttedance(contentValues);
+                        //attedanceDao.saveAttedance(contentValues);
 
-                        // myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
+                        myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
                     }
                 }).setNegativeButton("Dismiss", null).show();
     }

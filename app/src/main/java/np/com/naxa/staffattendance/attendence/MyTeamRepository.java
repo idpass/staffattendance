@@ -9,6 +9,7 @@ import np.com.naxa.staffattendance.data.MyTeamResponse;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -28,7 +29,7 @@ public class MyTeamRepository {
     }
 
     public void fetchMyTeam() {
-        myTeamObserable()
+        myTeamObservable()
                 .subscribe(new Observer<List<TeamMemberResposne>>() {
                     @Override
                     public void onCompleted() {
@@ -50,7 +51,7 @@ public class MyTeamRepository {
 
     }
 
-    private Observable<List<TeamMemberResposne>> myTeamObserable() {
+    private Observable<List<TeamMemberResposne>> myTeamObservable() {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         return apiInterface.getMyTeam()
                 .subscribeOn(Schedulers.io())
@@ -98,12 +99,12 @@ public class MyTeamRepository {
                 .subscribe(new Observer<AttedanceResponse>() {
                     @Override
                     public void onCompleted() {
-                        fetchMyTeam();
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
+                        ToastUtils.showLong(String.format("Failed to upload reason %s", e.getMessage()));
                     }
 
                     @Override

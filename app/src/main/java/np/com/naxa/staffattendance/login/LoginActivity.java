@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
+import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
@@ -82,8 +83,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
             @Override
             public void onSuccess() {
-                WeeklyAttendanceVPActivity.start(LoginActivity.this);
-                dialog.dismiss();
+                APIClient.removeRetrofitClient();
+                myTeamRepository.fetchMyTeam();
+                //WeeklyAttendanceVPActivity.start(LoginActivity.this);
+
 
             }
 

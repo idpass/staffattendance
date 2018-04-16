@@ -32,6 +32,9 @@ public class APIClient {
         return APIClient.getUploadClient().create(ApiInterface.class);
     }
 
+    public static void removeRetrofitClient() {
+        retrofit = null;
+    }
 
     public static Retrofit getUploadClient() {
         if (retrofit == null) {
@@ -61,6 +64,8 @@ public class APIClient {
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(4, TimeUnit.MINUTES)
                 .readTimeout(4, TimeUnit.MINUTES);
+
+
 
         if (TokenMananger.doesTokenExist()) {
             okHttpClientBuidler.addInterceptor(authorization);

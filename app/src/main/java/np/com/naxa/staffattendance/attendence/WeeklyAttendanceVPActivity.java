@@ -37,8 +37,8 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
     private MyTeamRepository myTeamRepository;
 
 
-    public static void start(Context context){
-        Intent  intent = new Intent(context, WeeklyAttendanceVPActivity.class);
+    public static void start(Context context) {
+        Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
         context.startActivity(intent);
     }
 
@@ -115,11 +115,12 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             DailyAttendanceFragment fragment = null;
+            AttedanceResponse attedance = attedanceResponses.get(position);
 
-            for (AttedanceResponse attedance : attedanceResponses) {
-                fragment = new DailyAttendanceFragment();
-                fragment.setAttedanceIds(attedance.getStaffs());
-            }
+
+            fragment = new DailyAttendanceFragment();
+            fragment.setAttedanceIds(attedance.getStaffs());
+
 
             return fragment;
         }

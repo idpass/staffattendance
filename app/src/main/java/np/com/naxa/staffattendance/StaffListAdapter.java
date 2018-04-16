@@ -32,11 +32,11 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // index is used to animate only the selected row
     // dirty fix, find a better solution
     private static int currentSelectedIndex = -1;
-    private boolean isShowingPastAttedance;
+    private boolean enablePersonSelection;
 
 
 
-    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean isShowingPastAttedance, List<String> attedanceIds, OnStaffItemClickListener listener) {
+    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
@@ -44,7 +44,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.listener = listener;
         selectedItems = new SparseBooleanArray();
         animationItemsIndex = new SparseBooleanArray();
-        this.isShowingPastAttedance = isShowingPastAttedance;
+        this.enablePersonSelection = enablePersonSelection;
     }
 
 
@@ -63,7 +63,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         final StaffVH staffVH = (StaffVH) holder;
         setupPreviousAttedance(attedanceIds, staff.getId(), staffVH);
 
-        staffVH.rootLayout.setEnabled(!isShowingPastAttedance);
+        staffVH.rootLayout.setEnabled(enablePersonSelection);
         staffVH.staffName.setText(staff.getFirstName());
         staffVH.staffType.setText(staff.getTeamName());
         staffVH.iconText.setVisibility(View.VISIBLE);
@@ -212,7 +212,6 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             sitePhone = view.findViewById(R.id.staff_list_row_phone);
             staffType = view.findViewById(R.id.staff_list_row_type);
             iconText = view.findViewById(R.id.icon_text);
-            tvTagOfflineSite = view.findViewById(R.id.staff_list_row_status);
             imgProfile = view.findViewById(R.id.icon_profile);
         }
     }

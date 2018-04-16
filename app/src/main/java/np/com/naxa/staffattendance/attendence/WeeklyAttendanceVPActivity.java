@@ -58,9 +58,11 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         ArrayList<AttedanceResponse> attedanceResponseArrayList = getAcessedAttedance();
         myTeamRepository = new MyTeamRepository();
 
+
         List<AttedanceResponse> todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
         if (todaysAttedanceSheet != null && (todaysAttedanceSheet.size() == 1 || todaysAttedanceSheet.size() > 0)) {
             //not implemented
+
         } else {
             attedanceResponseArrayList.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
         }

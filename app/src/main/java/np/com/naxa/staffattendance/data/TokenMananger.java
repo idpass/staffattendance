@@ -29,8 +29,11 @@ public class TokenMananger {
         if (!TextUtils.isEmpty(rawtoken)) {
             rawtoken = "Token " + rawtoken;
         }
+<<<<<<< HEAD
 
         Log.i("TokenMananger",rawtoken);
+=======
+>>>>>>> 8f98128bfcfa2932a7fe3c7ec5a164fc3404c326
         return rawtoken;
     }
 

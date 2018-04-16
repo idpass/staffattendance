@@ -119,20 +119,21 @@
             android:weightSum="3">
 
             <RadioButton
-                android:id="@+id/rb_male"
+                android:id="@+id/gender_male"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Male" />
 
             <RadioButton
-                android:id="@+id/rb_female"
+                android:id="@+id/gender_female"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Female" />
 
             <RadioButton
+                android:id="@+id/gender_other"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -339,12 +340,12 @@
 
     <Button
         android:id="@+id/staff_photo"
-        android:drawableLeft="@android:drawable/ic_menu_camera"
-        android:drawablePadding="8dp"
-        android:drawableStart="@android:drawable/ic_menu_camera"
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:drawableLeft="@android:drawable/ic_menu_camera"
+        android:drawablePadding="8dp"
+        android:drawableStart="@android:drawable/ic_menu_camera"
         android:text="Take Photo" />
 
 

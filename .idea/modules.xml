@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
+=======
+      <module fileurl="file://$PROJECT_DIR$/Staff Attendence.iml" filepath="$PROJECT_DIR$/Staff Attendence.iml" />
+>>>>>>> 8f98128bfcfa2932a7fe3c7ec5a164fc3404c326
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/staffattendance.iml" filepath="$PROJECT_DIR$/.idea/staffattendance.iml" />
     </modules>

@@ -23,6 +23,7 @@ import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import retrofit2.Call;
 import retrofit2.Response;
+import rx.Observer;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -84,9 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onSuccess() {
                 APIClient.removeRetrofitClient();
-                myTeamRepository.fetchMyTeam();
-                //WeeklyAttendanceVPActivity.start(LoginActivity.this);
-
+                fetchMyTeam();
 
             }
 
@@ -94,6 +93,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onError() {
                 dialog.dismiss();
                 ToastUtils.showShort("Login Error");
+            }
+        });
+    }
+
+    private void fetchMyTeam() {
+
+        myTeamRepository.fetchMyTeam().subscribe(new Observer<Object>() {
+            @Override
+            public void onCompleted() {
+                dialog.dismiss();
+                WeeklyAttendanceVPActivity.start(LoginActivity.this);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                ToastUtils.showLong(e.getMessage());
+            }
+
+            @Override
+            public void onNext(Object o) {
+
             }
         });
     }

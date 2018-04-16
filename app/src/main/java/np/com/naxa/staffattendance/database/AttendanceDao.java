@@ -3,17 +3,14 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+import rx.Observable;
 
 public class AttendanceDao {
 
@@ -42,7 +39,7 @@ public class AttendanceDao {
         return contentValues;
     }
 
-    public void saveAttendance(List<AttedanceResponse> attedanceResponses) {
+    public Observable<?> saveAttendance(List<AttedanceResponse> attedanceResponses) {
         SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
         try {
             db.beginTransaction();
@@ -59,6 +56,7 @@ public class AttendanceDao {
             db.endTransaction();
             db.close();
         }
+        return null;
     }
 
     private long saveAttedance(SQLiteDatabase database, ContentValues contentValues) {

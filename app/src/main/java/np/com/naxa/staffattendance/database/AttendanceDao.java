@@ -16,20 +16,28 @@ import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class AttendanceDao {
+
+    public final static class SyncStatus {
+        public static String FINALIZED = "finalized";
+        public static String UPLOADED = "uploaded";
+    }
+
+
     private final String TABLE_NAME = DatabaseHelper.TABLE_ATTENDANCE;
 
-    private ContentValues getContentValuesForAttedance(AttedanceResponse attedance) {
+    public ContentValues getContentValuesForAttedance(AttedanceResponse attedance) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.KEY_ID, attedance.getId());
 
         String date;
         if (attedance.getAttendanceDate().equalsIgnoreCase("Today")) {
             date = DateConvertor.getCurrentDate();
-        }else {
-            date= attedance.getAttendanceDate();
+        } else {
+            date = attedance.getAttendanceDate();
         }
 
-        contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE,date);
+        contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, date);
+        contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, attedance.getDataSyncStatus());
         contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, attedance.getStaffs().toString());
         return contentValues;
     }
@@ -41,7 +49,7 @@ public class AttendanceDao {
             for (AttedanceResponse staff : attedanceResponses) {
 
                 ContentValues values = getContentValuesForAttedance(staff);
-                saveStaff(db, values);
+                saveAttedance(db, values);
             }
 
             db.setTransactionSuccessful();
@@ -53,8 +61,12 @@ public class AttendanceDao {
         }
     }
 
-    private long saveStaff(SQLiteDatabase database, ContentValues contentValues) {
+    private long saveAttedance(SQLiteDatabase database, ContentValues contentValues) {
         return database.replace(TABLE_NAME, null, contentValues);
+    }
+
+    public long saveAttedance(ContentValues contentValues) {
+        return DatabaseHelper.getDatabaseHelper().getWritableDatabase().replace(TABLE_NAME, null, contentValues);
     }
 
     public ArrayList<AttedanceResponse> getAttendanceFromCursor(Cursor cursor) {

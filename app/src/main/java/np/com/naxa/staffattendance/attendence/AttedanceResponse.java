@@ -35,6 +35,16 @@ public class AttedanceResponse {
     @Expose
     private List<String> staffs = null;
 
+    private String dataSyncStatus;
+
+    public String getDataSyncStatus() {
+        return dataSyncStatus;
+    }
+
+    public void setDataSyncStatus(String dataSyncStatus) {
+        this.dataSyncStatus = dataSyncStatus;
+    }
+
     public Integer getId() {
         return id;
     }

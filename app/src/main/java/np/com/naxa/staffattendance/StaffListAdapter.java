@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,6 +33,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // dirty fix, find a better solution
     private static int currentSelectedIndex = -1;
     private boolean isShowingPastAttedance;
+
 
 
     StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean isShowingPastAttedance, List<String> attedanceIds, OnStaffItemClickListener listener) {
@@ -118,8 +120,14 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void applyIconAnimation(StaffVH holder, int position, boolean shouldHightlight) {
         if (selectedItems.get(position, false)) {
+
+            int colorGreen = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.green);
+            holder.staffStatus.setTextColor(colorGreen);
+
             holder.rootLayout.setActivated(shouldHightlight);
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_present));
+
+
             holder.iconFront.setVisibility(View.GONE);
             resetIconYAxis(holder.iconBack);
             holder.iconBack.setVisibility(View.VISIBLE);
@@ -129,6 +137,9 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
+            int colorBlue = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.colorAccent);
+            holder.staffStatus.setTextColor(colorBlue);
+
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_absent));
 
             holder.rootLayout.setActivated(!shouldHightlight);
@@ -165,6 +176,15 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         ArrayList<TeamMemberResposne> items = new ArrayList<>(selectedItems.size());
         for (int i = 0; i < selectedItems.size(); i++) {
             items.add(staffList.get(i));
+        }
+
+        return items;
+    }
+
+    public ArrayList<String> getSelectedStaffID() {
+        ArrayList<String> items = new ArrayList<>(selectedItems.size());
+        for (int i = 0; i < selectedItems.size(); i++) {
+            items.add(staffList.get(i).getId());
         }
 
         return items;

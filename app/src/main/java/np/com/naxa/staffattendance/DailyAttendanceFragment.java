@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance;
 
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,8 +25,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import np.com.naxa.staffattendance.attendence.AttedanceResponse;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
+import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.Staff;
@@ -89,8 +92,18 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
                         final String teamId = teamDao.getOneTeamIdForDemo();
-                        Log.i("DailyAttendacneFragment","Uploading for "+DateConvertor.getCurrentDate());
-                        myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
+
+                        //saving it offline
+                        AttendanceDao attedanceDao = new AttendanceDao();
+                        AttedanceResponse attedanceResponse = new AttedanceResponse();
+                        attedanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
+                        attedanceResponse.setStaffs(stafflistAdapter.getSelectedStaffID());
+                        attedanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
+
+                        ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
+                        attedanceDao.saveAttedance(contentValues);
+
+                        // myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
                     }
                 }).setNegativeButton("Dismiss", null).show();
     }
@@ -118,9 +131,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     @Override
     public void onStaffClick(int pos) {
         stafflistAdapter.toggleSelection(pos);
-        if (stafflistAdapter.getSelected().size() > 0){
+        if (stafflistAdapter.getSelected().size() > 0) {
             fabUploadAttedance.show();
-        }else {
+        } else {
             fabUploadAttedance.hide();
         }
     }

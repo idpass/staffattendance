@@ -43,11 +43,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Spinner bank, designation;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
     private EditText dob, contractStartDate, contractEndDate, bankNameOther;
-    private Button photo, create;
+    private Button photo, save, create;
     private List<String> designationList = new ArrayList<>();
     private List<String> bankList = new ArrayList<>();
     private RadioGroup gender;
-    private RadioButton male,female,other;
+    private RadioButton male, female, other;
     private Calendar calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener date;
     private ArrayAdapter<String> spinnerAdapter;
@@ -159,9 +159,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         lastName = findViewById(R.id.staff_last_name);
         dob = findViewById(R.id.staff_dob_date);
         gender = findViewById(R.id.staff_gender);
-        male=findViewById(R.id.gender_male);
-        female=findViewById(R.id.gender_female);
-        other=findViewById(R.id.gender_other);
+        male = findViewById(R.id.gender_male);
+        female = findViewById(R.id.gender_female);
+        other = findViewById(R.id.gender_other);
         ethinicity = findViewById(R.id.staff_ethinicity);
         bank = findViewById(R.id.staff_bank);
         accountNumber = findViewById(R.id.staff_bank_account);
@@ -172,7 +172,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         contractStartDate = findViewById(R.id.staff_contract_start_date_date);
         contractEndDate = findViewById(R.id.staff_contract_end_date_date);
         photo = findViewById(R.id.staff_photo);
-        create = findViewById(R.id.staff_create);
+        save = findViewById(R.id.staff_save);
+        create = findViewById(R.id.staff_send);
     }
 
     private void initListeners() {
@@ -180,6 +181,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         contractStartDate.setOnClickListener(this);
         contractEndDate.setOnClickListener(this);
         photo.setOnClickListener(this);
+        save.setOnClickListener(this);
         create.setOnClickListener(this);
     }
 
@@ -206,11 +208,20 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 showImageOptionsDialog();
                 break;
 
-            case R.id.staff_create:
+            case R.id.staff_save:
+                if(validate()){
+                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
+                    finish();
+                    startActivity(getIntent());
+                    ToastUtils.showShort("New staff detail saved.");
+                }
+                break;
+
+            case R.id.staff_send:
                 if (validate()) {
                     final ProgressDialog progressDialog = new ProgressDialogUtils().getProgressDialog(this, "Logging in...");
                     progressDialog.show();
-                    new NewStaffCall().upload(getNewStaffDetail(),photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
+                    new NewStaffCall().upload(getNewStaffDetail(), photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
@@ -302,16 +313,16 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private String getPhotoLocation() {
-        if(photoFileToUpload!=null){
+        if (photoFileToUpload != null) {
             return photoFileToUpload.getAbsolutePath();
         }
         return null;
     }
 
     private Integer getGender() {
-        if(male.isChecked()){
+        if (male.isChecked()) {
             return 1;
-        }else if(female.isChecked()){
+        } else if (female.isChecked()) {
             return 2;
         }
         return 3;

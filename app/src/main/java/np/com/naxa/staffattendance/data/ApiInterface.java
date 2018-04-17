@@ -36,8 +36,9 @@ public interface ApiInterface {
     );
 
     @Multipart
-    @POST("staff/api/staff/1/")
+    @POST("staff/api/staff/{team_id}/")
     Observable<NewStaffPojo> uploadNewStaff(
+            @Path(value = "team_id", encoded = true) String teamID,
             @Part("designation") Integer designation,
             @Part("first_name") RequestBody firstName,
             @Part("last_name") RequestBody lastName,
@@ -52,7 +53,6 @@ public interface ApiInterface {
             @Part("address") RequestBody address,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
-
             @Part MultipartBody.Part photo
     );
 

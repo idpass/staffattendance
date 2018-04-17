@@ -34,6 +34,7 @@ public class MyTeamRepository {
                 .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttedanceResponse>>>() {
                     @Override
                     public Observable<ArrayList<AttedanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
+                        staffDao.removeAllStaffList();
                         staffDao.saveStafflist(teamMemberResposnes);
                         String teamId = teamMemberResposnes.get(0).getTeamID();
                         return apiInterface.getPastAttendanceList(teamId);
@@ -42,7 +43,7 @@ public class MyTeamRepository {
                 .flatMap(new Func1<ArrayList<AttedanceResponse>, Observable<?>>() {
                     @Override
                     public Observable<?> call(ArrayList<AttedanceResponse> attedanceResponses) {
-
+                        attendanceDao.removeAllAttedance();
                         return attendanceDao.saveAttendance(attedanceResponses);
                     }
                 });

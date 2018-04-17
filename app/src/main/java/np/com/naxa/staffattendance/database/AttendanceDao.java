@@ -32,6 +32,12 @@ public class AttendanceDao {
         DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, contentValues, selection, selectionArgs);
     }
 
+    public void removeAllAttedance() {
+        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
+        db.execSQL("DELETE from " + TABLE_NAME + " WHERE " + DatabaseHelper.KEY_SYNC_STATUS + " != '" + SyncStatus.FINALIZED + "'");
+        db.close();
+    }
+
     public final static class SyncStatus {
         public static String FINALIZED = "finalized";
         public static String UPLOADED = "uploaded";
@@ -65,7 +71,7 @@ public class AttendanceDao {
 
                 ContentValues values = getContentValuesForAttedance(staff);
                 long i = saveAttedance(db, values);
-;
+                ;
             }
 
             db.setTransactionSuccessful();

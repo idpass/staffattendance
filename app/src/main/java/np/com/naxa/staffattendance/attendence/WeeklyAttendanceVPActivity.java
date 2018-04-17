@@ -96,7 +96,25 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.main_menu_refresh:
-                myTeamRepository.fetchMyTeam();
+                showUploadDialog();
+                myTeamRepository.fetchMyTeam().subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+                        closeUploadDialog();
+                        WeeklyAttendanceVPActivity.start(WeeklyAttendanceVPActivity.this, true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        DialogFactory.createGenericErrorDialog(WeeklyAttendanceVPActivity.this,e.getMessage()).show();
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
                 break;
             case R.id.main_menu_upload_attedance:
                 showUploadDialog();
@@ -105,12 +123,12 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
                     public void onCompleted() {
 
                         closeUploadDialog();
-                        DialogFactory.createActionDialog(WeeklyAttendanceVPActivity.this,"Attendance Uploaded","All pending attendance has been uploaded").show();
+                        DialogFactory.createActionDialog(WeeklyAttendanceVPActivity.this, "Attendance Uploaded", "All pending attendance has been uploaded").show();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        DialogFactory.createGenericErrorDialog(WeeklyAttendanceVPActivity.this,"Failed to upload Reason "+e.getMessage()).show();
+                        DialogFactory.createGenericErrorDialog(WeeklyAttendanceVPActivity.this, "Failed to upload Reason " + e.getMessage()).show();
                     }
 
                     @Override
@@ -192,7 +210,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     }
 
     private void showUploadDialog() {
-        uploadDialog = DialogFactory.createProgressDialogHorizontal(this, "Uploading attendance");
+        uploadDialog = DialogFactory.createProgressDialogHorizontal(this, "Please wait");
         uploadDialog.show();
     }
 

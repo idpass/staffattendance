@@ -53,7 +53,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         this.attedanceIds = attedanceIds;
 
 
-
         if (attedanceIds.isEmpty()) {
             enablePersonSelection = true;
         }
@@ -84,19 +83,10 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     }
 
 
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.main_menu_upload_attedance:
-                ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
-                final String teamId = teamDao.getOneTeamIdForDemo();
-
-
-
-
 
 
                 break;
@@ -127,9 +117,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                WeeklyAttendanceVPActivity.start(getActivity(),true);
+                                WeeklyAttendanceVPActivity.start(getActivity(), true);
                             }
-                        },1000);
+                        }, 1000);
 
                     }
                 }).setNegativeButton("Dismiss", null).show();
@@ -158,6 +148,12 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     @Override
     public void onStaffClick(int pos) {
         stafflistAdapter.toggleSelection(pos);
+        ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
+        if ((stafflist.size() - 1) != 0){
+            Log.i("Nishon", "Total staff selected " + stafflist.get(stafflist.size() - 1).getFirstName() + "");
+
+        }
+
         if (stafflistAdapter.getSelected().size() > 0) {
             fabUploadAttedance.show();
         } else {

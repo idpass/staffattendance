@@ -69,7 +69,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
         context.startActivity(intent);
-        if(disableTrasition) ((Activity) context).overridePendingTransition(0, 0);
+        if (disableTrasition) ((Activity) context).overridePendingTransition(0, 0);
     }
 
     @Override
@@ -262,11 +262,13 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void putDataInStafftable(NewStaffPojo newStaffDetail) {
+        String id = new TeamDao().getOneTeamIdForDemo();
         TeamMemberResposne member = new TeamMemberResposneBuilder()
                 .setFirstName(newStaffDetail.getFirstName())
                 .setLastName(newStaffDetail.getLastName())
                 .setDesignation(newStaffDetail.getDesignation())
-                .setTeamID(new TeamDao().getOneTeamIdForDemo())
+                .setTeamID(id)
+                .setTeamName(new TeamDao().getTeamNameById(id))
                 .createTeamMemberResposne();
 
         new StaffDao().saveStaff(member);
@@ -413,7 +415,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        WeeklyAttendanceVPActivity.start(this,false);
+        WeeklyAttendanceVPActivity.start(this, false);
         finish();
     }
 
@@ -425,7 +427,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.action_attedance:
-                WeeklyAttendanceVPActivity.start(this,false);
+                WeeklyAttendanceVPActivity.start(this, false);
                 finish();
                 break;
 

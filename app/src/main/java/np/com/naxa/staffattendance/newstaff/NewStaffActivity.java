@@ -389,6 +389,12 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
     @Override
+    public void onBackPressed() {
+        WeeklyAttendanceVPActivity.start(this,false);
+        finish();
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_staff:

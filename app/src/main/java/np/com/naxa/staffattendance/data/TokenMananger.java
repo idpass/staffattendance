@@ -35,6 +35,7 @@ public class TokenMananger {
 
 
     public static boolean doesTokenExist() {
+        Log.i("Shree",getToken());
         return !TokenMananger.getToken().isEmpty();
     }
 

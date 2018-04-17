@@ -54,6 +54,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private ArrayAdapter<String> spinnerAdapter;
     private File photoFileToUpload;
 
+    public static void start(Context context) {
+        Intent intent = new Intent(context, NewStaffActivity.class);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -11,6 +11,7 @@ import np.com.naxa.staffattendance.AttendanceFormEditActivity;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
+import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.MediaType;
@@ -53,6 +54,7 @@ public class NewStaffCall {
         Context context = StaffAttendance.getStaffAttendance();
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         return apiInterface.uploadNewStaff(
+                new TeamDao().getOneTeamIdForDemo(),
                 pojo.getDesignation(),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getFirstName()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getLastName()),

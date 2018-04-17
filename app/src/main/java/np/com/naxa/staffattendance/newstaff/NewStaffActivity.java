@@ -30,8 +30,12 @@ import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
+import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
 import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
+import np.com.naxa.staffattendance.database.StaffDao;
+import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
@@ -210,7 +214,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.staff_save:
-                if(validate()){
+                if (validate()) {
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     finish();
                     startActivity(getIntent());
@@ -223,6 +227,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                     final ProgressDialog progressDialog = new ProgressDialogUtils().getProgressDialog(this, "Logging in...");
                     progressDialog.show();
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
+                    putDataInStafftable(getNewStaffDetail());
                     new NewStaffCall().upload(getNewStaffDetail(), photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
                         @Override
                         public void onError() {
@@ -241,6 +246,17 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
         }
+    }
+
+    private void putDataInStafftable(NewStaffPojo newStaffDetail) {
+        TeamMemberResposne member = new TeamMemberResposneBuilder()
+                .setFirstName(newStaffDetail.getFirstName())
+                .setLastName(newStaffDetail.getLastName())
+                .setDesignation(newStaffDetail.getDesignation())
+                .setTeamID(new TeamDao().getOneTeamIdForDemo())
+                .createTeamMemberResposne();
+
+        new StaffDao().saveStaff(member);
     }
 
     private boolean validate() {
@@ -380,7 +396,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
-
 
 
 }

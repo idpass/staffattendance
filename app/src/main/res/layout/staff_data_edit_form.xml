@@ -361,6 +361,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save" />
+        android:text="Save"
+        android:layout_marginBottom="@dimen/spacing_xxlarge"/>
 
 </LinearLayout>

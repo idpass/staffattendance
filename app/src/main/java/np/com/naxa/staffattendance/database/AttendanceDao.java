@@ -15,6 +15,23 @@ import rx.Observable;
 
 public class AttendanceDao {
 
+    public void updateAttendance(String date, String teamId) {
+        String selection = DatabaseHelper.KEY_ATTENDACE_DATE + "=? AND " + DatabaseHelper.KEY_STAFF_TEAM_ID + "=?";
+        String[] selectionArgs = new String[]{date, teamId};
+        updateAttendance(getContentValuesForStatusUpdate(), selection, selectionArgs);
+    }
+
+
+    public ContentValues getContentValuesForStatusUpdate() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, SyncStatus.UPLOADED);
+        return contentValues;
+    }
+
+    private void updateAttendance(ContentValues contentValues, String selection, String[] selectionArgs) {
+        DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, contentValues, selection, selectionArgs);
+    }
+
     public final static class SyncStatus {
         public static String FINALIZED = "finalized";
         public static String UPLOADED = "uploaded";
@@ -28,10 +45,10 @@ public class AttendanceDao {
         contentValues.put(DatabaseHelper.KEY_ID, attedance.getId());
 
         String date;
-        if (attedance.getAttendanceDate().equalsIgnoreCase("Today")) {
+        if (attedance.getAttendanceDate(false).equalsIgnoreCase("Today")) {
             date = DateConvertor.getCurrentDate();
         } else {
-            date = attedance.getAttendanceDate();
+            date = attedance.getAttendanceDate(false);
         }
 
         contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, date);
@@ -48,7 +65,7 @@ public class AttendanceDao {
 
                 ContentValues values = getContentValuesForAttedance(staff);
                 long i = saveAttedance(db, values);
-                Log.i("Arun","i"+i);
+;
             }
 
             db.setTransactionSuccessful();
@@ -68,6 +85,7 @@ public class AttendanceDao {
     public long saveAttedance(ContentValues contentValues) {
         return DatabaseHelper.getDatabaseHelper().getWritableDatabase().replace(TABLE_NAME, null, contentValues);
     }
+
 
     public ArrayList<AttedanceResponse> getAttendanceFromCursor(Cursor cursor) {
         ArrayList<AttedanceResponse> attedanceResponses = new ArrayList<>();
@@ -111,6 +129,13 @@ public class AttendanceDao {
 
     public ArrayList<AttedanceResponse> getAttendanceSheetForTeam(String teamId) {
         Cursor cursor = getCursor(null, null);
+        ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+        closeCursor(cursor);
+        return list;
+    }
+
+    public ArrayList<AttedanceResponse> getFinalizedAttendanceSheet() {
+        Cursor cursor = getCursor(DatabaseHelper.KEY_SYNC_STATUS + "=?", new String[]{SyncStatus.FINALIZED});
         ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
         closeCursor(cursor);
         return list;

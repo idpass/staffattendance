@@ -137,8 +137,8 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
-            int colorBlue = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.colorAccent);
-            holder.staffStatus.setTextColor(colorBlue);
+            int colorRed = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.red);
+            holder.staffStatus.setTextColor(colorRed);
 
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_absent));
 

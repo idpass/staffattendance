@@ -8,9 +8,8 @@ import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
+import np.com.naxa.staffattendance.database.TeamDao;
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -96,7 +95,7 @@ public class MyTeamRepository {
 
     }
 
-    public Observable<Object> uploadAttendance(final String teamId, final String date, final ArrayList<TeamMemberResposne> stafflist) {
+    private Observable<Object> uploadAttendance(final String teamId, final String date, final ArrayList<TeamMemberResposne> stafflist) {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
 
         return staffDao.getStaffIdFromObject(stafflist)
@@ -109,38 +108,43 @@ public class MyTeamRepository {
                     @Override
                     public Observable<?> call(AttedanceResponse attedanceResponse) {
                         if (attedanceResponse != null) {
-                            ArrayList<AttedanceResponse> list = new ArrayList<>();
-                            list.add(attedanceResponse);
-                            attendanceDao.saveAttendance(list);
+                            attendanceDao.updateAttendance(attedanceResponse.getAttendanceDate(false), teamId);
                         }
                         return null;
                     }
                 });
     }
 
-    public Subscription fetchPastAttendance(String teamID) {
-        final ApiInterface apiInterface = APIClient
-                .getUploadClient()
-                .create(ApiInterface.class);
 
-        return apiInterface.getPastAttendanceList(teamID)
-                .subscribe(new Observer<ArrayList<AttedanceResponse>>() {
+    public Observable<Object> bulkAttendanceUpload() {
+        final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
+        final String teamId = new TeamDao().getOneTeamIdForDemo();
+
+        return Observable.just(attendanceDao.getFinalizedAttendanceSheet())
+                .flatMapIterable(new Func1<ArrayList<AttedanceResponse>, Iterable<AttedanceResponse>>() {
                     @Override
-                    public void onCompleted() {
-
+                    public Iterable<AttedanceResponse> call(ArrayList<AttedanceResponse> attedanceResponses) {
+                        return attedanceResponses;
                     }
-
+                })
+                .flatMap(new Func1<AttedanceResponse, Observable<AttedanceResponse>>() {
                     @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
+                    public Observable<AttedanceResponse> call(AttedanceResponse attedanceResponse) {
+
+                        return apiInterface.postAttendanceForTeam(teamId, attedanceResponse.getAttendanceDate(false), attedanceResponse.getStaffs());
                     }
-
+                })
+                .flatMap(new Func1<AttedanceResponse, Observable<?>>() {
                     @Override
-                    public void onNext(ArrayList<AttedanceResponse> attedanceResponses) {
+                    public Observable<?> call(AttedanceResponse attedanceResponse) {
+                        if (attedanceResponse != null) {
+                            attendanceDao.updateAttendance(attedanceResponse.getAttendanceDate(false), teamId);
+                        }
+                        return null;
 
                     }
                 });
 
-    }
 
+    }
 }

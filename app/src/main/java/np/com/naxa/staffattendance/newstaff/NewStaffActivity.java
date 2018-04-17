@@ -266,15 +266,16 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
-                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this);
+                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this,false);
                             finish();
                         }
 
                         @Override
                         public void onSuccess() {
                             progressDialog.dismiss();
+
+                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this,false);
                             finish();
-                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this);
                         }
                     });
                 }

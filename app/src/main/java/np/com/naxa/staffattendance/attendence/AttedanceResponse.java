@@ -53,10 +53,14 @@ public class AttedanceResponse {
         this.id = id;
     }
 
-    public String getAttendanceDate() {
-        if (attendanceDate.equals(DateConvertor.getCurrentDate())) {
-            return "Today";
+    public String getAttendanceDate(boolean stylize) {
+        if (stylize) {
+            if (attendanceDate.equals(DateConvertor.getCurrentDate())) {
+                return "Today";
+            }
         }
+
+
         return attendanceDate;
     }
 

@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance;
 
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -42,6 +44,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private MyTeamRepository myTeamRepository;
     private boolean enablePersonSelection = false;
 
+
     public DailyAttendanceFragment() {
         myTeamRepository = new MyTeamRepository();
     }
@@ -49,7 +52,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public void setAttedanceIds(List<String> attedanceIds) {
         this.attedanceIds = attedanceIds;
 
-        Log.i("PUBG", attedanceIds.size() + "");
+
 
         if (attedanceIds.isEmpty()) {
             enablePersonSelection = true;
@@ -66,7 +69,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         bindUI(rootView);
         setupRecyclerView();
 
-
+        setHasOptionsMenu(true);
         fabUploadAttedance.setEnabled(true);
         fabUploadAttedance.hide();
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +83,27 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         return rootView;
     }
 
+
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_menu_upload_attedance:
+                ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
+                final String teamId = teamDao.getOneTeamIdForDemo();
+
+
+
+
+
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void showMarkPresentDialog() {
         String title = "Mark selected as present?";
         String msg = "You won't be able to change this once confirmed.";
@@ -88,8 +112,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                 .setPositiveButton("Mark Present", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
-                        final String teamId = teamDao.getOneTeamIdForDemo();
+
 
                         //saving it offline
                         AttendanceDao attedanceDao = new AttendanceDao();
@@ -101,24 +124,12 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
                         attedanceDao.saveAttedance(contentValues);
 
-                        myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist)
-                                .subscribe(new Observer<Object>() {
-                                    @Override
-                                    public void onCompleted() {
-                                        WeeklyAttendanceVPActivity.start(getActivity());
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        ToastUtils.showShort(e.getMessage());
-                                    }
-
-                                    @Override
-                                    public void onNext(Object o) {
-
-                                    }
-                                });
-
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                WeeklyAttendanceVPActivity.start(getActivity(),true);
+                            }
+                        },1000);
 
                     }
                 }).setNegativeButton("Dismiss", null).show();

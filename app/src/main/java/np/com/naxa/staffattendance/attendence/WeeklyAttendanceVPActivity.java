@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance.attendence;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +31,9 @@ import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import rx.Observer;
 
 
 public class WeeklyAttendanceVPActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -41,6 +44,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     private AttendanceDao attendanceDao;
     private MyTeamRepository myTeamRepository;
     private BottomNavigationView bottomNavigationView;
+    private ProgressDialog uploadDialog;
 
 
     public static void start(Context context, boolean disableTransition) {
@@ -49,10 +53,6 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
         if (disableTransition) ((Activity) context).overridePendingTransition(0, 0);
     }
 
-    public static void start(Context context) {
-        Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
-        context.startActivity(intent);
-    }
 
     private ArrayList<AttedanceResponse> getAcessedAttedance() {
         String teamID = new TeamDao().getOneTeamIdForDemo();
@@ -97,6 +97,27 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
         switch (item.getItemId()) {
             case R.id.main_menu_refresh:
                 myTeamRepository.fetchMyTeam();
+                break;
+            case R.id.main_menu_upload_attedance:
+                showUploadDialog();
+                myTeamRepository.bulkAttendanceUpload().subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+
+                        closeUploadDialog();
+                        DialogFactory.createActionDialog(WeeklyAttendanceVPActivity.this,"Attendance Uploaded","All pending attendance has been uploaded").show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        DialogFactory.createGenericErrorDialog(WeeklyAttendanceVPActivity.this,"Failed to upload Reason "+e.getMessage()).show();
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
                 break;
         }
 
@@ -165,8 +186,26 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
         public CharSequence getPageTitle(int position) {
 
 
-            return attedanceResponses.get(position).getAttendanceDate();
+            return attedanceResponses.get(position).getAttendanceDate(true);
 
         }
     }
+
+    private void showUploadDialog() {
+        uploadDialog = DialogFactory.createProgressDialogHorizontal(this, "Uploading attendance");
+        uploadDialog.show();
+    }
+
+    private void closeUploadDialog() {
+        if (uploadDialog != null && uploadDialog.isShowing()) {
+            uploadDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        closeUploadDialog();
+    }
+
 }

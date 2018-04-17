@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
@@ -219,15 +220,20 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 if (validate()) {
                     final ProgressDialog progressDialog = new ProgressDialogUtils().getProgressDialog(this, "Logging in...");
                     progressDialog.show();
+                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     new NewStaffCall().upload(getNewStaffDetail(), photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
+                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this);
+                            finish();
                         }
 
                         @Override
                         public void onSuccess() {
                             progressDialog.dismiss();
+                            finish();
+                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this);
                         }
                     });
                 }

@@ -99,7 +99,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                WeeklyAttendanceVPActivity.start(getActivity());
+                                WeeklyAttendanceVPActivity.start(getActivity(),true);
                             }
                         }, 2000);
 

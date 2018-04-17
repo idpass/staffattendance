@@ -7,10 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +34,7 @@ import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
@@ -38,7 +43,8 @@ import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
-public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener {
+public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
+
 
     private Spinner bank, designation;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
@@ -52,11 +58,12 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private DatePickerDialog.OnDateSetListener date;
     private ArrayAdapter<String> spinnerAdapter;
     private File photoFileToUpload;
+    private BottomNavigationView bottomNavigationView;
 
-    public static void start(Context context) {
+    public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
         context.startActivity(intent);
-        ((Activity) context).overridePendingTransition(0, 0);
+        if(disableTrasition) ((Activity) context).overridePendingTransition(0, 0);
     }
 
     @Override
@@ -73,6 +80,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         spinnerValues();
 
         initSpinners();
+
+        bottomNavigationView.setSelectedItemId(R.id.action_add_staff);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     private void spinnerValues() {
@@ -174,6 +184,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         photo = findViewById(R.id.staff_photo);
         save = findViewById(R.id.staff_save);
         create = findViewById(R.id.staff_send);
+        bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
     }
 
     private void initListeners() {
@@ -209,7 +221,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.staff_save:
-                if(validate()){
+                if (validate()) {
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     finish();
                     startActivity(getIntent());
@@ -376,5 +388,20 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_staff:
 
+                break;
+
+            case R.id.action_attedance:
+                WeeklyAttendanceVPActivity.start(this,false);
+                finish();
+                break;
+
+
+        }
+        return true;
+    }
 }

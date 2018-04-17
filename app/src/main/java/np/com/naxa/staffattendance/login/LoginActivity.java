@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         if (TokenMananger.doesTokenExist()) {
-            WeeklyAttendanceVPActivity.start(this);
+            WeeklyAttendanceVPActivity.start(this,false);
             finish();
         }
 
@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCompleted() {
                 dialog.dismiss();
-                WeeklyAttendanceVPActivity.start(LoginActivity.this);
+                WeeklyAttendanceVPActivity.start(LoginActivity.this,false);
 
             }
 

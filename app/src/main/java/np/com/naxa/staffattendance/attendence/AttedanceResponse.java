@@ -1,9 +1,12 @@
 package np.com.naxa.staffattendance.attendence;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class AttedanceResponse {
 
@@ -32,6 +35,16 @@ public class AttedanceResponse {
     @Expose
     private List<String> staffs = null;
 
+    private String dataSyncStatus;
+
+    public String getDataSyncStatus() {
+        return dataSyncStatus;
+    }
+
+    public void setDataSyncStatus(String dataSyncStatus) {
+        this.dataSyncStatus = dataSyncStatus;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -41,11 +54,16 @@ public class AttedanceResponse {
     }
 
     public String getAttendanceDate() {
+        if (attendanceDate.equals(DateConvertor.getCurrentDate())) {
+            return "Today";
+        }
         return attendanceDate;
     }
 
     public void setAttendanceDate(String attendanceDate) {
+
         this.attendanceDate = attendanceDate;
+
     }
 
     public Boolean getIsDeleted() {

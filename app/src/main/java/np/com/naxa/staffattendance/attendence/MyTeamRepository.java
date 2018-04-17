@@ -8,10 +8,12 @@ import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
-import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -27,30 +29,40 @@ public class MyTeamRepository {
         attendanceDao = new AttendanceDao();
     }
 
-    public void fetchMyTeam() {
-        myTeamObserable()
-                .subscribe(new Observer<List<TeamMemberResposne>>() {
-                    @Override
-                    public void onCompleted() {
-                        //todo  do not do this, make this request tied with rx in future
-                        String teamId = new TeamDao().getOneTeamIdForDemo();
-                        new MyTeamRepository().fetchPastAttendance(teamId);
-                    }
+    public Observable<Object> fetchMyTeam() {
+        final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
 
+        return myTeamObservable()
+                .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttedanceResponse>>>() {
                     @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<TeamMemberResposne> teamMemberResposnes) {
+                    public Observable<ArrayList<AttedanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
                         staffDao.saveStafflist(teamMemberResposnes);
+                        String teamId = teamMemberResposnes.get(0).getTeamID();
+                        return apiInterface.getPastAttendanceList(teamId);
+                    }
+                })
+                .flatMap(new Func1<ArrayList<AttedanceResponse>, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(ArrayList<AttedanceResponse> attedanceResponses) {
+                        return attendanceDao.saveAttendance(attedanceResponses);
                     }
                 });
 
+
+
     }
 
-    private Observable<List<TeamMemberResposne>> myTeamObserable() {
+    private Action1<Throwable> defaultErrorHanlder() {
+        return new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                throwable.printStackTrace();
+
+            }
+        };
+    }
+
+    private Observable<List<TeamMemberResposne>> myTeamObservable() {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         return apiInterface.getMyTeam()
                 .subscribeOn(Schedulers.io())
@@ -103,13 +115,13 @@ public class MyTeamRepository {
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
+                        ToastUtils.showLong(String.format("Failed to upload reason %s", e.getMessage()));
                     }
 
                     @Override
                     public void onNext(AttedanceResponse staff) {
                         if (staff != null) {
-                            ArrayList<AttedanceResponse> list =new ArrayList<>();
+                            ArrayList<AttedanceResponse> list = new ArrayList<>();
                             list.add(staff);
                             attendanceDao.saveAttendance(list);
                         }
@@ -118,12 +130,12 @@ public class MyTeamRepository {
 
     }
 
-    public void fetchPastAttendance(String teamID) {
+    public Subscription fetchPastAttendance(String teamID) {
         final ApiInterface apiInterface = APIClient
                 .getUploadClient()
                 .create(ApiInterface.class);
 
-        apiInterface.getPastAttendanceList(teamID)
+        return apiInterface.getPastAttendanceList(teamID)
                 .subscribe(new Observer<ArrayList<AttedanceResponse>>() {
                     @Override
                     public void onCompleted() {
@@ -137,7 +149,7 @@ public class MyTeamRepository {
 
                     @Override
                     public void onNext(ArrayList<AttedanceResponse> attedanceResponses) {
-                        attendanceDao.saveAttendance(attedanceResponses);
+
                     }
                 });
 

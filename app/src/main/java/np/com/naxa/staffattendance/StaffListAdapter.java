@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,9 +32,11 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // index is used to animate only the selected row
     // dirty fix, find a better solution
     private static int currentSelectedIndex = -1;
+    private boolean enablePersonSelection;
 
 
-    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, List<String> attedanceIds, OnStaffItemClickListener listener) {
+
+    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
@@ -41,6 +44,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.listener = listener;
         selectedItems = new SparseBooleanArray();
         animationItemsIndex = new SparseBooleanArray();
+        this.enablePersonSelection = enablePersonSelection;
     }
 
 
@@ -53,39 +57,13 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
-    private boolean contains(List<String> list, String comparable) {
-        //todo why did list.containts(string) not work?
-        if(list == null || list.size() <= 0){
-            return false;
-        }
-
-        for (String string : list) {
-            if (string.trim().contains(comparable)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         TeamMemberResposne staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
-        boolean isPresent = contains(attedanceIds,staff.getId());
+        setupPreviousAttedance(attedanceIds, staff.getId(), staffVH);
 
-        Context context = staffVH.rootLayout.getContext();
-
-        if (isPresent) {
-            selectedItems.put(holder.getAdapterPosition(), true);
-            animationItemsIndex.put(holder.getAdapterPosition(), true);
-            applyAnimToPastAttedanceItems(staffVH,holder.getAdapterPosition());
-            staffVH.rootLayout.setEnabled(false);
-
-        }else {
-            applyAnimToTodayAttedanceItems(staffVH,holder.getAdapterPosition());
-
-        }
-
+        staffVH.rootLayout.setEnabled(enablePersonSelection);
         staffVH.staffName.setText(staff.getFirstName());
         staffVH.staffType.setText(staff.getTeamName());
         staffVH.iconText.setVisibility(View.VISIBLE);
@@ -98,6 +76,18 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 listener.onStaffClick(holder.getAdapterPosition());
             }
         });
+    }
+
+    private void setupPreviousAttedance(List<String> attedanceIds, String staffId, StaffVH staffVH) {
+        boolean isPresentOnThisDay = contains(attedanceIds, staffId);
+
+        if (isPresentOnThisDay) {
+            selectedItems.put(staffVH.getAdapterPosition(), true);
+            animationItemsIndex.put(staffVH.getAdapterPosition(), true);
+            applyAnimToPastAttedanceItems(staffVH, staffVH.getAdapterPosition());
+        } else {
+            applyAnimToTodayAttedanceItems(staffVH, staffVH.getAdapterPosition());
+        }
     }
 
     @Override
@@ -115,22 +105,29 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             selectedItems.put(pos, true);
             animationItemsIndex.put(pos, true);
         }
+
         notifyItemChanged(pos);
     }
 
 
-    private void applyAnimToTodayAttedanceItems(StaffVH holder, int position){
-        applyIconAnimation(holder,position,true);
+    private void applyAnimToTodayAttedanceItems(StaffVH holder, int position) {
+        applyIconAnimation(holder, position, true);
     }
 
-    private void applyAnimToPastAttedanceItems(StaffVH holder, int position){
-        applyIconAnimation(holder,position,false);
+    private void applyAnimToPastAttedanceItems(StaffVH holder, int position) {
+        applyIconAnimation(holder, position, false);
     }
 
-    private void applyIconAnimation(StaffVH holder, int position,boolean shouldHightlight) {
+    private void applyIconAnimation(StaffVH holder, int position, boolean shouldHightlight) {
         if (selectedItems.get(position, false)) {
+
+            int colorGreen = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.green);
+            holder.staffStatus.setTextColor(colorGreen);
+
             holder.rootLayout.setActivated(shouldHightlight);
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_present));
+
+
             holder.iconFront.setVisibility(View.GONE);
             resetIconYAxis(holder.iconBack);
             holder.iconBack.setVisibility(View.VISIBLE);
@@ -140,6 +137,9 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
+            int colorBlue = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.colorAccent);
+            holder.staffStatus.setTextColor(colorBlue);
+
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_absent));
 
             holder.rootLayout.setActivated(!shouldHightlight);
@@ -181,9 +181,18 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return items;
     }
 
+    public ArrayList<String> getSelectedStaffID() {
+        ArrayList<String> items = new ArrayList<>(selectedItems.size());
+        for (int i = 0; i < selectedItems.size(); i++) {
+            items.add(staffList.get(i).getId());
+        }
+
+        return items;
+    }
+
 
     public class StaffVH extends RecyclerView.ViewHolder {
-        private TextView staffName,staffStatus, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
+        private TextView staffName, staffStatus, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
         private ImageView iconImp, imgProfile;
         private RelativeLayout iconContainer, iconBack, iconFront;
         private RelativeLayout rootLayout;
@@ -203,7 +212,6 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             sitePhone = view.findViewById(R.id.staff_list_row_phone);
             staffType = view.findViewById(R.id.staff_list_row_type);
             iconText = view.findViewById(R.id.icon_text);
-            tvTagOfflineSite = view.findViewById(R.id.staff_list_row_status);
             imgProfile = view.findViewById(R.id.icon_profile);
         }
     }
@@ -212,6 +220,20 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         void onStaffClick(int pos);
 
         void onStaffLongClick(int pos);
+    }
+
+    private boolean contains(List<String> list, String comparable) {
+        //todo why did list.containts(string) not work?
+        if (list == null || list.size() <= 0) {
+            return false;
+        }
+
+        for (String string : list) {
+            if (string.trim().contains(comparable)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

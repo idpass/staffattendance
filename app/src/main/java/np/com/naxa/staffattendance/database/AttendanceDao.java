@@ -3,37 +3,50 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+import rx.Observable;
 
 public class AttendanceDao {
+
+    public final static class SyncStatus {
+        public static String FINALIZED = "finalized";
+        public static String UPLOADED = "uploaded";
+    }
+
+
     private final String TABLE_NAME = DatabaseHelper.TABLE_ATTENDANCE;
 
-    private ContentValues getContentValuesForAttedance(AttedanceResponse attedance) {
+    public ContentValues getContentValuesForAttedance(AttedanceResponse attedance) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.KEY_ID, attedance.getId());
-        contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, attedance.getAttendanceDate());
+
+        String date;
+        if (attedance.getAttendanceDate().equalsIgnoreCase("Today")) {
+            date = DateConvertor.getCurrentDate();
+        } else {
+            date = attedance.getAttendanceDate();
+        }
+
+        contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, date);
+        contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, attedance.getDataSyncStatus());
         contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, attedance.getStaffs().toString());
         return contentValues;
     }
 
-    public void saveAttendance(List<AttedanceResponse> attedanceResponses) {
+    public Observable<?> saveAttendance(List<AttedanceResponse> attedanceResponses) {
         SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
         try {
             db.beginTransaction();
             for (AttedanceResponse staff : attedanceResponses) {
 
                 ContentValues values = getContentValuesForAttedance(staff);
-                saveStaff(db, values);
+                saveAttedance(db, values);
             }
 
             db.setTransactionSuccessful();
@@ -43,10 +56,15 @@ public class AttendanceDao {
             db.endTransaction();
             db.close();
         }
+        return null;
     }
 
-    private long saveStaff(SQLiteDatabase database, ContentValues contentValues) {
+    private long saveAttedance(SQLiteDatabase database, ContentValues contentValues) {
         return database.replace(TABLE_NAME, null, contentValues);
+    }
+
+    public long saveAttedance(ContentValues contentValues) {
+        return DatabaseHelper.getDatabaseHelper().getWritableDatabase().replace(TABLE_NAME, null, contentValues);
     }
 
     public ArrayList<AttedanceResponse> getAttendanceFromCursor(Cursor cursor) {
@@ -79,18 +97,6 @@ public class AttendanceDao {
         return db.query(TABLE_NAME, null, selection, selectionArgs, null, null, null, null);
     }
 
-    private void closeCursor(Cursor cursor) {
-        if (cursor != null) {
-            cursor.close();
-        }
-    }
-
-    private void closeDB(SQLiteDatabase db) {
-        if (db != null) {
-            db.close();
-        }
-    }
-
     public List<AttedanceResponse> getTodaysAddedance(String teamId) {
         return getAttedanceByDate(teamId, DateConvertor.getCurrentDate());
     }
@@ -104,24 +110,21 @@ public class AttendanceDao {
     public ArrayList<AttedanceResponse> getAttendanceSheetForTeam(String teamId) {
         Cursor cursor = getCursor(null, null);
         ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
-        ArrayList<AttedanceResponse> attedanceResponses = new ArrayList<>();
-        Date todaysDate = new Date();
-
-        attedanceResponses.addAll(list);
-//        for (AttedanceResponse attedanceResponse : list) {
-//            String dateString = attedanceResponse.getAttendanceDate();
-//            Date oldDate = DateConvertor.stringToDate(dateString);
-//
-//            if (todaysDate.compareTo(oldDate) != 0){
-//
-//                AttedanceResponse todayAttedanceSheet = new AttedanceResponse();
-//                attedanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
-//                attedanceResponses.add(todayAttedanceSheet);
-//            }
-//        }
-
-
         closeCursor(cursor);
-        return attedanceResponses;
+        return list;
     }
+
+
+    private void closeCursor(Cursor cursor) {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
+    private void closeDB(SQLiteDatabase db) {
+        if (db != null) {
+            db.close();
+        }
+    }
+
 }

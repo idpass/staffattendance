@@ -29,6 +29,12 @@ public class StaffDao {
         return saveStaff(getContentValuesFronSaff(staff));
     }
 
+    public void removeAllStaffList() {
+        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
+        db.execSQL("DELETE from " + TABLE_NAME);
+        db.close();
+    }
+
     public void saveStafflist(final List<TeamMemberResposne> staffs) {
 
         SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
@@ -65,7 +71,7 @@ public class StaffDao {
         return getStaffFromCursor(cursor);
     }
 
-    public List<TeamMemberResposne> getStaffByTeamAndStaffId(String teamId,String staffID) {
+    public List<TeamMemberResposne> getStaffByTeamAndStaffId(String teamId, String staffID) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=?", new String[]{staffID});
         return getStaffFromCursor(cursor);
     }
@@ -127,9 +133,6 @@ public class StaffDao {
                     }
                 }).toList();
     }
-
-
-
 
 
 }

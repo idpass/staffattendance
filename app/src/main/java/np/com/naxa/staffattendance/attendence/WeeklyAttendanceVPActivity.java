@@ -1,6 +1,9 @@
 package np.com.naxa.staffattendance.attendence;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,15 +12,21 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.function.Predicate;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+
 
 public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
@@ -25,12 +34,17 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private Toolbar toolbar;
     private AttendanceDao attendanceDao;
+    private MyTeamRepository myTeamRepository;
 
 
-    private ArrayList<AttedanceResponse> generateSevenDaysAttendanceSheet() {
+    public static void start(Context context) {
+        Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
+        context.startActivity(intent);
+    }
+
+    private ArrayList<AttedanceResponse> getAcessedAttedance() {
         String teamID = new TeamDao().getOneTeamIdForDemo();
-        ArrayList<AttedanceResponse> list = attendanceDao.getAttendanceSheetForTeam(teamID);
-        return list;
+        return attendanceDao.getAttendanceSheetForTeam(teamID);
     }
 
 
@@ -41,18 +55,43 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         attendanceDao = new AttendanceDao();
         bindUI();
         setuptoolbar();
-        ArrayList<AttedanceResponse> list = generateSevenDaysAttendanceSheet();
+        ArrayList<AttedanceResponse> attedanceResponseArrayList = getAcessedAttedance();
+        myTeamRepository = new MyTeamRepository();
 
-        //todo stop loading old attedance history
-        //list.clear();
 
-        if (attendanceDao.getTodaysAddedance("") != null) {
-            list.addAll(attendanceDao.getTodaysAddedance(""));
+        List<AttedanceResponse> todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
+        if (todaysAttedanceSheet != null && (todaysAttedanceSheet.size() == 1 || todaysAttedanceSheet.size() > 0)) {
+            //not implemented
+
         } else {
-            list.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
+            attedanceResponseArrayList.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
         }
+
         tabLayout.setupWithViewPager(viewPager);
-        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager(), list));
+        viewPager.setAdapter(new YoFragmentPagerAdapter(getSupportFragmentManager(), attedanceResponseArrayList));
+
+        final int scrollPostion = attedanceResponseArrayList.size();
+        viewPager.setCurrentItem(scrollPostion, true);
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_menu_refresh:
+                myTeamRepository.fetchMyTeam();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+
     }
 
     private void setuptoolbar() {
@@ -70,7 +109,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
     public class YoFragmentPagerAdapter extends FragmentPagerAdapter {
         private ArrayList<AttedanceResponse> attedanceResponses;
 
-        public YoFragmentPagerAdapter(FragmentManager fm, ArrayList<AttedanceResponse> attedanceResponses) {
+        YoFragmentPagerAdapter(FragmentManager fm, ArrayList<AttedanceResponse> attedanceResponses) {
             super(fm);
             this.attedanceResponses = attedanceResponses;
         }
@@ -78,10 +117,12 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             DailyAttendanceFragment fragment = null;
-            for (AttedanceResponse attedance : attedanceResponses) {
-                fragment = new DailyAttendanceFragment();
-                fragment.setAttedanceIds(attedance.getStaffs());
-            }
+            AttedanceResponse attedance = attedanceResponses.get(position);
+
+
+            fragment = new DailyAttendanceFragment();
+            fragment.setAttedanceIds(attedance.getStaffs());
+
 
             return fragment;
         }

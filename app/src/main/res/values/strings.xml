@@ -6,8 +6,12 @@
     <string name="bank_other">Other</string>
 
     <string name="not_avaliable">%s not available</string>
-    <string name="attedance_present">Marked Present</string>
-    <string name="attedance_absent">Marked Absent</string>
+    <string name="attedance_present"> Present</string>
+    <string name="attedance_absent"> Absent</string>
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_error_title">Unexpected error occurred</string>
+    <string name="dialog_error_title_sync_failed">Failed to sync with server (STATUS CODE : %s)</string>
+    <string name="dialog_action_hide">Hide</string>
 
 
 </resources>

@@ -63,6 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_ATTENDACE_DATE = "date";
     public static final String KEY_STAFFS_IDS = "staffs_ids";
     public static final String KEY_SUBMITTED_BY = "submitted_by";
+    public static final String KEY_SYNC_STATUS = "sync_status";
 
 
     // Table Create Statements
@@ -90,6 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             KEY_STAFF_TEAM_ID + " TEXT," +
             KEY_SUBMITTED_BY + " INTEGER," +
             KEY_CREATED_AT + " DATETIME" + "," +
+            KEY_SYNC_STATUS + " TEXT," +
             KEY_UPDATED_AT + " DATETIME" +
             ")";
 

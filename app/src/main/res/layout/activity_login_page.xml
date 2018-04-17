@@ -8,9 +8,6 @@
     android:focusableInTouchMode="true"
     android:gravity="center_vertical">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,7 +28,7 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/spacing_xlarge"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@mipmap/ic_launcher" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"

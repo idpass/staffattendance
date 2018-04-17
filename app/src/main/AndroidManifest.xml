@@ -29,8 +29,7 @@
             android:name=".attendence.WeeklyAttendanceVPActivity"
             android:exported="true" />
 
-
-        <activity android:name=".newstaff.NewStaffActivity"></activity>
+        <activity android:name=".newstaff.NewStaffActivity" />
     </application>
 
 </manifest>

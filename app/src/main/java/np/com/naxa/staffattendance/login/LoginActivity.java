@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
+import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
+import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
@@ -21,6 +23,7 @@ import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import retrofit2.Call;
 import retrofit2.Response;
+import rx.Observer;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,6 +33,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button btnLogin;
     private TokenMananger tokenMananger;
     private MyTeamRepository myTeamRepository;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +41,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login_page);
 
 
-        if(TokenMananger.doesTokenExist()){
-            startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
+        if (TokenMananger.doesTokenExist()) {
+
+            startActivity(new Intent(LoginActivity.this, WeeklyAttendanceVPActivity.class));
+            finish();
         }
 
         myTeamRepository = new MyTeamRepository();
@@ -60,11 +66,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
-                ProgressDialog dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
+                dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
                 if (validate()) {
-                    dialog.show();
+
                     loginToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
-                    dialog.dismiss();
+
                 } else {
                     ToastUtils.showShort("Enter valid credentials..");
                 }
@@ -74,17 +80,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     private void loginToServer(final String username, final String password) {
+        dialog.show();
         new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
             @Override
             public void onSuccess() {
-                startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
-                myTeamRepository.fetchMyTeam();
+                APIClient.removeRetrofitClient();
+                fetchMyTeam();
 
             }
 
             @Override
             public void onError() {
+                dialog.dismiss();
                 ToastUtils.showShort("Login Error");
+            }
+        });
+    }
+
+    private void fetchMyTeam() {
+
+        myTeamRepository.fetchMyTeam().subscribe(new Observer<Object>() {
+            @Override
+            public void onCompleted() {
+                dialog.dismiss();
+                WeeklyAttendanceVPActivity.start(LoginActivity.this);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                ToastUtils.showLong(e.getMessage());
+            }
+
+            @Override
+            public void onNext(Object o) {
+
             }
         });
     }

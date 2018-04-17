@@ -29,11 +29,7 @@
             android:name=".attendence.WeeklyAttendanceVPActivity"
             android:exported="true" />
 
-
-        <activity android:name=".newstaff.NewStaffActivity"></activity>
-        <activity
-            android:exported="true"
-            android:name=".OnBoardingActivity" />
+        <activity android:name=".newstaff.NewStaffActivity" />
     </application>
 
 </manifest>

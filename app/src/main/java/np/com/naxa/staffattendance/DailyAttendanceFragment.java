@@ -45,7 +45,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public void setAttedanceIds(List<String> attedanceIds) {
         this.attedanceIds = attedanceIds;
 
-        if (attedanceIds != null && attedanceIds.size() >= 0) {
+        if (attedanceIds.isEmpty()) {
             enablePersonSelection = true;
         }
     }

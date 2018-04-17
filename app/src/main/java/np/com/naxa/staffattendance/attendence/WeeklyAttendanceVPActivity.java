@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.attendence;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     public static void start(Context context) {
         Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
         context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
     }
 
     private ArrayList<AttedanceResponse> getAcessedAttedance() {
@@ -67,7 +69,6 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
         List<AttedanceResponse> todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
         if (todaysAttedanceSheet != null && (todaysAttedanceSheet.size() == 1 || todaysAttedanceSheet.size() > 0)) {
             //not implemented
-
         } else {
             attedanceResponseArrayList.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
         }
@@ -77,7 +78,6 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
 
         final int scrollPostion = attedanceResponseArrayList.size();
         viewPager.setCurrentItem(scrollPostion, true);
-
 
     }
 
@@ -117,7 +117,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_staff:
-
+                NewStaffActivity.start(this);
                 break;
 
             case R.id.action_attedance:

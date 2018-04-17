@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.newstaff;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,13 +25,11 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
-import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
@@ -57,6 +56,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     public static void start(Context context) {
         Intent intent = new Intent(context, NewStaffActivity.class);
         context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
     }
 
     @Override

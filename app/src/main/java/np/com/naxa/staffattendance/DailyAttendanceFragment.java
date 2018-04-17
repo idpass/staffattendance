@@ -4,6 +4,7 @@ package np.com.naxa.staffattendance;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import java.util.List;
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
+import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
@@ -92,9 +94,16 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         attedanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
                         ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
-                        //attedanceDao.saveAttedance(contentValues);
+                        attedanceDao.saveAttedance(contentValues);
 
-                        myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                WeeklyAttendanceVPActivity.start(getActivity());
+                            }
+                        }, 2000);
+
+                        // myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
                     }
                 }).setNegativeButton("Dismiss", null).show();
     }

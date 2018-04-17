@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.newstaff;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
@@ -356,6 +358,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
+
 
 
 }

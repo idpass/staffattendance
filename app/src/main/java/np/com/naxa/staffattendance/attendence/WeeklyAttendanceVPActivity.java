@@ -1,10 +1,13 @@
 package np.com.naxa.staffattendance.attendence;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,28 +28,31 @@ import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.login.LoginActivity;
+import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
 
 
-public class WeeklyAttendanceVPActivity extends AppCompatActivity {
+public class WeeklyAttendanceVPActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
     private AttendanceDao attendanceDao;
     private MyTeamRepository myTeamRepository;
+    private BottomNavigationView bottomNavigationView;
 
 
     public static void start(Context context) {
         Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
         context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
     }
 
     private ArrayList<AttedanceResponse> getAcessedAttedance() {
         String teamID = new TeamDao().getOneTeamIdForDemo();
         return attendanceDao.getAttendanceSheetForTeam(teamID);
     }
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,12 +63,12 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         setuptoolbar();
         ArrayList<AttedanceResponse> attedanceResponseArrayList = getAcessedAttedance();
         myTeamRepository = new MyTeamRepository();
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
 
         List<AttedanceResponse> todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
         if (todaysAttedanceSheet != null && (todaysAttedanceSheet.size() == 1 || todaysAttedanceSheet.size() > 0)) {
             //not implemented
-
         } else {
             attedanceResponseArrayList.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
         }
@@ -72,7 +78,6 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
 
         final int scrollPostion = attedanceResponseArrayList.size();
         viewPager.setCurrentItem(scrollPostion, true);
-
 
     }
 
@@ -103,7 +108,25 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.veiw_pager);
         tabLayout = findViewById(R.id.tab_layout);
         toolbar = findViewById(R.id.toolbar_general);
+        bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
 
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_staff:
+                NewStaffActivity.start(this);
+                break;
+
+            case R.id.action_attedance:
+                WeeklyAttendanceVPActivity.start(this);
+                break;
+
+
+        }
+        return true;
     }
 
     public class YoFragmentPagerAdapter extends FragmentPagerAdapter {

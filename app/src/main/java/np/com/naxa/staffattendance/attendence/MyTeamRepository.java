@@ -44,6 +44,7 @@ public class MyTeamRepository {
                 .flatMap(new Func1<ArrayList<AttedanceResponse>, Observable<?>>() {
                     @Override
                     public Observable<?> call(ArrayList<AttedanceResponse> attedanceResponses) {
+
                         return attendanceDao.saveAttendance(attedanceResponses);
                     }
                 });

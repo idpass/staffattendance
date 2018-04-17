@@ -42,8 +42,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         if (TokenMananger.doesTokenExist()) {
-            startActivity(new Intent(LoginActivity.this, NewStaffActivity.class));
-//            startActivity(new Intent(LoginActivity.this, WeeklyAttendanceVPActivity.class));
+            WeeklyAttendanceVPActivity.start(this);
             finish();
         }
 
@@ -103,8 +102,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCompleted() {
                 dialog.dismiss();
-//                WeeklyAttendanceVPActivity.start(LoginActivity.this);
-                NewStaffActivity.start(LoginActivity.this);
+                WeeklyAttendanceVPActivity.start(LoginActivity.this);
+
             }
 
             @Override

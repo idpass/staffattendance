@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.newstaff;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -56,6 +57,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     public static void start(Context context) {
         Intent intent = new Intent(context, NewStaffActivity.class);
         context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(0, 0);
     }
 
     @Override
@@ -378,6 +380,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
+
 
 
 }

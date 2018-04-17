@@ -3,6 +3,7 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +47,8 @@ public class AttendanceDao {
             for (AttedanceResponse staff : attedanceResponses) {
 
                 ContentValues values = getContentValuesForAttedance(staff);
-                saveAttedance(db, values);
+                long i = saveAttedance(db, values);
+                Log.i("Arun","i"+i);
             }
 
             db.setTransactionSuccessful();

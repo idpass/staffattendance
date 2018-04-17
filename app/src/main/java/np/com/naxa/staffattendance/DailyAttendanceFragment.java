@@ -96,14 +96,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
                         attedanceDao.saveAttedance(contentValues);
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                WeeklyAttendanceVPActivity.start(getActivity(),true);
-                            }
-                        }, 2000);
+                        WeeklyAttendanceVPActivity.start(getActivity(),true);
 
-                        // myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
+                         myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
                     }
                 }).setNegativeButton("Dismiss", null).show();
     }

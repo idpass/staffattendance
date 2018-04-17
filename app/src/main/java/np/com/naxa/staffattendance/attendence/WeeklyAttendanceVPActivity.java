@@ -43,10 +43,15 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     private BottomNavigationView bottomNavigationView;
 
 
+    public static void start(Context context, boolean disableTransition) {
+        Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
+        context.startActivity(intent);
+        if (disableTransition) ((Activity) context).overridePendingTransition(0, 0);
+    }
+
     public static void start(Context context) {
         Intent intent = new Intent(context, WeeklyAttendanceVPActivity.class);
         context.startActivity(intent);
-        ((Activity) context).overridePendingTransition(0, 0);
     }
 
     private ArrayList<AttedanceResponse> getAcessedAttedance() {
@@ -117,11 +122,12 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_staff:
-                NewStaffActivity.start(this);
+                NewStaffActivity.start(this, false);
+                finish();
                 break;
 
             case R.id.action_attedance:
-                WeeklyAttendanceVPActivity.start(this);
+
                 break;
 
 

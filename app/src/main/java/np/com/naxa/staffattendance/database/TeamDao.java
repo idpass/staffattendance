@@ -12,6 +12,22 @@ public class TeamDao {
         return db.query(true, TABLE_NAME, null, selection, selectionArgs, null, null, null, null);
     }
 
+
+    public Cursor getCursor(String selection, String[] selectionArgs) {
+        return getCursor(false, selection, selectionArgs);
+    }
+
+    public String getTeamNameById(String id) {
+        String teamName = "";
+        Cursor cursor = getCursor(DatabaseHelper.TABLE_STAFF + "=?", new String[]{id});
+        if (cursor.getCount() > 0) {
+            cursor.moveToNext();
+            teamName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_NAME);
+        }
+
+        return teamName;
+    }
+
     public String getOneTeamIdForDemo() {
         SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
         Cursor cursor = null;

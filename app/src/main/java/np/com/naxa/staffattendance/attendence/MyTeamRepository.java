@@ -8,7 +8,6 @@ import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -48,7 +47,6 @@ public class MyTeamRepository {
                         return attendanceDao.saveAttendance(attedanceResponses);
                     }
                 });
-
 
 
     }
@@ -98,37 +96,26 @@ public class MyTeamRepository {
 
     }
 
-    public void uploadAttendance(final String teamId, final String date, final ArrayList<TeamMemberResposne> stafflist) {
+    public Observable<Object> uploadAttendance(final String teamId, final String date, final ArrayList<TeamMemberResposne> stafflist) {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
 
-        staffDao.getStaffIdFromObject(stafflist)
+        return staffDao.getStaffIdFromObject(stafflist)
                 .flatMap(new Func1<List<String>, Observable<AttedanceResponse>>() {
                     @Override
                     public Observable<AttedanceResponse> call(List<String> stafflist) {
                         return apiInterface.postAttendanceForTeam(teamId, date, stafflist);
                     }
-                })
-                .subscribe(new Observer<AttedanceResponse>() {
+                }).flatMap(new Func1<AttedanceResponse, Observable<?>>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        ToastUtils.showLong(String.format("Failed to upload reason %s", e.getMessage()));
-                    }
-
-                    @Override
-                    public void onNext(AttedanceResponse staff) {
-                        if (staff != null) {
+                    public Observable<?> call(AttedanceResponse attedanceResponse) {
+                        if (attedanceResponse != null) {
                             ArrayList<AttedanceResponse> list = new ArrayList<>();
-                            list.add(staff);
+                            list.add(attedanceResponse);
                             attendanceDao.saveAttendance(list);
                         }
+                        return null;
                     }
                 });
-
     }
 
     public Subscription fetchPastAttendance(String teamID) {

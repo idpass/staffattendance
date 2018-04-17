@@ -28,6 +28,8 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
+import rx.Observer;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
 
@@ -47,6 +49,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public void setAttedanceIds(List<String> attedanceIds) {
         this.attedanceIds = attedanceIds;
 
+        Log.i("PUBG", attedanceIds.size() + "");
+
         if (attedanceIds.isEmpty()) {
             enablePersonSelection = true;
         }
@@ -62,7 +66,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         bindUI(rootView);
         setupRecyclerView();
 
-        fabUploadAttedance.setEnabled(enablePersonSelection);
+
+        fabUploadAttedance.setEnabled(true);
         fabUploadAttedance.hide();
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,9 +101,25 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
                         attedanceDao.saveAttedance(contentValues);
 
-                        WeeklyAttendanceVPActivity.start(getActivity(),true);
+                        myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist)
+                                .subscribe(new Observer<Object>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        WeeklyAttendanceVPActivity.start(getActivity());
+                                    }
 
-                         myTeamRepository.uploadAttendance(teamId, DateConvertor.getCurrentDate(), stafflist);
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        ToastUtils.showShort(e.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onNext(Object o) {
+
+                                    }
+                                });
+
+
                     }
                 }).setNegativeButton("Dismiss", null).show();
     }

@@ -1,62 +1,63 @@
 package np.com.naxa.staffattendance;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.pojo.BankPojo;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
-import rx.Subscriber;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class FormCall {
 
-    public void getDesignation(final DesignationListener listener) {
+    public Observable<List<String>> getDesignation() {
         ApiInterface apiService = APIClient.getUploadClient().create(ApiInterface.class);
-        apiService.getDesignation()
+        return apiService.getDesignation()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<ArrayList<String>>>() {
+                .flatMapIterable(new Func1<ArrayList<ArrayList<String>>, Iterable<ArrayList<String>>>() {
                     @Override
-                    public void onCompleted() {
-
+                    public Iterable<ArrayList<String>> call(ArrayList<ArrayList<String>> arrayLists) {
+                        return arrayLists;
                     }
-
+                })
+                .flatMapIterable(new Func1<ArrayList<String>, Iterable<String>>() {
                     @Override
-                    public void onError(Throwable e) {
-
+                    public Iterable<String> call(ArrayList<String> strings) {
+                        return strings;
                     }
-
+                }).filter(new Func1<String, Boolean>() {
                     @Override
-                    public void onNext(ArrayList<ArrayList<String>> arrayLists) {
-                        listener.designation(arrayLists);
+                    public Boolean call(String s) {
+                        return !TextUtils.isDigitsOnly(s);
                     }
-                });
-
+                })
+                .toList();
     }
 
-    public void getBankList(final BankListListener listener) {
+    public Observable<List<String>> getBankList(  ) {
         ApiInterface apiService = APIClient.getUploadClient().create(ApiInterface.class);
-        apiService.getBankist()
+        return apiService.getBankist()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<BankPojo>>() {
+                .flatMapIterable(new Func1<ArrayList<BankPojo>, Iterable<BankPojo>>() {
                     @Override
-                    public void onCompleted() {
-
+                    public Iterable<BankPojo> call(ArrayList<BankPojo> bankPojos) {
+                        return bankPojos;
                     }
-
+                })
+                .flatMap(new Func1<BankPojo, Observable<String>>() {
                     @Override
-                    public void onError(Throwable e) {
-
+                    public Observable<String> call(BankPojo bankPojo) {
+                        return Observable.just(bankPojo.getName());
                     }
+                }).toList();
 
-                    @Override
-                    public void onNext(ArrayList<BankPojo> arrayLists) {
-                                              listener.bankList(arrayLists);
-                    }
-                });
     }
 
 

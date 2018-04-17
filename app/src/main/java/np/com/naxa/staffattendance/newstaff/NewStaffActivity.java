@@ -48,6 +48,7 @@ import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
+import rx.Observer;
 
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -92,29 +93,49 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void spinnerValues() {
+        FormCall formCall = new FormCall();
+
         if (designationList.isEmpty()) {
             designationList.add(getResources().getString(R.string.default_option));
-            new FormCall().getDesignation(new FormCall.DesignationListener() {
-                @Override
-                public void designation(ArrayList<ArrayList<String>> arrayLists) {
-                    for (ArrayList<String> list : arrayLists) {
-                        designationList.add(list.get(1));
-                    }
-                }
-            });
+            formCall.getDesignation()
+                    .subscribe(new Observer<List<String>>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(List<String> strings) {
+                            designationList.addAll(strings);
+                        }
+                    });
         }
 
         if (bankList.isEmpty()) {
             bankList.add(getResources().getString(R.string.default_option));
-            new FormCall().getBankList(new FormCall.BankListListener() {
+            formCall.getBankList().subscribe(new Observer<List<String>>() {
                 @Override
-                public void bankList(ArrayList<BankPojo> arrayLists) {
-                    for (BankPojo list : arrayLists) {
-                        bankList.add(list.getName());
-                    }
+                public void onCompleted() {
+                    bankList.add(getString(R.string.bank_other));
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(List<String> strings) {
+                    bankList.addAll(strings);
                 }
             });
-            bankList.add(getString(R.string.bank_other));
+
+
         }
 
 

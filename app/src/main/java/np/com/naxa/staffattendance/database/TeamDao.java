@@ -19,7 +19,7 @@ public class TeamDao {
 
     public String getTeamNameById(String id) {
         String teamName = "";
-        Cursor cursor = getCursor(DatabaseHelper.TABLE_STAFF + "=?", new String[]{id});
+        Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=?", new String[]{id});
         if (cursor.getCount() > 0) {
             cursor.moveToNext();
             teamName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_NAME);

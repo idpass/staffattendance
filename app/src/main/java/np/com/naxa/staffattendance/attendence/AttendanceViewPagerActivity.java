@@ -92,8 +92,35 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 LoginActivity.start(AttendanceViewPagerActivity.this);
                 finish();
                 break;
+            case R.id.main_menu_refresh:
+                refreshTeam();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshTeam() {
+        showPleaseWaitDialog();
+        repository.fetchMyTeam().subscribe(new Observer<Object>() {
+            @Override
+            public void onCompleted() {
+                AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this,true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                closePleaseWaitDialog();
+                DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
+                        "Failed to refresh Reason " + e.getMessage())
+                        .show();
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
     }
 
     @Override

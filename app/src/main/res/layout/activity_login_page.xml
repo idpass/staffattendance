@@ -1,76 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+
+
+<ScrollView android:background="@color/white"
+    android:layout_below="@id/toolbar"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true"
-    android:gravity="center_vertical">
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <ScrollView
+    <LinearLayout
+        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar">
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/spacing_large"
+        android:paddingRight="@dimen/spacing_large"
+        android:paddingTop="@dimen/spacing_large">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_gravity="center_horizontal"
+            android:layout_height="72dp"
+            android:layout_marginBottom="@dimen/spacing_xlarge"
+            android:layout_width="wrap_content"
+            android:src="@mipmap/ic_launcher" />
+
+        <android.support.design.widget.TextInputLayout
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/spacing_xlarge"
-            android:paddingRight="@dimen/spacing_xlarge"
-            android:paddingTop="@dimen/spacing_xlarge">
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="72dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/spacing_xlarge"
-                android:src="@mipmap/ic_launcher" />
-
-            <android.support.design.widget.TextInputLayout
+            <EditText
+                android:hint="Email"
+                android:id="@+id/tv_email"
+                android:inputType="textEmailAddress"
+                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:textSize="@dimen/material_text_title" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent">
+
+            <EditText
+                android:hint="Password"
+                android:id="@+id/tv_password"
+                android:inputType="textPassword"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
-
-                <EditText
-                    android:id="@+id/tv_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:textSize="@dimen/material_text_title" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:textSize="@dimen/material_text_title" />
+        </android.support.design.widget.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/tv_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Password"
-                    android:inputType="textPassword"
-                    android:textSize="@dimen/material_text_title" />
-            </android.support.design.widget.TextInputLayout>
+        <android.support.v7.widget.AppCompatButton
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:id="@+id/btn_login"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xxlarge"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_width="fill_parent"
+            android:padding="12dp"
+            android:text="Login"
+            android:textSize="@dimen/material_text_button" />
 
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/btn_login"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_xxlarge"
-                android:layout_marginTop="@dimen/spacing_large"
-                android:padding="12dp"
-                android:text="Login"
-                android:textSize="@dimen/material_text_button" />
-
-        </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+    </LinearLayout>
+</ScrollView>

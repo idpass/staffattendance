@@ -49,12 +49,17 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         attedanceToUpload = new ArrayList<>();
     }
 
-    public void setAttendanceIds(List<String> attendanceIds) {
+    public void setAttendanceIds(List<String> attendanceIds, String attendanceDate) {
         this.attedanceIds = attendanceIds;
-        if (attendanceIds == null || attendanceIds.isEmpty()) {
+
+
+        boolean isAttedanceEmpty = (attendanceDate == null) || attendanceDate.isEmpty();
+        boolean isAttedanceDateToday = DateConvertor.getCurrentDate().equalsIgnoreCase(attendanceDate);
+        if (isAttedanceEmpty || isAttedanceDateToday) {
             enablePersonSelection = true;
         }
     }
+
 
     @Nullable
     @Override

@@ -11,6 +11,7 @@ import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
+import timber.log.Timber;
 
 
 public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
@@ -22,7 +23,6 @@ public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
     private final String TAG = this.getClass().getSimpleName();
 
 
-
     AttendanceViewPagerAdapter(FragmentManager fm) {
         super(fm);
         attendanceDao = new AttendanceDao();
@@ -32,11 +32,11 @@ public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        DailyAttendanceFragment fragment = null;
-        String formattedDate = DateConvertor.formatDate(getDateForPosition(position));
-        AttedanceResponse dailyAttendance = attendanceDao.getAttedanceByDate(teamId, formattedDate);
-        fragment = new DailyAttendanceFragment();
-        fragment.setAttendanceIds(dailyAttendance.getPresentStaffIds());
+        DailyAttendanceFragment fragment = new DailyAttendanceFragment();
+        String todaysFormattedDate = DateConvertor.formatDate(getDateForPosition(position));
+        AttedanceResponse dailyAttendance = attendanceDao.getAttedanceByDate(teamId, todaysFormattedDate);
+        fragment.setAttendanceIds(dailyAttendance.getPresentStaffIds(), todaysFormattedDate);
+
         return fragment;
     }
 
@@ -50,7 +50,7 @@ public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
         Date date = getDateForPosition(position);
         String formattedDate;
 
-        boolean isToday =  DateConvertor.formatDate(date).equals(DateConvertor.formatDate(new Date()));
+        boolean isToday = DateConvertor.formatDate(date).equals(DateConvertor.formatDate(new Date()));
 
         if (isToday) {
             formattedDate = "Today";

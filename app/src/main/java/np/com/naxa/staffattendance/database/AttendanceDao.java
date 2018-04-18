@@ -95,6 +95,7 @@ public class AttendanceDao {
     public AttedanceResponse getSingleAttedanceFromCusor(Cursor cursor) {
         ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
         if (list != null && list.size() == 1) {
+
             return list.get(0);
         }
 

@@ -27,8 +27,9 @@ public class LoginCall {
                     listener.onSuccess();
 
                 } else {
+                    listener.onError();
                     Log.d(TAG, "onResponse: " + " null response");
-                    ToastUtils.showShort("Login failed!!");
+
                 }
             }
 

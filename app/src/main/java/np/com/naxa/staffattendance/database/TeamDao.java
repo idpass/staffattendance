@@ -20,13 +20,13 @@ public class TeamDao {
 
     public String getTeamNameById(String id) {
         String teamName = "";
-        Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=", new String[]{id});
-        Log.i("Shree", "Cursor length: " + cursor.getCount());
+        Cursor cursor = null;
+        cursor = DatabaseHelper.getDatabaseHelper().getWritableDatabase()
+                .query(true, TABLE_NAME, null, null, null, null, null, null, null);
         if (cursor.getCount() > 0) {
             cursor.moveToNext();
             teamName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_NAME);
         }
-        Log.i("Shree", "Team name: " + teamName);
         return teamName;
     }
 

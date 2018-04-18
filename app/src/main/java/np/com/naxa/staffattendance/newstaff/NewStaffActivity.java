@@ -262,7 +262,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
-                            AttendanceViewPagerActivity.start(NewStaffActivity.this,false);
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this, false);
                             finish();
                         }
 
@@ -270,7 +270,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         public void onSuccess() {
                             progressDialog.dismiss();
 
-                            AttendanceViewPagerActivity.start(NewStaffActivity.this,false);
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this, false);
                             finish();
                         }
                     });
@@ -293,7 +293,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private boolean validate() {
-        boolean validtion = false;
+        boolean validation = false;
 
         if (designation.getSelectedItem().equals(getResources().getString(R.string.default_option))) {
             ToastUtils.showShort("Select a designation");
@@ -307,20 +307,13 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             ToastUtils.showShort("Select gender");
         } else if (ethinicity.getEditText().getText().toString().isEmpty()) {
             ToastUtils.showShort("Enter ethnicity");
-        }
-//        else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
-//            ToastUtils.showShort("Select Bank");
-//        }
-//        else if (bankNameOther.getVisibility() == View.VISIBLE) {
-//            if (bankNameOther.getText().toString().isEmpty()) {
-//                ToastUtils.showShort("Enter other bank name");
-//            }
-//        } else if (accountNumber.getVisibility() == View.VISIBLE) {
-//            if (accountNumber.getEditText().getText().toString().isEmpty()) {
-//                ToastUtils.showShort("Enter account number");
-//            }
-//        }
-        else if (contactNumber.getEditText().getText().toString().isEmpty()) {
+        } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
+            ToastUtils.showShort("Choose a option");
+        } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
+            ToastUtils.showShort("Enter bank name");
+        } else if (!bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
+            ToastUtils.showShort("Enter account number");
+        } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
             ToastUtils.showShort("Enter contact number");
         } else if (email.getEditText().getText().toString().isEmpty()) {
             ToastUtils.showShort("Enter email");
@@ -333,9 +326,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         } else if (contractEndDate.getText().toString().isEmpty()) {
             ToastUtils.showShort("Choose contract end date");
         } else {
-            validtion = true;
+            validation = true;
         }
-        return validtion;
+        return validation;
     }
 
     private void getDatePicker(final EditText view) {

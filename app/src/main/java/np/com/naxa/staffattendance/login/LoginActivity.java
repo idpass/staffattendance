@@ -1,29 +1,19 @@
 package np.com.naxa.staffattendance.login;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
-import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.data.APIClient;
-import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
-import retrofit2.Call;
-import retrofit2.Response;
 import rx.Observer;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {

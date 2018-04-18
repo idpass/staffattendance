@@ -53,10 +53,16 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         this.attedanceIds = attendanceIds;
 
 
-        boolean isAttedanceEmpty = (attendanceDate == null) || attendanceDate.isEmpty();
+        boolean isAttedanceEmpty = (attendanceIds == null) || attendanceIds.isEmpty();
         boolean isAttedanceDateToday = DateConvertor.getCurrentDate().equalsIgnoreCase(attendanceDate);
-        if (isAttedanceEmpty || isAttedanceDateToday) {
+        if (isAttedanceEmpty && isAttedanceDateToday) {
             enablePersonSelection = true;
+        }
+
+        boolean isAttendenceNotEmpty = !isAttedanceEmpty;
+
+        if (isAttedanceDateToday && isAttendenceNotEmpty) {
+            enablePersonSelection = false;
         }
     }
 

@@ -60,7 +60,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final TeamMemberResposne staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
         setupPreviousAttendance(attedanceIds, staff.getId(), staffVH);
@@ -76,6 +76,14 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             @Override
             public void onClick(View view) {
                 listener.onStaffClick(staffVH.getAdapterPosition(), staff);
+            }
+        });
+
+        staffVH.rootLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                listener.onStaffLongClick(position);
+                return true;
             }
         });
     }
@@ -103,6 +111,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (selectedItems.get(pos, false)) {
             selectedItems.delete(pos);
             animationItemsIndex.delete(pos);
+
             if (selectedStaffHashMap.containsKey(pos)) {
                 selectedStaffHashMap.remove(pos);
             }

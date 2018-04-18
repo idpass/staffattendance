@@ -28,6 +28,8 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
+import timber.log.Timber;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
 
@@ -39,10 +41,12 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private List<String> attedanceIds;
     private MyTeamRepository myTeamRepository;
     private boolean enablePersonSelection = false;
+    private List<String> attedanceToUpload;
 
 
     public DailyAttendanceFragment() {
         myTeamRepository = new MyTeamRepository();
+        attedanceToUpload = new ArrayList<>();
     }
 
     public void setAttendanceIds(List<String> attendanceIds) {
@@ -59,6 +63,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         teamDao = new TeamDao();
         staffDao = new StaffDao();
 
+
         bindUI(rootView);
         setupRecyclerView();
 
@@ -67,11 +72,10 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //showMarkPresentDialog();
-                ArrayList<String> stafflist = stafflistAdapter.getSelectedStaffIds();
-
+                showMarkPresentDialog();
             }
         });
+
 
         return rootView;
     }
@@ -81,7 +85,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.main_menu_upload_attedance:
-
 
                 break;
         }
@@ -136,14 +139,23 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
     private void bindUI(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_staff_list);
-        fabUploadAttedance = getActivity().findViewById(R.id.fab_attedance);
+        fabUploadAttedance = view.findViewById(R.id.fab_attedance);
     }
 
     @Override
     public void onStaffClick(int pos, TeamMemberResposne staff) {
         stafflistAdapter.toggleSelection(pos);
-        ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
 
+        if (attedanceToUpload.contains(staff.getId())) {
+            Timber.i("Removing staff id %s", staff.getId());
+            attedanceToUpload.remove(staff.getId());
+        } else {
+            Timber.i("Adding staff id %s", staff.getId());
+            attedanceToUpload.add(staff.getId());
+        }
+
+
+        Timber.i("Current array is %s", attedanceToUpload.toString());
         if (stafflistAdapter.getSelected().size() > 0) {
             fabUploadAttedance.show();
         } else {
@@ -153,6 +165,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
     @Override
     public void onStaffLongClick(int pos) {
-
+        Timber.i("Saving staffIds %s", attedanceToUpload.toString());
     }
 }

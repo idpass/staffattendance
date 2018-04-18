@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class TeamDao {
 
@@ -19,12 +20,13 @@ public class TeamDao {
 
     public String getTeamNameById(String id) {
         String teamName = "";
-        Cursor cursor = getCursor(DatabaseHelper.TABLE_STAFF + "=?", new String[]{id});
+        Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=", new String[]{id});
+        Log.i("Shree", "Cursor length: " + cursor.getCount());
         if (cursor.getCount() > 0) {
             cursor.moveToNext();
             teamName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_NAME);
         }
-
+        Log.i("Shree", "Team name: " + teamName);
         return teamName;
     }
 

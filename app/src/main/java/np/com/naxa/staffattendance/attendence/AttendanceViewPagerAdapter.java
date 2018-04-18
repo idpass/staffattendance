@@ -15,7 +15,7 @@ import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
 
-    private final int TOTAL_NO_OF_DAYS = 7;
+    public static final int TOTAL_NO_OF_DAYS = 7;
     private AttendanceDao attendanceDao;
     private TeamDao teamDao;
     private String teamId;
@@ -49,7 +49,6 @@ public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         Date date = getDateForPosition(position);
         String formattedDate;
-
 
         boolean isToday =  DateConvertor.formatDate(date).equals(DateConvertor.formatDate(new Date()));
 

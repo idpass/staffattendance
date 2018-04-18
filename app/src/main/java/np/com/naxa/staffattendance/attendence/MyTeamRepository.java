@@ -144,7 +144,8 @@ public class MyTeamRepository {
                         return null;
 
                     }
-                });
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
 
     }

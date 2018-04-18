@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance.attendence;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import android.view.MenuItem;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
+import np.com.naxa.staffattendance.utlils.DialogFactory;
+import rx.Observer;
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
 
@@ -25,6 +28,9 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     private AppBarLayout appbar;
     private ViewPager viewpager;
     private BottomNavigationView bottomNavigationView;
+    private MyTeamRepository repository;
+    private ProgressDialog dialog;
+
 
     public static void start(Context context, boolean disableTransition) {
         Intent intent = new Intent(context, AttendanceViewPagerActivity.class);
@@ -40,6 +46,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         setupViewPager();
         setupToolbar();
 
+        repository = new MyTeamRepository();
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -72,13 +79,66 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_menu_upload_attedance:
+                uploadAllFinalizedAttendance();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        closePleaseWaitDialog();
+    }
 
+    private void showPleaseWaitDialog() {
+        dialog = DialogFactory.createProgressDialogHorizontal(AttendanceViewPagerActivity.this, "Please Wait");
+        dialog.show();
+    }
+
+    private void uploadAllFinalizedAttendance() {
+        showPleaseWaitDialog();
+
+        repository.bulkAttendanceUpload()
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+                        closePleaseWaitDialog();
+                        DialogFactory.createActionDialog(AttendanceViewPagerActivity.this,
+                                "Attendance Uploaded",
+                                "All pending attendance has been uploaded")
+                                .show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        closePleaseWaitDialog();
+                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
+                                "Failed to upload Reason " + e.getMessage())
+                                .show();
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
+    }
+
+    private void closePleaseWaitDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+    }
 
     private void setupViewPager() {
         tablayout.setupWithViewPager(viewpager);
         viewpager.setAdapter(new AttendanceViewPagerAdapter(getSupportFragmentManager()));
-        viewpager.setCurrentItem(7, true);
+        viewpager.setCurrentItem(AttendanceViewPagerAdapter.TOTAL_NO_OF_DAYS, true);
     }
 
 
@@ -88,8 +148,5 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         appbar = (AppBarLayout) findViewById(R.id.appbar_general);
         viewpager = (ViewPager) findViewById(R.id.veiw_pager);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
     }
-
-
 }

@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onCompleted() {
                 dialog.dismiss();
                 AttendanceViewPagerActivity.start(LoginActivity.this, false);
-
+                finish();
             }
 
             @Override

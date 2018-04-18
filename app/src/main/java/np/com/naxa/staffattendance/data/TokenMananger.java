@@ -47,7 +47,7 @@ public class TokenMananger {
 
     public static void clearToken() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
-        sharedPreferences.edit().commit();
+        sharedPreferences.edit().clear().commit();
 
     }
 }

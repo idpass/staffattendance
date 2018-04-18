@@ -6,10 +6,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.readystatesoftware.chuck.ChuckInterceptor;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -62,9 +64,9 @@ public class APIClient {
 
         OkHttpClient.Builder okHttpClientBuidler = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
+                .addInterceptor(new ChuckInterceptor(StaffAttendance.getStaffAttendance().getApplicationContext()))
                 .connectTimeout(4, TimeUnit.MINUTES)
                 .readTimeout(4, TimeUnit.MINUTES);
-
 
 
         if (TokenMananger.doesTokenExist()) {

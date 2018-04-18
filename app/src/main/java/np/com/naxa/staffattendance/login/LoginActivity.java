@@ -1,6 +1,8 @@
 package np.com.naxa.staffattendance.login;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +14,7 @@ import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observer;
@@ -33,7 +36,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         if (TokenMananger.doesTokenExist()) {
-            AttendanceViewPagerActivity.start(this,false);
+            AttendanceViewPagerActivity.start(this, false);
             finish();
         }
 
@@ -56,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
-                dialog = new ProgressDialogUtils().getProgressDialog(this, "Signing in");
+                dialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
                 if (validate()) {
 
                     loginToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
@@ -93,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCompleted() {
                 dialog.dismiss();
-                AttendanceViewPagerActivity.start(LoginActivity.this,false);
+                AttendanceViewPagerActivity.start(LoginActivity.this, false);
 
             }
 
@@ -135,5 +138,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         return valid;
+    }
+
+    public static void start(Context attendanceViewPagerActivity) {
+        Intent intent = new Intent(attendanceViewPagerActivity, LoginActivity.class);
+        attendanceViewPagerActivity.startActivity(intent);
     }
 }

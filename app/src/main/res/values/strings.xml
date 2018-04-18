@@ -13,6 +13,7 @@
     <string name="dialog_error_title_sync_failed">Failed to sync with server (STATUS CODE : %s)</string>
     <string name="dialog_action_hide">Hide</string>
     <string name="toolbar_title_attedance">Attendance</string>
+    <string name="msg_please_wait">Please wait</string>
 
 
 </resources>

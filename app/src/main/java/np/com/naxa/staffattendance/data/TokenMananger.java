@@ -35,7 +35,7 @@ public class TokenMananger {
 
 
     public static boolean doesTokenExist() {
-        Log.i("Shree",getToken());
+
         return !TokenMananger.getToken().isEmpty();
     }
 
@@ -43,6 +43,12 @@ public class TokenMananger {
     public static void saveToken(String token) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
         sharedPreferences.edit().putString("TOKEN", token).commit();
+    }
+
+    public static void clearToken() {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StaffAttendance.getStaffAttendance());
+        sharedPreferences.edit().commit();
+
     }
 }
 

@@ -3,16 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_attedance_today"
-        android:enabled="true"
-        android:icon="@drawable/ic_today_white_24dp"
-        android:title="Today"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_attedance"
         android:enabled="true"
-        android:icon="@drawable/ic_list_white_24dp"
+        android:icon="@drawable/ic_today_white_24dp"
         android:title="Attendance History"
         app:showAsAction="ifRoom" />
     <item

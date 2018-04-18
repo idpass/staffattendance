@@ -17,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import rx.Observer;
@@ -85,6 +87,11 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
             case R.id.main_menu_upload_attedance:
                 uploadAllFinalizedAttendance();
                 break;
+            case R.id.main_menu_logout:
+                TokenMananger.clearToken();
+                LoginActivity.start(AttendanceViewPagerActivity.this);
+                finish();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -108,7 +115,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted() {
                         closePleaseWaitDialog();
-                        DialogFactory.createActionDialog(AttendanceViewPagerActivity.this,
+                        DialogFactory.createMessageDialog(AttendanceViewPagerActivity.this,
                                 "Attendance Uploaded",
                                 "All pending attendance has been uploaded")
                                 .show();

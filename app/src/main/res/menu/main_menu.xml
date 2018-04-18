@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/main_menu_refresh"
         android:icon="@android:drawable/stat_sys_download"
-        android:title="Refresh Team list"
+        android:title="Refresh"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/main_menu_upload_attedance"
         android:icon="@android:drawable/stat_sys_download"
         android:title="Upload Attedance"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/main_menu_logout"
+        android:icon="@android:drawable/stat_sys_download"
+        android:title="Logout"
         app:showAsAction="never" />
 
 </menu>

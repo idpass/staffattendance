@@ -78,7 +78,7 @@ public class AttedanceResponse {
         this.isDeleted = isDeleted;
     }
 
-    public List<String> getStaffs() {
+    public List<String> getPresentStaffIds() {
         return staffs;
     }
 

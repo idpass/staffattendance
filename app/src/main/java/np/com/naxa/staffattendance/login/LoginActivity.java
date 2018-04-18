@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.FormCall;
+import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.data.APIClient;
@@ -42,7 +43,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         if (TokenMananger.doesTokenExist()) {
-            WeeklyAttendanceVPActivity.start(this,false);
+            AttendanceViewPagerActivity.start(this,false);
             finish();
         }
 
@@ -102,7 +103,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCompleted() {
                 dialog.dismiss();
-                WeeklyAttendanceVPActivity.start(LoginActivity.this,false);
+                AttendanceViewPagerActivity.start(LoginActivity.this,false);
 
             }
 

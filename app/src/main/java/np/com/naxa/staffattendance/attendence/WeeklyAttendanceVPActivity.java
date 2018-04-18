@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -16,23 +15,18 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
-import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observer;
 
 
@@ -71,8 +65,8 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
 
-        List<AttedanceResponse> todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
-        if (todaysAttedanceSheet != null && (todaysAttedanceSheet.size() == 1 || todaysAttedanceSheet.size() > 0)) {
+        AttedanceResponse todaysAttedanceSheet = attendanceDao.getTodaysAddedance("");
+        if (todaysAttedanceSheet != null) {
             //not implemented
         } else {
             attedanceResponseArrayList.add(new AttedanceResponse(DateConvertor.getCurrentDate(), new ArrayList<String>()));
@@ -106,7 +100,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
 
                     @Override
                     public void onError(Throwable e) {
-                        DialogFactory.createGenericErrorDialog(WeeklyAttendanceVPActivity.this,e.getMessage()).show();
+                        DialogFactory.createGenericErrorDialog(WeeklyAttendanceVPActivity.this, e.getMessage()).show();
                         e.printStackTrace();
                     }
 
@@ -189,7 +183,7 @@ public class WeeklyAttendanceVPActivity extends AppCompatActivity implements Bot
 
 
             fragment = new DailyAttendanceFragment();
-            fragment.setAttedanceIds(attedance.getStaffs());
+            fragment.setAttendanceIds(attedance.getPresentStaffIds());
 
 
             return fragment;

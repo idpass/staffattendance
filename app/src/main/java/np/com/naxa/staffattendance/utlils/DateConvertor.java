@@ -11,8 +11,11 @@ public class DateConvertor {
 
     public static String getCurrentDate() {
         Date cDate = new Date();
+        return formatDate(cDate);
+    }
 
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(cDate);
+    public static String formatDate(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(date);
     }
 
     public static Date stringToDate(String dateString) {
@@ -28,11 +31,21 @@ public class DateConvertor {
     }
 
 
-    public void getFutureDate(Date currentDate, int days) {
+    public static void getFutureDate(Date currentDate, int days) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentDate);
         cal.add(Calendar.DATE, days);
 
         Date futureDate = cal.getTime();
+    }
+
+
+    public static Date getPastDate(int days) {
+        Date currentDate = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentDate);
+        cal.add(Calendar.DATE, days);
+        Date pastDate = cal.getTime();
+        return pastDate;
     }
 }

@@ -13,7 +13,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,15 +33,12 @@ import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
-
+import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
-
-import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
-import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -266,7 +262,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
-                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this,false);
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this,false);
                             finish();
                         }
 
@@ -274,7 +270,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         public void onSuccess() {
                             progressDialog.dismiss();
 
-                            WeeklyAttendanceVPActivity.start(NewStaffActivity.this,false);
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this,false);
                             finish();
                         }
                     });
@@ -437,7 +433,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        WeeklyAttendanceVPActivity.start(this, false);
+        AttendanceViewPagerActivity.start(this, false);
         finish();
     }
 
@@ -449,7 +445,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.action_attedance:
-                WeeklyAttendanceVPActivity.start(this, false);
+                AttendanceViewPagerActivity.start(this, false);
                 finish();
                 break;
 

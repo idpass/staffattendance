@@ -1,7 +1,6 @@
 package np.com.naxa.staffattendance;
 
 
-import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import np.com.naxa.staffattendance.attendence.AttedanceResponse;
+import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.WeeklyAttendanceVPActivity;
@@ -30,8 +30,6 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
-import rx.Observer;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
 
@@ -49,11 +47,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         myTeamRepository = new MyTeamRepository();
     }
 
-    public void setAttedanceIds(List<String> attedanceIds) {
-        this.attedanceIds = attedanceIds;
-
-
-        if (attedanceIds.isEmpty()) {
+    public void setAttendanceIds(List<String> attendanceIds) {
+        this.attedanceIds = attendanceIds;
+        if (attendanceIds == null || attendanceIds.isEmpty()) {
             enablePersonSelection = true;
         }
     }
@@ -69,12 +65,12 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         setupRecyclerView();
 
         setHasOptionsMenu(true);
-        fabUploadAttedance.setEnabled(true);
         fabUploadAttedance.hide();
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showMarkPresentDialog();
+                //showMarkPresentDialog();
+                ArrayList<String> stafflist = stafflistAdapter.getSelectedStaffIds();
 
             }
         });
@@ -117,7 +113,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                WeeklyAttendanceVPActivity.start(getActivity(), true);
+                                AttendanceViewPagerActivity.start(getActivity(), true);
                             }
                         }, 1000);
 
@@ -146,13 +142,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     }
 
     @Override
-    public void onStaffClick(int pos) {
+    public void onStaffClick(int pos, TeamMemberResposne staff) {
         stafflistAdapter.toggleSelection(pos);
         ArrayList<TeamMemberResposne> stafflist = stafflistAdapter.getSelected();
-        if ((stafflist.size() - 1) != 0){
-            Log.i("Nishon", "Total staff selected " + stafflist.get(stafflist.size() - 1).getFirstName() + "");
-
-        }
 
         if (stafflistAdapter.getSelected().size() > 0) {
             fabUploadAttedance.show();

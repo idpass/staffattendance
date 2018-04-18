@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
@@ -33,7 +34,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // dirty fix, find a better solution
     private static int currentSelectedIndex = -1;
     private boolean enablePersonSelection;
-
+    private HashMap<Integer, String> selectedStaffHashMap = new HashMap<>();
 
 
     StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
@@ -45,6 +46,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         selectedItems = new SparseBooleanArray();
         animationItemsIndex = new SparseBooleanArray();
         this.enablePersonSelection = enablePersonSelection;
+
     }
 
 
@@ -59,9 +61,9 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        TeamMemberResposne staff = staffList.get(position);
+        final TeamMemberResposne staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
-        setupPreviousAttedance(attedanceIds, staff.getId(), staffVH);
+        setupPreviousAttendance(attedanceIds, staff.getId(), staffVH);
 
         staffVH.rootLayout.setEnabled(enablePersonSelection);
         staffVH.staffName.setText(staff.getFirstName());
@@ -73,12 +75,12 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         staffVH.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onStaffClick(holder.getAdapterPosition());
+                listener.onStaffClick(staffVH.getAdapterPosition(), staff);
             }
         });
     }
 
-    private void setupPreviousAttedance(List<String> attedanceIds, String staffId, StaffVH staffVH) {
+    private void setupPreviousAttendance(List<String> attedanceIds, String staffId, StaffVH staffVH) {
         boolean isPresentOnThisDay = contains(attedanceIds, staffId);
 
         if (isPresentOnThisDay) {
@@ -101,14 +103,29 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (selectedItems.get(pos, false)) {
             selectedItems.delete(pos);
             animationItemsIndex.delete(pos);
+            if (selectedStaffHashMap.containsKey(pos)) {
+                selectedStaffHashMap.remove(pos);
+            }
+
         } else {
             selectedItems.put(pos, true);
             animationItemsIndex.put(pos, true);
+            selectedStaffHashMap.put(pos, staffList.get(pos).getId());
         }
 
         notifyItemChanged(pos);
     }
 
+
+    public ArrayList<String> getSelectedStaffIds() {
+        ArrayList<String> staffIds = new ArrayList<>();
+
+        for (Map.Entry<Integer, String> entry : selectedStaffHashMap.entrySet()) {
+            staffIds.add(entry.getValue());
+        }
+
+        return staffIds;
+    }
 
     private void applyAnimToTodayAttedanceItems(StaffVH holder, int position) {
         applyIconAnimation(holder, position, true);
@@ -121,7 +138,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private void applyIconAnimation(StaffVH holder, int position, boolean shouldHightlight) {
         if (selectedItems.get(position, false)) {
 
-            int colorGreen = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.green);
+            int colorGreen = ContextCompat.getColor(holder.rootLayout.getContext(), R.color.green);
             holder.staffStatus.setTextColor(colorGreen);
 
             holder.rootLayout.setActivated(shouldHightlight);
@@ -137,7 +154,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 resetCurrentIndex();
             }
         } else {
-            int colorRed = ContextCompat.getColor(holder.rootLayout.getContext(),R.color.red);
+            int colorRed = ContextCompat.getColor(holder.rootLayout.getContext(), R.color.red);
             holder.staffStatus.setTextColor(colorRed);
 
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_absent));
@@ -181,6 +198,14 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return items;
     }
 
+    public List<Integer> getSelectedItems() {
+        List<Integer> items = new ArrayList<>(selectedItems.size());
+        for (int i = 0; i < selectedItems.size(); i++) {
+            items.add(selectedItems.keyAt(i));
+        }
+        return items;
+    }
+
     public ArrayList<String> getSelectedStaffID() {
         ArrayList<String> items = new ArrayList<>(selectedItems.size());
         for (int i = 0; i < selectedItems.size(); i++) {
@@ -217,7 +242,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public interface OnStaffItemClickListener {
-        void onStaffClick(int pos);
+        void onStaffClick(int pos, TeamMemberResposne staff);
 
         void onStaffLongClick(int pos);
     }

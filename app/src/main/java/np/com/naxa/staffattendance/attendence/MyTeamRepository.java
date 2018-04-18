@@ -132,7 +132,7 @@ public class MyTeamRepository {
                     @Override
                     public Observable<AttedanceResponse> call(AttedanceResponse attedanceResponse) {
 
-                        return apiInterface.postAttendanceForTeam(teamId, attedanceResponse.getAttendanceDate(false), attedanceResponse.getStaffs());
+                        return apiInterface.postAttendanceForTeam(teamId, attedanceResponse.getAttendanceDate(false), attedanceResponse.getPresentStaffIds());
                     }
                 })
                 .flatMap(new Func1<AttedanceResponse, Observable<?>>() {

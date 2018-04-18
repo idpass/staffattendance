@@ -27,6 +27,9 @@
             android:exported="true" />
 
         <activity android:name=".newstaff.NewStaffActivity" />
+        <activity
+            android:exported="true"
+            android:name=".attendence.AttendanceViewPagerActivity" />
 
     </application>
 

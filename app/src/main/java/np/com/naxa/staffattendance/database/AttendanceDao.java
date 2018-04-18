@@ -3,7 +3,6 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +58,7 @@ public class AttendanceDao {
 
         contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, date);
         contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, attedance.getDataSyncStatus());
-        contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, attedance.getStaffs().toString());
+        contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, attedance.getPresentStaffIds().toString());
         return contentValues;
     }
 
@@ -93,6 +92,15 @@ public class AttendanceDao {
     }
 
 
+    public AttedanceResponse getSingleAttedanceFromCusor(Cursor cursor) {
+        ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+        if (list != null && list.size() == 1) {
+            return list.get(0);
+        }
+
+        return new AttedanceResponse();
+    }
+
     public ArrayList<AttedanceResponse> getAttendanceFromCursor(Cursor cursor) {
         ArrayList<AttedanceResponse> attedanceResponses = new ArrayList<>();
 
@@ -123,13 +131,13 @@ public class AttendanceDao {
         return db.query(TABLE_NAME, null, selection, selectionArgs, null, null, null, null);
     }
 
-    public List<AttedanceResponse> getTodaysAddedance(String teamId) {
+    public AttedanceResponse getTodaysAddedance(String teamId) {
         return getAttedanceByDate(teamId, DateConvertor.getCurrentDate());
     }
 
-    public List<AttedanceResponse> getAttedanceByDate(String teamId, String date) {
+    public AttedanceResponse getAttedanceByDate(String teamId, String date) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{date});
-        return getAttendanceFromCursor(cursor);
+        return getSingleAttedanceFromCusor(cursor);
     }
 
 

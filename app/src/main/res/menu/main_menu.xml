@@ -10,7 +10,7 @@
     <item
         android:id="@+id/main_menu_upload_attedance"
         android:icon="@android:drawable/stat_sys_download"
-        android:title="Upload Attedance"
+        android:title="Upload Attendance"
         app:showAsAction="never" />
 
     <item

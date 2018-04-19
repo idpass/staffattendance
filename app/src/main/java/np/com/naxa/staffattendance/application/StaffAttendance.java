@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.application;
 
 import android.app.Application;
 
+import com.evernote.android.job.JobManager;
 import com.facebook.stetho.Stetho;
 
 import timber.log.Timber;
@@ -19,6 +20,7 @@ public class StaffAttendance extends Application {
         staffAttendance = this;
         Stetho.initializeWithDefaults(this);
         Timber.plant(new Timber.DebugTree());
+        JobManager.create(this).addJobCreator(new DataSyncJobCreator());
 
     }
 

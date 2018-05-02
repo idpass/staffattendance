@@ -40,6 +40,7 @@ import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
+import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
@@ -254,7 +255,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.staff_send:
                 if (validate()) {
-                    final ProgressDialog progressDialog = new ProgressDialogUtils().getProgressDialog(this, "Logging in...");
+                    final ProgressDialog progressDialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
                     progressDialog.show();
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     putDataInStafftable(getNewStaffDetail());
@@ -269,7 +270,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onSuccess() {
                             progressDialog.dismiss();
-
                             AttendanceViewPagerActivity.start(NewStaffActivity.this, false);
                             finish();
                         }

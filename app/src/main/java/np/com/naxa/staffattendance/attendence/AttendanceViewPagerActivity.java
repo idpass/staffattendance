@@ -26,6 +26,8 @@ import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
+import np.com.naxa.staffattendance.utlils.NetworkUtils;
+import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observer;
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
@@ -116,8 +118,13 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.main_menu_refresh:
-                uploadAllFinalizedAttendance();
-                refreshTeam();
+                if(NetworkUtils.isInternetAvailable()){
+                    uploadAllFinalizedAttendance();
+                    refreshTeam();
+                }else {
+                    ToastUtils.showLong(getString(R.string.no_internet));
+                }
+
                 break;
             case R.id.main_menu_setting:
                 SyncHistoryActivity.start(this);

@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.newstaff;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,15 +27,21 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.File;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
@@ -41,6 +50,7 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
+import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
@@ -63,6 +73,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private ArrayAdapter<String> spinnerAdapter;
     private File photoFileToUpload;
     private BottomNavigationView bottomNavigationView;
+    private Gson gson;
+    private Dialog msgDialog;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -74,6 +86,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_staff);
+        gson = new Gson();
 
         initUI();
 
@@ -92,6 +105,29 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private void spinnerValues() {
         FormCall formCall = new FormCall();
 
+        if (!NetworkUtils.isInternetAvailable()) {
+            String designations = SharedPreferenceUtils
+                    .getFromPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Designation, "");
+
+            String banks = SharedPreferenceUtils
+                    .getFromPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Bank, "");
+
+            if (TextUtils.isEmpty(designations) || TextUtils.isEmpty(banks)) {
+                msgDialog = DialogFactory
+                        .createMessageDialog(NewStaffActivity.this, "Message", "Connect to then internet and reopen form to get banks and designations");
+                msgDialog.show();
+            } else {
+                Type typeToken = new TypeToken<ArrayList<String>>() {
+                }.getType();
+
+                designationList.clear();
+                bankList.clear();
+                designationList.addAll((ArrayList<String>) gson.fromJson(designations, typeToken));
+                bankList.addAll((ArrayList<String>) gson.fromJson(banks, typeToken));
+            }
+
+        }
+
         if (designationList.isEmpty()) {
             designationList.add(getResources().getString(R.string.default_option));
             formCall.getDesignation()
@@ -109,6 +145,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onNext(List<String> strings) {
                             designationList.addAll(strings);
+                            SharedPreferenceUtils
+                                    .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Designation,
+                                            gson.toJson(designationList));
+
+
                         }
                     });
         }
@@ -119,6 +160,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onCompleted() {
                     bankList.add(getString(R.string.bank_other));
+
+                    SharedPreferenceUtils
+                            .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Bank,
+                                    gson.toJson(bankList));
                 }
 
                 @Override
@@ -136,6 +181,14 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         }
 
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (msgDialog != null && msgDialog.isShowing()) {
+            msgDialog.dismiss();
+        }
     }
 
     private void initSpinners() {

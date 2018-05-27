@@ -92,15 +92,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.main_menu_upload_attedance:
-
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private void showMarkPresentDialog() {
         String title = "Mark selected as present?";

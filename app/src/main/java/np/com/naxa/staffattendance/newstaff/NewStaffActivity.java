@@ -315,10 +315,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             ToastUtils.showShort("Enter account number");
         } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
             ToastUtils.showShort("Enter contact number");
-        } else if (email.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter email");
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.getEditText().getText().toString()).matches()) {
-            ToastUtils.showShort("Enter valid email");
         } else if (address.getEditText().getText().toString().isEmpty()) {
             ToastUtils.showShort("Enter address");
         } else if (contractStartDate.getText().toString().isEmpty()) {

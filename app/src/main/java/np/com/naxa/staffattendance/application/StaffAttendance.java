@@ -5,6 +5,7 @@ import android.app.Application;
 import com.evernote.android.job.JobManager;
 import com.facebook.stetho.Stetho;
 
+import np.com.naxa.staffattendance.jobs.DataSyncJobCreator;
 import timber.log.Timber;
 
 /**

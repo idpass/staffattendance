@@ -16,14 +16,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.evernote.android.job.JobRequest;
+
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.jobs.StaffAttendanceSyncJob;
+import np.com.naxa.staffattendance.jobs.StaffDownloadJob;
+import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import rx.Observer;
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
+
+    private static final String LAST_JOB_ID = "LAST_JOB_ID";
+    private static final String LAST_JOB_ID_STAFF_LIST = "LAST_JOB_ID_STAFF_LIST";
 
     private Toolbar toolbar;
     private TabLayout tablayout;
@@ -32,6 +40,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private MyTeamRepository repository;
     private ProgressDialog dialog;
+    private int staffAttedancelastJobId, staffListlastJobId;
 
 
     public static void start(Context context, boolean disableTransition) {
@@ -44,11 +53,20 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weekly_attendence);
+        repository = new MyTeamRepository();
+
+
         initView();
         setupViewPager();
         setupToolbar();
+        syncStaffAttendancePeriodic();
+        syncStaffListPeriodic();
 
-        repository = new MyTeamRepository();
+        if (savedInstanceState != null) {
+            staffAttedancelastJobId = savedInstanceState.getInt(LAST_JOB_ID, 0);
+            staffListlastJobId = savedInstanceState.getInt(LAST_JOB_ID_STAFF_LIST, 0);
+        }
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -82,18 +100,27 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(LAST_JOB_ID, staffAttedancelastJobId);
+        outState.putInt(LAST_JOB_ID_STAFF_LIST, staffListlastJobId);
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.main_menu_upload_attedance:
-                uploadAllFinalizedAttendance();
-                break;
             case R.id.main_menu_logout:
                 TokenMananger.clearToken();
                 LoginActivity.start(AttendanceViewPagerActivity.this);
                 finish();
                 break;
             case R.id.main_menu_refresh:
+                uploadAllFinalizedAttendance();
                 refreshTeam();
+                break;
+            case R.id.main_menu_setting:
+                SyncHistoryActivity.start(this);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -104,7 +131,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         repository.fetchMyTeam().subscribe(new Observer<Object>() {
             @Override
             public void onCompleted() {
-                AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this,true);
+                AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this, true);
             }
 
             @Override
@@ -131,7 +158,9 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     private void showPleaseWaitDialog() {
         dialog = DialogFactory.createProgressDialogHorizontal(AttendanceViewPagerActivity.this, "Please Wait");
-        dialog.show();
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
     }
 
     private void uploadAllFinalizedAttendance() {
@@ -183,4 +212,22 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         viewpager = (ViewPager) findViewById(R.id.veiw_pager);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
     }
+
+    private void syncStaffAttendancePeriodic() {
+        staffAttedancelastJobId = new JobRequest.Builder(StaffAttendanceSyncJob.TAG)
+                .setPeriodic(JobRequest.MIN_INTERVAL, JobRequest.MIN_FLEX)
+                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                .build()
+                .schedule();
+    }
+
+
+    private void syncStaffListPeriodic() {
+        staffListlastJobId = new JobRequest.Builder(StaffDownloadJob.TAG)
+                .setPeriodic(JobRequest.MIN_INTERVAL, JobRequest.MIN_FLEX)
+                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                .build()
+                .schedule();
+    }
+
 }

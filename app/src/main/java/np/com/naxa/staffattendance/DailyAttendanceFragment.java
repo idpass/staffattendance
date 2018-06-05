@@ -12,9 +12,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,6 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
 import timber.log.Timber;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
@@ -42,6 +41,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private MyTeamRepository myTeamRepository;
     private boolean enablePersonSelection = false;
     private List<String> attedanceToUpload;
+    private RelativeLayout layoutNoData;
 
 
     public DailyAttendanceFragment() {
@@ -71,6 +71,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_daily_attendence, container, false);
+
+
         teamDao = new TeamDao();
         staffDao = new StaffDao();
 
@@ -90,7 +92,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
         return rootView;
     }
-
 
 
     private void showMarkPresentDialog() {
@@ -131,10 +132,18 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
         List<TeamMemberResposne> staffs = new StaffDao().getStaffByTeamId(teamId);
 
-        stafflistAdapter = new StaffListAdapter(getActivity(), staffs, enablePersonSelection, attedanceIds, this);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(stafflistAdapter);
+        if (staffs != null && staffs.size() > 0) {
+            stafflistAdapter = new StaffListAdapter(getActivity(), staffs, enablePersonSelection, attedanceIds, this);
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(stafflistAdapter);
+
+            recyclerView.setVisibility(View.VISIBLE);
+            layoutNoData.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            layoutNoData.setVisibility(View.VISIBLE);
+        }
 
 
     }
@@ -142,6 +151,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private void bindUI(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_staff_list);
         fabUploadAttedance = view.findViewById(R.id.fab_attedance);
+        layoutNoData = view.findViewById(R.id.layout_no_data);
     }
 
     @Override

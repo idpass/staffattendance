@@ -70,7 +70,6 @@ public class AttendanceDao {
 
                 ContentValues values = getContentValuesForAttedance(staff);
                 long i = saveAttedance(db, values);
-                ;
             }
 
             db.setTransactionSuccessful();

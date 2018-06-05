@@ -122,7 +122,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
                 designationList.clear();
                 bankList.clear();
+                bankList.add(getResources().getString(R.string.default_option));
+                designationList.add(getResources().getString(R.string.default_option));
                 designationList.addAll((ArrayList<String>) gson.fromJson(designations, typeToken));
+                bankList.add(getResources().getString(R.string.default_option));
                 bankList.addAll((ArrayList<String>) gson.fromJson(banks, typeToken));
             }
 

@@ -9,11 +9,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+
+import java.util.List;
+
+import np.com.naxa.staffattendance.FormCall;
+import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -34,7 +41,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
-
+        getWindow().setBackgroundDrawableResource(R.drawable.login_background);
         if (TokenMananger.doesTokenExist()) {
             AttendanceViewPagerActivity.start(this, false);
             finish();
@@ -44,8 +51,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initUI();
 
 
-//        tvUserName.setText("nikitar@unops.org");
-//        tvPassword.setText("nikita");
+        tvUserName.setText("dheerajkc47@gmail.com");
+        tvPassword.setText("dheerajkc47");
 
     }
 
@@ -80,6 +87,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess() {
                 APIClient.removeRetrofitClient();
                 fetchMyTeam();
+                getBanksAndDesignation();
 
             }
 
@@ -91,26 +99,80 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void fetchMyTeam() {
 
-        myTeamRepository.fetchMyTeam().subscribe(new Observer<Object>() {
+    private void getBanksAndDesignation() {
+        final Gson gson = new Gson();
+        FormCall formCall = new FormCall();
+
+        formCall.getDesignation()
+                .subscribe(new Observer<List<String>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<String> designationList) {
+                        SharedPreferenceUtils
+                                .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Designation,
+                                        gson.toJson(designationList));
+
+
+                    }
+                });
+
+
+        formCall.getBankList().subscribe(new Observer<List<String>>() {
             @Override
             public void onCompleted() {
-                dialog.dismiss();
-                AttendanceViewPagerActivity.start(LoginActivity.this, false);
-                finish();
+
             }
 
             @Override
             public void onError(Throwable e) {
-                ToastUtils.showLong(e.getMessage());
+
             }
 
             @Override
-            public void onNext(Object o) {
+            public void onNext(List<String> bankList) {
+                SharedPreferenceUtils
+                        .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Bank,
+                                gson.toJson(bankList));
 
             }
         });
+    }
+
+    private void fetchMyTeam() {
+
+        myTeamRepository.fetchMyTeam()
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+                        dialog.dismiss();
+                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+
+                        dialog.dismiss();
+                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
+                        finish();
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
     }
 
     private boolean validate() {

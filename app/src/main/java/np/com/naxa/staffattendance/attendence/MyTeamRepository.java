@@ -1,8 +1,12 @@
 package np.com.naxa.staffattendance.attendence;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
@@ -31,6 +35,20 @@ public class MyTeamRepository {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
 
         return myTeamObservable()
+                .filter(new Func1<List<TeamMemberResposne>, Boolean>() {
+                    @Override
+                    public Boolean call(List<TeamMemberResposne> teamMemberResposnes) {
+                        boolean hasStaff = false;
+
+                        try {
+                            String teamId = teamMemberResposnes.get(0).getTeamID();
+                            hasStaff = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return hasStaff;
+                    }
+                })
                 .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttedanceResponse>>>() {
                     @Override
                     public Observable<ArrayList<AttedanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
@@ -76,6 +94,8 @@ public class MyTeamRepository {
                     @Override
                     public Observable<TeamMemberResposne> call(final MyTeamResponse myTeamResponse) {
                         String teamId = myTeamResponse.getId();//get team id
+                        SharedPreferenceUtils.saveToPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), "TEAM_ID", teamId);
+
                         return apiInterface.getTeamMember(teamId)//request team memeber for each id
                                 .flatMapIterable(new Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
                                     @Override
@@ -86,6 +106,7 @@ public class MyTeamRepository {
                                     @Override
                                     public Observable<TeamMemberResposne> call(TeamMemberResposne teamMemberResposne) {
                                         //add team id and team name is team member obj
+
                                         teamMemberResposne.setTeamID(myTeamResponse.getId());
                                         teamMemberResposne.setTeamName(myTeamResponse.getName());
                                         return Observable.just(teamMemberResposne);

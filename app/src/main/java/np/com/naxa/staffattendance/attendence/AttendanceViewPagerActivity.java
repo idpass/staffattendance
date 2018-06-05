@@ -29,6 +29,7 @@ import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import rx.Observer;
+import timber.log.Timber;
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
 
@@ -118,10 +119,10 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.main_menu_refresh:
-                if(NetworkUtils.isInternetAvailable()){
+                if (NetworkUtils.isInternetAvailable()) {
                     uploadAllFinalizedAttendance();
                     refreshTeam();
-                }else {
+                } else {
                     ToastUtils.showLong(getString(R.string.no_internet));
                 }
 
@@ -135,26 +136,27 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     private void refreshTeam() {
         showPleaseWaitDialog();
-        repository.fetchMyTeam().subscribe(new Observer<Object>() {
-            @Override
-            public void onCompleted() {
-                AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this, true);
-            }
+        repository.fetchMyTeam()
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+                        AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this, true);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                closePleaseWaitDialog();
-                DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                        "Failed to refresh Reason " + e.getMessage())
-                        .show();
+                    @Override
+                    public void onError(Throwable e) {
+                        closePleaseWaitDialog();
+                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
+                                "Failed to refresh Reason " + e.getMessage())
+                                .show();
 
-            }
+                    }
 
-            @Override
-            public void onNext(Object o) {
+                    @Override
+                    public void onNext(Object o) {
 
-            }
-        });
+                    }
+                });
     }
 
     @Override
@@ -186,6 +188,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
+
                         closePleaseWaitDialog();
                         DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
                                 "Failed to upload Reason " + e.getMessage())

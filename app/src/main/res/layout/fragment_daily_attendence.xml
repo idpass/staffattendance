@@ -10,16 +10,21 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
 
+
+    <include
+        android:id="@+id/layout_no_data"
+        layout="@layout/layout_no_staff" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_attedance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
-        android:src="@drawable/ic_save_save_24dp"
         android:tint="@color/white"
         app:elevation="8dp"
         app:fabSize="normal"
         app:layout_anchor="@+id/recycler_view_staff_list"
         app:layout_anchorGravity="right|bottom"
+        app:srcCompat="@drawable/ic_save_save_24dp"
         tools:ignore="RtlHardcoded" />
 </android.support.design.widget.CoordinatorLayout>

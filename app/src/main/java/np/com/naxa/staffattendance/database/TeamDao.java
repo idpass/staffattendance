@@ -4,6 +4,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.application.StaffAttendance;
+
 public class TeamDao {
 
     private final String TABLE_NAME = DatabaseHelper.TABLE_STAFF;
@@ -32,29 +35,35 @@ public class TeamDao {
     }
 
     public String getOneTeamIdForDemo() {
-        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
-        Cursor cursor = null;
-        String teamId = "";
 
-        try {
-            cursor = db.query(true, TABLE_NAME, null, null, null, null, null, null, null);
-            cursor.moveToFirst();
-            teamId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_ID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+        return SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), "TEAM_ID", "");
 
-            if (cursor != null) {
-                cursor.close();
-                db.close();
-            }
+        //        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
+//        Cursor cursor = null;
+//        String teamId = "";
+//
+//        try {
+//            cursor = db.query(true, TABLE_NAME, null, null, null, null, null, null, null);
+//            cursor.moveToFirst();
+//            teamId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_ID);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//
+//            if (cursor != null) {
+//                cursor.close();
+//                db.close();
+//            }
+//
+//            if (db != null) {
+//                db.close();
+//            }
+//        }
+//
+//        return teamId;
 
-            if (db != null) {
-                db.close();
-            }
-        }
-
-        return teamId;
     }
-
 }
+
+
+

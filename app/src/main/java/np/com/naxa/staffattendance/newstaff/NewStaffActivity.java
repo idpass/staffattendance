@@ -15,7 +15,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,7 +34,6 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,9 +47,9 @@ import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
+import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
-import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -319,14 +317,14 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onError() {
                             progressDialog.dismiss();
-                            AttendanceViewPagerActivity.start(NewStaffActivity.this, false);
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                             finish();
                         }
 
                         @Override
                         public void onSuccess() {
                             progressDialog.dismiss();
-                            AttendanceViewPagerActivity.start(NewStaffActivity.this, false);
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                             finish();
                         }
                     });
@@ -392,24 +390,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     public NewStaffPojo getNewStaffDetail() {
 
-        return new NewStaffPojo(
-                designation.getSelectedItemPosition(),
-                firstName.getEditText().getText().toString(),
-                lastName.getEditText().getText().toString(),
-                dob.getText().toString(),
-                getGender(),
-                ethinicity.getEditText().getText().toString(),
-                getBankId(),
-                bankNameOther.getText().toString(),
-                accountNumber.getEditText().getText().toString(),
-                contactNumber.getEditText().getText().toString(),
-                email.getEditText().getText().toString(),
-                address.getEditText().getText().toString(),
-                contractStartDate.getText().toString(),
-                contractEndDate.getText().toString(),
-                getPhotoLocation(),
-                NewStaffDao.SAVED
-        );
+        return new NewStaffPojoBuilder().setDesignation(designation.getSelectedItemPosition()).setFirstName(firstName.getEditText().getText().toString()).setLastName(lastName.getEditText().getText().toString()).setDateOfBirth(dob.getText().toString()).setGender(getGender()).setEthnicity(ethinicity.getEditText().getText().toString()).setBank(getBankId()).setBankName(bankNameOther.getText().toString()).setAccountNumber(accountNumber.getEditText().getText().toString()).setPhoneNumber(contactNumber.getEditText().getText().toString()).setEmail(email.getEditText().getText().toString()).setAddress(address.getEditText().getText().toString()).setContractStart(contractStartDate.getText().toString()).setContractEnd(contractEndDate.getText().toString()).setPhoto(getPhotoLocation()).setStatus(NewStaffDao.SAVED).createNewStaffPojo();
     }
 
     private String getPhotoLocation() {

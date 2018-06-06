@@ -263,7 +263,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         for (String string : list) {
-            if (string.trim().contains(comparable)) {
+            if (string.trim().equalsIgnoreCase(comparable)) {
                 return true;
             }
         }

@@ -18,17 +18,28 @@ import android.view.MenuItem;
 
 import com.evernote.android.job.JobRequest;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.jobs.StaffAttendanceSyncJob;
 import np.com.naxa.staffattendance.jobs.StaffDownloadJob;
 import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
+import np.com.naxa.staffattendance.newstaff.NewStaffCall;
+import np.com.naxa.staffattendance.pojo.NewStaffPojo;
+import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import rx.Observable;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
@@ -120,8 +131,8 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
             case R.id.main_menu_refresh:
                 if (NetworkUtils.isInternetAvailable()) {
-                    uploadAllFinalizedAttendance();
-                    refreshTeam();
+                    //uploadAllFinalizedAttendance();
+                    uploadNewStaffThenRefreshStaff();
                 } else {
                     ToastUtils.showLong(getString(R.string.no_internet));
                 }
@@ -134,9 +145,72 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void refreshTeam() {
+    private void uploadNewStaffThenRefreshStaff() {
         showPleaseWaitDialog();
-        repository.fetchMyTeam()
+
+        final NewStaffCall newStaffCall = new NewStaffCall();
+        final NewStaffDao newStaffDao = new NewStaffDao();
+        ArrayList<NewStaffPojo> newStaffs = new NewStaffDao().getOfflineStaffs();
+
+
+        Observable
+                .just(newStaffs)
+                .flatMap(new Func1<ArrayList<NewStaffPojo>, Observable<ArrayList<NewStaffPojo>>>() {
+                    @Override
+                    public Observable<ArrayList<NewStaffPojo>> call(ArrayList<NewStaffPojo> newStaffs) {
+
+                        if (newStaffs.isEmpty()) {
+                            repository.fetchMyTeam().subscribe(new Observer<Object>() {
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                                @Override
+                                public void onNext(Object o) {
+
+                                }
+                            });
+                        }
+
+                        return Observable.just(newStaffs);
+                    }
+                })
+                .flatMapIterable(new Func1<ArrayList<NewStaffPojo>, Iterable<NewStaffPojo>>() {
+                    @Override
+                    public Iterable<NewStaffPojo> call(ArrayList<NewStaffPojo> newStaffPojos) {
+                        return newStaffPojos;
+                    }
+                })
+                .flatMap(new Func1<NewStaffPojo, Observable<NewStaffPojo>>() {
+                    @Override
+                    public Observable<NewStaffPojo> call(final NewStaffPojo newStaffPojo) {
+
+                        final File photoToUpload = null;
+
+                        return newStaffCall.newStaffObservable(newStaffPojo, photoToUpload)
+                                .flatMap(new Func1<NewStaffPojo, Observable<NewStaffPojo>>() {
+                                    @Override
+                                    public Observable<NewStaffPojo> call(NewStaffPojo newStaffPojoResponse) {
+                                        newStaffDao.deleteStaffById(String.valueOf(newStaffPojo.getId()));
+                                        return Observable.just(newStaffPojoResponse);
+                                    }
+                                });
+                    }
+                })
+                .flatMap(new Func1<NewStaffPojo, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(NewStaffPojo newStaffPojo) {
+                        return repository.fetchMyTeam();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onCompleted() {
@@ -149,7 +223,6 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                         DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
                                 "Failed to refresh Reason " + e.getMessage())
                                 .show();
-
                     }
 
                     @Override

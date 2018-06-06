@@ -7,7 +7,8 @@ public class NewStaffPojo {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
+
     @SerializedName("first_name")
     @Expose
     private String firstName;
@@ -56,7 +57,9 @@ public class NewStaffPojo {
 
     private String status;
 
-    public NewStaffPojo(Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender, String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email, String address, String contractStart, String contractEnd, String photo, String status) {
+
+    public NewStaffPojo(String id, Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender, String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email, String address, String contractStart, String contractEnd, String photo, String status) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -75,11 +78,11 @@ public class NewStaffPojo {
         this.status = status;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

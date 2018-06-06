@@ -39,6 +39,7 @@ public class MyTeamRepository {
                     @Override
                     public Boolean call(List<TeamMemberResposne> teamMemberResposnes) {
                         boolean hasStaff = false;
+                        staffDao.removeAllStaffList();
 
                         try {
                             String teamId = teamMemberResposnes.get(0).getTeamID();
@@ -52,7 +53,7 @@ public class MyTeamRepository {
                 .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttedanceResponse>>>() {
                     @Override
                     public Observable<ArrayList<AttedanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
-                        staffDao.removeAllStaffList();
+
                         staffDao.saveStafflist(teamMemberResposnes);
                         String teamId = teamMemberResposnes.get(0).getTeamID();
                         return apiInterface.getPastAttendanceList(teamId);
@@ -94,7 +95,7 @@ public class MyTeamRepository {
                     @Override
                     public Observable<TeamMemberResposne> call(final MyTeamResponse myTeamResponse) {
                         String teamId = myTeamResponse.getId();//get team id
-                        SharedPreferenceUtils.saveToPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), "TEAM_ID", teamId);
+                        SharedPreferenceUtils.saveToPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, teamId);
 
                         return apiInterface.getTeamMember(teamId)//request team memeber for each id
                                 .flatMapIterable(new Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
@@ -136,6 +137,7 @@ public class MyTeamRepository {
                     }
                 });
     }
+
 
 
     public Observable<Object> bulkAttendanceUpload() {

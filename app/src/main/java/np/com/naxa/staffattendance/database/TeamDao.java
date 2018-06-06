@@ -36,7 +36,7 @@ public class TeamDao {
 
     public String getOneTeamIdForDemo() {
 
-        return SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), "TEAM_ID", "");
+        return SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, "");
 
         //        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
 //        Cursor cursor = null;

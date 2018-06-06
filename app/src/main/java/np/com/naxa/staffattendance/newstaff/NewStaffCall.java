@@ -48,7 +48,8 @@ public class NewStaffCall {
                 });
     }
 
-    private Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo, File photoFileToUpload) {
+
+    public Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo, File photoFileToUpload) {
         Context context = StaffAttendance.getStaffAttendance();
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         return apiInterface.uploadNewStaff(

@@ -159,6 +159,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onNext(List<String> strings) {
                             designationList.addAll(strings);
+                            designation.setSelection(1);
                             SharedPreferenceUtils
                                     .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Designation,
                                             gson.toJson(designationList));
@@ -174,7 +175,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onCompleted() {
                     bankList.add(getString(R.string.bank_other));
-
+                    bank.setSelection(1);
                     SharedPreferenceUtils
                             .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Bank,
                                     gson.toJson(bankList));

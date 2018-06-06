@@ -11,6 +11,7 @@ import np.com.naxa.staffattendance.AttendanceFormEditActivity;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
+import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -43,6 +44,7 @@ public class NewStaffCall {
 
                     @Override
                     public void onNext(NewStaffPojo newStaffPojo) {
+                        new NewStaffDao().deleteStaffById(String.valueOf(newStaffPojo.getId()));
                         listener.onSuccess();
                     }
                 });

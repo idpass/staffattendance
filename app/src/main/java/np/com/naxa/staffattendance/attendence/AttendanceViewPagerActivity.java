@@ -20,6 +20,7 @@ import com.evernote.android.job.JobRequest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
@@ -131,7 +132,6 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
             case R.id.main_menu_refresh:
                 if (NetworkUtils.isInternetAvailable()) {
-                    //uploadAllFinalizedAttendance();
                     uploadNewStaffThenRefreshStaff();
                 } else {
                     ToastUtils.showLong(getString(R.string.no_internet));
@@ -160,22 +160,24 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     public Observable<ArrayList<NewStaffPojo>> call(ArrayList<NewStaffPojo> newStaffs) {
 
                         if (newStaffs.isEmpty()) {
-                            repository.fetchMyTeam().subscribe(new Observer<Object>() {
-                                @Override
-                                public void onCompleted() {
+                            uploadAllFinalizedAttendance();
+                            repository.fetchMyTeam()
+                                    .subscribe(new Observer<Object>() {
+                                        @Override
+                                        public void onCompleted() {
 
-                                }
+                                        }
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    e.printStackTrace();
-                                }
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            e.printStackTrace();
+                                        }
 
-                                @Override
-                                public void onNext(Object o) {
+                                        @Override
+                                        public void onNext(Object o) {
 
-                                }
-                            });
+                                        }
+                                    });
                         }
 
                         return Observable.just(newStaffs);
@@ -189,14 +191,17 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 })
                 .flatMap(new Func1<NewStaffPojo, Observable<NewStaffPojo>>() {
                     @Override
-                    public Observable<NewStaffPojo> call(final NewStaffPojo newStaffPojo) {
+                    public Observable<NewStaffPojo> call(final NewStaffPojo newStaffPojo) {//old id
 
                         final File photoToUpload = null;
 
                         return newStaffCall.newStaffObservable(newStaffPojo, photoToUpload)
                                 .flatMap(new Func1<NewStaffPojo, Observable<NewStaffPojo>>() {
                                     @Override
-                                    public Observable<NewStaffPojo> call(NewStaffPojo newStaffPojoResponse) {
+                                    public Observable<NewStaffPojo> call(NewStaffPojo newStaffPojoResponse) {//new id
+                                        //todo change ids from server
+
+
                                         newStaffDao.deleteStaffById(String.valueOf(newStaffPojo.getId()));
                                         return Observable.just(newStaffPojoResponse);
                                     }
@@ -206,6 +211,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 .flatMap(new Func1<NewStaffPojo, Observable<?>>() {
                     @Override
                     public Observable<?> call(NewStaffPojo newStaffPojo) {
+                        uploadAllFinalizedAttendance();
                         return repository.fetchMyTeam();
                     }
                 })
@@ -219,6 +225,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         closePleaseWaitDialog();
                         DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
                                 "Failed to refresh Reason " + e.getMessage())
@@ -246,26 +253,43 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     }
 
     private void uploadAllFinalizedAttendance() {
-        showPleaseWaitDialog();
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showPleaseWaitDialog();
+            }
+        });
 
         repository.bulkAttendanceUpload()
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onCompleted() {
-                        closePleaseWaitDialog();
-                        DialogFactory.createMessageDialog(AttendanceViewPagerActivity.this,
-                                "Attendance Uploaded",
-                                "All pending attendance has been uploaded")
-                                .show();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                closePleaseWaitDialog();
+                                DialogFactory.createMessageDialog(AttendanceViewPagerActivity.this,
+                                        "Attendance Uploaded",
+                                        "All pending attendance has been uploaded")
+                                        .show();
+                            }
+                        });
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(final Throwable e) {
 
-                        closePleaseWaitDialog();
-                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                                "Failed to upload Reason " + e.getMessage())
-                                .show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                closePleaseWaitDialog();
+                                DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
+                                        "Failed to upload Reason " + e.getMessage())
+                                        .show();
+                            }
+                        });
                     }
 
                     @Override

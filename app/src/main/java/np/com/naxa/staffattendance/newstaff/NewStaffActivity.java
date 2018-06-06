@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
@@ -98,6 +99,18 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         bottomNavigationView.setSelectedItemId(R.id.action_add_staff);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        setFakeData();
+
+    }
+
+    private void setFakeData(){
+        firstName.getEditText().setText(randomName());
+        try{
+//            bank.setSelection(1);
+//            designation.setSelection(1);
+        }catch (Exception e){
+
+        }
     }
 
     private void spinnerValues() {
@@ -191,6 +204,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             msgDialog.dismiss();
         }
     }
+
+
 
     private void initSpinners() {
         spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, designationList);
@@ -310,24 +325,31 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             case R.id.staff_send:
                 if (validate()) {
                     final ProgressDialog progressDialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
-                    progressDialog.show();
+
+                    //progressDialog.show();
+
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     putDataInStafftable(getNewStaffDetail());
-                    new NewStaffCall().upload(getNewStaffDetail(), photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
-                        @Override
-                        public void onError() {
-                            progressDialog.dismiss();
-                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
-                            finish();
-                        }
+                    AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
+                    finish();
 
-                        @Override
-                        public void onSuccess() {
-                            progressDialog.dismiss();
-                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
-                            finish();
-                        }
-                    });
+//
+//                    new NewStaffCall().upload(getNewStaffDetail(), photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
+//                        @Override
+//                        public void onError() {
+//                            progressDialog.dismiss();
+//                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
+//                            finish();
+//                        }
+//
+//                        @Override
+//                        public void onSuccess() {
+//
+//                            progressDialog.dismiss();
+//                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
+//                            finish();
+//                        }
+//                    });
                 }
                 break;
         }
@@ -478,6 +500,19 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         }
         return true;
+    }
+
+
+    public static String randomName() {
+      final String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+
+
+        final Random random=new Random();
+        int sizeOfRandomString = 10;
+        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
+        for(int i=0;i<sizeOfRandomString;++i)
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        return sb.toString();
     }
 
 }

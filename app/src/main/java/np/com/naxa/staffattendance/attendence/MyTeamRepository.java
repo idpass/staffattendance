@@ -38,31 +38,23 @@ public class MyTeamRepository {
                 .filter(new Func1<List<TeamMemberResposne>, Boolean>() {
                     @Override
                     public Boolean call(List<TeamMemberResposne> teamMemberResposnes) {
-                        boolean hasStaff = false;
                         staffDao.removeAllStaffList();
-
-                        try {
-                            String teamId = teamMemberResposnes.get(0).getTeamID();
-                            hasStaff = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return hasStaff;
+                        String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
+                        return !TextUtils.isEmpty(teamId);
                     }
                 })
                 .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttedanceResponse>>>() {
                     @Override
                     public Observable<ArrayList<AttedanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
-
+                        String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
                         staffDao.saveStafflist(teamMemberResposnes);
-                        String teamId = teamMemberResposnes.get(0).getTeamID();
                         return apiInterface.getPastAttendanceList(teamId);
                     }
                 })
                 .flatMap(new Func1<ArrayList<AttedanceResponse>, Observable<?>>() {
                     @Override
                     public Observable<?> call(ArrayList<AttedanceResponse> attedanceResponses) {
-                        attendanceDao.removeAllAttedance();
+
                         return attendanceDao.saveAttendance(attedanceResponses);
                     }
                 });
@@ -94,7 +86,7 @@ public class MyTeamRepository {
                 .flatMap(new Func1<MyTeamResponse, Observable<TeamMemberResposne>>() {
                     @Override
                     public Observable<TeamMemberResposne> call(final MyTeamResponse myTeamResponse) {
-                        String teamId = myTeamResponse.getId();//get team id
+                        final String teamId = myTeamResponse.getId();//get team id
                         SharedPreferenceUtils.saveToPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, teamId);
 
                         return apiInterface.getTeamMember(teamId)//request team memeber for each id
@@ -108,7 +100,7 @@ public class MyTeamRepository {
                                     public Observable<TeamMemberResposne> call(TeamMemberResposne teamMemberResposne) {
                                         //add team id and team name is team member obj
 
-                                        teamMemberResposne.setTeamID(myTeamResponse.getId());
+                                        teamMemberResposne.setTeamID(teamId);
                                         teamMemberResposne.setTeamName(myTeamResponse.getName());
                                         return Observable.just(teamMemberResposne);
                                     }
@@ -137,7 +129,6 @@ public class MyTeamRepository {
                     }
                 });
     }
-
 
 
     public Observable<Object> bulkAttendanceUpload() {

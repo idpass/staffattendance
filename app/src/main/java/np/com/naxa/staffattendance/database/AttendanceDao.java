@@ -3,6 +3,8 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,7 +118,6 @@ public class AttendanceDao {
             String[] staffIDlist = staffIDs.replace("[", "").replace("]", "").split(",");
             attedanceResponse.setStaffs(Arrays.asList(staffIDlist));
 
-
             attedanceResponses.add(attedanceResponse);
 
         }
@@ -165,6 +166,37 @@ public class AttendanceDao {
         if (db != null) {
             db.close();
         }
+    }
+
+    public List<Pair<Integer, String>> getAllUnfinilizedAttendanceListInPair() {
+
+        List<Pair<Integer, String>> pairList = new ArrayList<>();
+        //todo need to add where to get unfililized from
+        Cursor cursor = DatabaseHelper.getDatabaseHelper().getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        cursor.moveToFirst();
+        while (cursor.moveToNext()) {
+            Pair<Integer, String> pair = new Pair<>(cursor.getInt(0), cursor.getString(1));
+            pairList.add(pair);
+        }
+        closeCursor(cursor);
+        return pairList;
+    }
+
+    public void updateTableAfterFinilizingForm(List<Pair<Integer, String>> pairList) {
+        SQLiteDatabase writer = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
+        for (Pair<Integer, String> pair : pairList) {
+            writer.rawQuery("UPDATE "
+                    + TABLE_NAME
+                    + " SET "
+                    + DatabaseHelper.KEY_STAFFS_IDS
+                    + " = "
+                    + pair.second
+                    + " WHERE "
+                    + DatabaseHelper.KEY_ID
+                    + " = "
+                    + pair.first, null);
+        }
+        closeDB(writer);
     }
 
 }

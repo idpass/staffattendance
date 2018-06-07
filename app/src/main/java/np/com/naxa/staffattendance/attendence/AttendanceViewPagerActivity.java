@@ -13,6 +13,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,10 +21,12 @@ import com.evernote.android.job.JobRequest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.jobs.StaffAttendanceSyncJob;
 import np.com.naxa.staffattendance.jobs.StaffDownloadJob;
@@ -140,6 +143,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
             case R.id.main_menu_setting:
                 SyncHistoryActivity.start(this);
+//                    new AttendanceDao().getAllUnfinilizedAttendanceListInPair();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -150,6 +154,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
         final NewStaffCall newStaffCall = new NewStaffCall();
         final NewStaffDao newStaffDao = new NewStaffDao();
+        final AttendanceDao attendanceDao= new AttendanceDao();
         ArrayList<NewStaffPojo> newStaffs = new NewStaffDao().getOfflineStaffs();
 
 
@@ -200,9 +205,14 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                                     @Override
                                     public Observable<NewStaffPojo> call(NewStaffPojo newStaffPojoResponse) {//new id
                                         //todo change ids from server
-
-
                                         newStaffDao.deleteStaffById(String.valueOf(newStaffPojo.getId()));
+                                        if(newStaffPojo.getId()!=newStaffPojoResponse.getId()){
+                                            List<Pair<Integer, String>> pairList = attendanceDao.getAllUnfinilizedAttendanceListInPair();
+                                            for(Pair<Integer, String> pair: pairList){
+
+                                            }
+                                        }
+
                                         return Observable.just(newStaffPojoResponse);
                                     }
                                 });

@@ -15,16 +15,6 @@ public class AttedanceResponse {
     @SerializedName("id")
     @Expose
     private Integer id;
-
-    public AttedanceResponse(String attendanceDate, List<String> staffs) {
-        this.attendanceDate = attendanceDate;
-        this.staffs = staffs;
-    }
-
-    public AttedanceResponse() {
-
-    }
-
     @SerializedName("attendance_date")
     @Expose
     private String attendanceDate;
@@ -34,6 +24,15 @@ public class AttedanceResponse {
     @SerializedName("staffs")
     @Expose
     private List<String> staffs = null;
+
+    public AttedanceResponse(String attendanceDate, List<String> staffs) {
+        this.attendanceDate = attendanceDate;
+        this.staffs = staffs;
+    }
+
+    public AttedanceResponse() {
+
+    }
 
     private String dataSyncStatus;
 

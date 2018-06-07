@@ -19,7 +19,7 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import np.com.naxa.staffattendance.attendence.AttedanceResponse;
+import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
@@ -106,12 +106,12 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
                         //saving it offline
                         AttendanceDao attedanceDao = new AttendanceDao();
-                        AttedanceResponse attedanceResponse = new AttedanceResponse();
-                        attedanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
-                        attedanceResponse.setStaffs(stafflistAdapter.getSelectedStaffID());
-                        attedanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
+                        AttendanceResponse attendanceResponse = new AttendanceResponse();
+                        attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
+                        attendanceResponse.setStaffs(stafflistAdapter.getSelectedStaffID());
+                        attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
-                        ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attedanceResponse);
+                        ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
                         attedanceDao.saveAttedance(contentValues);
 
                         new Handler().postDelayed(new Runnable() {

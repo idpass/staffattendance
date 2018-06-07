@@ -3,7 +3,6 @@ package np.com.naxa.staffattendance.attendence;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
 
 import java.util.Date;
 
@@ -11,7 +10,6 @@ import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
-import timber.log.Timber;
 
 
 public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
@@ -34,7 +32,7 @@ public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         DailyAttendanceFragment fragment = new DailyAttendanceFragment();
         String todaysFormattedDate = DateConvertor.formatDate(getDateForPosition(position));
-        AttedanceResponse dailyAttendance = attendanceDao.getAttedanceByDate(teamId, todaysFormattedDate);
+        AttendanceResponse dailyAttendance = attendanceDao.getAttedanceByDate(teamId, todaysFormattedDate);
         fragment.setAttendanceIds(dailyAttendance.getPresentStaffIds(), todaysFormattedDate);
 
         return fragment;

@@ -43,19 +43,19 @@ public class MyTeamRepository {
                         return !TextUtils.isEmpty(teamId);
                     }
                 })
-                .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttedanceResponse>>>() {
+                .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttendanceResponse>>>() {
                     @Override
-                    public Observable<ArrayList<AttedanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
+                    public Observable<ArrayList<AttendanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
                         String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
                         staffDao.saveStafflist(teamMemberResposnes);
                         return apiInterface.getPastAttendanceList(teamId);
                     }
                 })
-                .flatMap(new Func1<ArrayList<AttedanceResponse>, Observable<?>>() {
+                .flatMap(new Func1<ArrayList<AttendanceResponse>, Observable<?>>() {
                     @Override
-                    public Observable<?> call(ArrayList<AttedanceResponse> attedanceResponses) {
+                    public Observable<?> call(ArrayList<AttendanceResponse> attendanceRespons) {
 
-                        return attendanceDao.saveAttendance(attedanceResponses);
+                        return attendanceDao.saveAttendance(attendanceRespons);
                     }
                 });
 
@@ -114,16 +114,16 @@ public class MyTeamRepository {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
 
         return staffDao.getStaffIdFromObject(stafflist)
-                .flatMap(new Func1<List<String>, Observable<AttedanceResponse>>() {
+                .flatMap(new Func1<List<String>, Observable<AttendanceResponse>>() {
                     @Override
-                    public Observable<AttedanceResponse> call(List<String> stafflist) {
+                    public Observable<AttendanceResponse> call(List<String> stafflist) {
                         return apiInterface.postAttendanceForTeam(teamId, date, stafflist);
                     }
-                }).flatMap(new Func1<AttedanceResponse, Observable<?>>() {
+                }).flatMap(new Func1<AttendanceResponse, Observable<?>>() {
                     @Override
-                    public Observable<?> call(AttedanceResponse attedanceResponse) {
-                        if (attedanceResponse != null) {
-                            attendanceDao.updateAttendance(attedanceResponse.getAttendanceDate(false), teamId);
+                    public Observable<?> call(AttendanceResponse attendanceResponse) {
+                        if (attendanceResponse != null) {
+                            attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
                         }
                         return null;
                     }
@@ -136,24 +136,24 @@ public class MyTeamRepository {
         final String teamId = new TeamDao().getOneTeamIdForDemo();
 
         return Observable.just(attendanceDao.getFinalizedAttendanceSheet())
-                .flatMapIterable(new Func1<ArrayList<AttedanceResponse>, Iterable<AttedanceResponse>>() {
+                .flatMapIterable(new Func1<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>() {
                     @Override
-                    public Iterable<AttedanceResponse> call(ArrayList<AttedanceResponse> attedanceResponses) {
-                        return attedanceResponses;
+                    public Iterable<AttendanceResponse> call(ArrayList<AttendanceResponse> attendanceRespons) {
+                        return attendanceRespons;
                     }
                 })
-                .flatMap(new Func1<AttedanceResponse, Observable<AttedanceResponse>>() {
+                .flatMap(new Func1<AttendanceResponse, Observable<AttendanceResponse>>() {
                     @Override
-                    public Observable<AttedanceResponse> call(AttedanceResponse attedanceResponse) {
+                    public Observable<AttendanceResponse> call(AttendanceResponse attendanceResponse) {
 
-                        return apiInterface.postAttendanceForTeam(teamId, attedanceResponse.getAttendanceDate(false), attedanceResponse.getPresentStaffIds());
+                        return apiInterface.postAttendanceForTeam(teamId, attendanceResponse.getAttendanceDate(false), attendanceResponse.getPresentStaffIds());
                     }
                 })
-                .flatMap(new Func1<AttedanceResponse, Observable<?>>() {
+                .flatMap(new Func1<AttendanceResponse, Observable<?>>() {
                     @Override
-                    public Observable<?> call(AttedanceResponse attedanceResponse) {
-                        if (attedanceResponse != null) {
-                            attendanceDao.updateAttendance(attedanceResponse.getAttendanceDate(false), teamId);
+                    public Observable<?> call(AttendanceResponse attendanceResponse) {
+                        if (attendanceResponse != null) {
+                            attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
                         }
                         return null;
 

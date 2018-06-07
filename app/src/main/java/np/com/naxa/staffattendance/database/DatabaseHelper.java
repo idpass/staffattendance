@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LOG = "DatabaseHelper";
 
     // Database Version
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     // Database Name
     public static final String DATABASE_NAME = "staffManager2";
@@ -85,9 +85,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_ATTENDANCE = "CREATE TABLE " +
             TABLE_ATTENDANCE +
             "(" +
-            KEY_ID + " INTEGER PRIMARY KEY," +
+            KEY_ID + " INTEGER ," +
             KEY_STAFFS_IDS + " TEXT," +
-            KEY_ATTENDACE_DATE + " DATETIME," +
+            KEY_ATTENDACE_DATE + " DATETIME PRIMARY KEY, " +
             KEY_STAFF_TEAM_ID + " TEXT," +
             KEY_SUBMITTED_BY + " INTEGER," +
             KEY_CREATED_AT + " DATETIME" + "," +
@@ -142,6 +142,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        if (newVersion == 3) {
+            //todo change primary key to datetime
+        }
+
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAFF);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NEW_STAFF);

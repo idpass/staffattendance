@@ -3,16 +3,20 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import np.com.naxa.staffattendance.attendence.AttedanceResponse;
+import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import rx.Observable;
+import timber.log.Timber;
 
 public class AttendanceDao {
 
@@ -39,6 +43,69 @@ public class AttendanceDao {
         db.close();
     }
 
+    public void query() {
+//        Cursor cursor = DatabaseHelper.getDatabaseHelper().getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
+//        while (cursor.moveToNext()) {
+//            String staffIds = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
+//            int[] staffIdList = new Gson().fromJson(staffIds, int[].class);
+
+
+        String list = "[1, 2, 11, 1, 5]";
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        List<String> staffIdList = new Gson().fromJson(list, type);
+
+        for (int i = 0; i < staffIdList.size(); i++) {
+            String oldStaffID = staffIdList.get(i);
+            if (oldStaffID.equals("11")) {
+                staffIdList.set(i, "33");
+            }
+        }
+
+        Timber.i("Nishon %s", staffIdList.toString());
+    }
+
+    public void updateStaffId(String oldStaffId, String newStaffId) {
+        Cursor cursor = DatabaseHelper.getDatabaseHelper().getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
+
+        while (cursor.moveToNext()) {
+
+            String staffIds = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
+            String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
+
+
+            Type type = new TypeToken<List<String>>() {
+            }.getType();
+            List<String> staffIdList = new Gson().fromJson(staffIds, type);
+
+            if(!staffIdList.isEmpty()){
+                Timber.i("updateStaffId old list %s", staffIds);
+            }
+
+            for (int i = 0; i < staffIdList.size(); i++) {
+                String curStaffId = staffIdList.get(i);
+
+                if (oldStaffId.equals(curStaffId)) {
+                    staffIdList.set(i, newStaffId);
+                }
+            }
+
+            AttendanceResponse attendanceResponse = new AttendanceResponse(attendanceDate, staffIdList);
+            ContentValues values = getContentValuesForAttedance(attendanceResponse);
+            update(values, DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{attendanceDate});
+
+            if(!staffIdList.isEmpty()){
+                Timber.i("updateStaffId new list %s", staffIds);
+            }
+        }
+
+        closeCursor(cursor);
+    }
+
+    private void update(ContentValues values, String selection, String[] selectionArgs) {
+        DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, values, selection, selectionArgs);
+    }
+
     public final static class SyncStatus {
         public static String FINALIZED = "finalized";
         public static String UPLOADED = "uploaded";
@@ -47,7 +114,7 @@ public class AttendanceDao {
 
     private final String TABLE_NAME = DatabaseHelper.TABLE_ATTENDANCE;
 
-    public ContentValues getContentValuesForAttedance(AttedanceResponse attedance) {
+    public ContentValues getContentValuesForAttedance(AttendanceResponse attedance) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.KEY_ID, attedance.getId());
 
@@ -64,11 +131,11 @@ public class AttendanceDao {
         return contentValues;
     }
 
-    public Observable<?> saveAttendance(List<AttedanceResponse> attedanceResponses) {
+    public Observable<?> saveAttendance(List<AttendanceResponse> attendanceRespons) {
         SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
         try {
             db.beginTransaction();
-            for (AttedanceResponse staff : attedanceResponses) {
+            for (AttendanceResponse staff : attendanceRespons) {
 
                 ContentValues values = getContentValuesForAttedance(staff);
                 long i = saveAttedance(db, values);
@@ -93,36 +160,36 @@ public class AttendanceDao {
     }
 
 
-    public AttedanceResponse getSingleAttedanceFromCusor(Cursor cursor) {
-        ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+    public AttendanceResponse getSingleAttedanceFromCusor(Cursor cursor) {
+        ArrayList<AttendanceResponse> list = getAttendanceFromCursor(cursor);
         if (list != null && list.size() >= 1) {
             return list.get(0);
         }
 
-        return new AttedanceResponse();
+        return new AttendanceResponse();
     }
 
-    public ArrayList<AttedanceResponse> getAttendanceFromCursor(Cursor cursor) {
-        ArrayList<AttedanceResponse> attedanceResponses = new ArrayList<>();
+    public ArrayList<AttendanceResponse> getAttendanceFromCursor(Cursor cursor) {
+        ArrayList<AttendanceResponse> attendanceRespons = new ArrayList<>();
 
         if (cursor == null || cursor.getCount() <= 0) {
-            return attedanceResponses;
+            return attendanceRespons;
         }
 
         while (cursor.moveToNext()) {
-            AttedanceResponse attedanceResponse = new AttedanceResponse();
+            AttendanceResponse attendanceResponse = new AttendanceResponse();
             String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
-            attedanceResponse.setAttendanceDate(attendanceDate);
+            attendanceResponse.setAttendanceDate(attendanceDate);
 
             String staffIDs = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
             String[] staffIDlist = staffIDs.replace("[", "").replace("]", "").split(",");
-            attedanceResponse.setStaffs(Arrays.asList(staffIDlist));
+            attendanceResponse.setStaffs(Arrays.asList(staffIDlist));
 
-            attedanceResponses.add(attedanceResponse);
+            attendanceRespons.add(attendanceResponse);
 
         }
 
-        return attedanceResponses;
+        return attendanceRespons;
     }
 
 
@@ -131,26 +198,26 @@ public class AttendanceDao {
         return db.query(TABLE_NAME, null, selection, selectionArgs, null, null, null, null);
     }
 
-    public AttedanceResponse getTodaysAddedance(String teamId) {
+    public AttendanceResponse getTodaysAddedance(String teamId) {
         return getAttedanceByDate(teamId, DateConvertor.getCurrentDate());
     }
 
-    public AttedanceResponse getAttedanceByDate(String teamId, String date) {
+    public AttendanceResponse getAttedanceByDate(String teamId, String date) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{date});
         return getSingleAttedanceFromCusor(cursor);
     }
 
 
-    public ArrayList<AttedanceResponse> getAttendanceSheetForTeam(String teamId) {
+    public ArrayList<AttendanceResponse> getAttendanceSheetForTeam(String teamId) {
         Cursor cursor = getCursor(null, null);
-        ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+        ArrayList<AttendanceResponse> list = getAttendanceFromCursor(cursor);
         closeCursor(cursor);
         return list;
     }
 
-    public ArrayList<AttedanceResponse> getFinalizedAttendanceSheet() {
+    public ArrayList<AttendanceResponse> getFinalizedAttendanceSheet() {
         Cursor cursor = getCursor(DatabaseHelper.KEY_SYNC_STATUS + "=?", new String[]{SyncStatus.FINALIZED});
-        ArrayList<AttedanceResponse> list = getAttendanceFromCursor(cursor);
+        ArrayList<AttendanceResponse> list = getAttendanceFromCursor(cursor);
         closeCursor(cursor);
         return list;
     }
@@ -170,16 +237,15 @@ public class AttendanceDao {
 
     public List<Pair<Integer, String>> getAllUnfinilizedAttendanceListInPair() {
 
-        List<Pair<Integer, String>> pairList = new ArrayList<>();
+        List<Pair<Integer, String>> dateAndAttedancePair = new ArrayList<>();
         //todo need to add where to get unfililized from
         Cursor cursor = DatabaseHelper.getDatabaseHelper().getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
-        cursor.moveToFirst();
         while (cursor.moveToNext()) {
             Pair<Integer, String> pair = new Pair<>(cursor.getInt(0), cursor.getString(1));
-            pairList.add(pair);
+            dateAndAttedancePair.add(pair);
         }
         closeCursor(cursor);
-        return pairList;
+        return dateAndAttedancePair;
     }
 
     public void updateTableAfterFinilizingForm(List<Pair<Integer, String>> pairList) {

@@ -101,6 +101,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
 
     private void setupToolbar() {
@@ -154,7 +155,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
         final NewStaffCall newStaffCall = new NewStaffCall();
         final NewStaffDao newStaffDao = new NewStaffDao();
-        final AttendanceDao attendanceDao= new AttendanceDao();
+        final AttendanceDao attendanceDao = new AttendanceDao();
         ArrayList<NewStaffPojo> newStaffs = new NewStaffDao().getOfflineStaffs();
 
 
@@ -199,19 +200,15 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     public Observable<NewStaffPojo> call(final NewStaffPojo newStaffPojo) {//old id
 
                         final File photoToUpload = null;
-
                         return newStaffCall.newStaffObservable(newStaffPojo, photoToUpload)
                                 .flatMap(new Func1<NewStaffPojo, Observable<NewStaffPojo>>() {
                                     @Override
                                     public Observable<NewStaffPojo> call(NewStaffPojo newStaffPojoResponse) {//new id
                                         //todo change ids from server
-                                        newStaffDao.deleteStaffById(String.valueOf(newStaffPojo.getId()));
-                                        if(newStaffPojo.getId()!=newStaffPojoResponse.getId()){
-                                            List<Pair<Integer, String>> pairList = attendanceDao.getAllUnfinilizedAttendanceListInPair();
-                                            for(Pair<Integer, String> pair: pairList){
-
-                                            }
-                                        }
+                                        String oldStaffId = newStaffPojo.getId();
+                                        String newStaffId = newStaffPojoResponse.getId();
+                                        newStaffDao.deleteStaffById(String.valueOf(oldStaffId));
+                                        attendanceDao.updateStaffId(oldStaffId, newStaffId);
 
                                         return Observable.just(newStaffPojoResponse);
                                     }

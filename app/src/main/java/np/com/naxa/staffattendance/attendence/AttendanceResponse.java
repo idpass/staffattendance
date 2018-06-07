@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 
-public class AttedanceResponse {
+public class AttendanceResponse {
 
     private List<TeamMemberResposne> teamMemberResposnes = null;
 
@@ -25,14 +25,15 @@ public class AttedanceResponse {
     @Expose
     private List<String> staffs = null;
 
-    public AttedanceResponse(String attendanceDate, List<String> staffs) {
+    public AttendanceResponse(String attendanceDate, List<String> staffs) {
         this.attendanceDate = attendanceDate;
         this.staffs = staffs;
     }
 
-    public AttedanceResponse() {
+    public AttendanceResponse() {
 
     }
+
 
     private String dataSyncStatus;
 

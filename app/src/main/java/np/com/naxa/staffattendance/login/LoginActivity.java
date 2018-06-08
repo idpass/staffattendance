@@ -51,8 +51,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initUI();
 
 
-        tvUserName.setText("dheerajkc47@gmail.com");
-        tvPassword.setText("dheerajkc47");
+//        tvUserName.setText("dheerajkc47@gmail.com");
+//        tvPassword.setText("dheerajkc47");
+
+        tvUserName.setText("nishon.tan@gmail.com");
+        tvPassword.setText("12345678");
 
     }
 

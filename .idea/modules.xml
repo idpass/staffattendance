@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Staff Attendence.iml" filepath="$PROJECT_DIR$/Staff Attendence.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/staffattendance.iml" filepath="$PROJECT_DIR$/staffattendance.iml" />
     </modules>

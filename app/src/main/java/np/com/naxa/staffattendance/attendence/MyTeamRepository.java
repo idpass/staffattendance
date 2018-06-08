@@ -15,7 +15,6 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -60,16 +59,6 @@ public class MyTeamRepository {
                 });
 
 
-    }
-
-    private Action1<Throwable> defaultErrorHanlder() {
-        return new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
-
-            }
-        };
     }
 
     private Observable<List<TeamMemberResposne>> myTeamObservable() {
@@ -130,7 +119,6 @@ public class MyTeamRepository {
                 });
     }
 
-
     public Observable<Object> bulkAttendanceUpload() {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         final String teamId = new TeamDao().getOneTeamIdForDemo();
@@ -156,7 +144,6 @@ public class MyTeamRepository {
                             attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
                         }
                         return null;
-
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

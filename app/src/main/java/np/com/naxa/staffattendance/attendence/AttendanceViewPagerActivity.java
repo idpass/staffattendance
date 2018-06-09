@@ -19,6 +19,7 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobRequest;
 
 import java.io.File;
@@ -166,6 +167,8 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         if (newStaffs.isEmpty()) {
             repository
                     .fetchMyTeam()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
                     .flatMap(new Func1<Object, Observable<Object>>() {
                         @Override
                         public Observable<Object> call(Object o) {
@@ -187,6 +190,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                         @Override
                         public void onError(Throwable e) {
                             closePleaseWaitDialog();
+                            Crashlytics.logException(e);
                             DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
                                     e.getMessage())
                                     .show();
@@ -212,13 +216,14 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                             if (e instanceof HttpException) {
                                 String msg = ((HttpException) e).message();
                                 String code = String.valueOf(((HttpException) e).code());
                                 DialogFactory.createDataSyncErrorDialog(AttendanceViewPagerActivity.this, msg, code).show();
                             } else {
                                 DialogFactory
-                                        .createGenericErrorDialog(AttendanceViewPagerActivity.this, "Failed to sync attendance information")
+                                        .createGenericErrorDialog(AttendanceViewPagerActivity.this, e.getMessage())
                                         .show();
                             }
                         }
@@ -250,7 +255,13 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 }).flatMap(new Func1<NewStaffPojo, Observable<Pair<String, String>>>() {
                     @Override
                     public Observable<Pair<String, String>> call(NewStaffPojo offlineStaff) {
-                        return newStaffCall.newStaffObservable(offlineStaff, null)
+                        String filePath = offlineStaff.getPhoto();
+                        File file = null;
+                        if (!TextUtils.isEmpty(filePath)) {
+                            file = new File(filePath);
+                        }
+
+                        return newStaffCall.newStaffObservable(offlineStaff, file)
                                 .map(new Func1<NewStaffPojo, Pair<String, String>>() {
                                     @Override
                                     public Pair<String, String> call(NewStaffPojo uploadedStaff) {
@@ -276,11 +287,11 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 }).flatMap(new Func1<AttendanceResponse, Observable<?>>() {
                     @Override
                     public Observable<?> call(AttendanceResponse attendanceResponse) {
+                        attendanceDao.changeAttendanceStatus(attendanceResponse.getAttendanceDate(false), AttendanceDao.SyncStatus.UPLOADED);
                         return repository.fetchMyTeam();
                     }
                 });
     }
-
 
 
     @Override

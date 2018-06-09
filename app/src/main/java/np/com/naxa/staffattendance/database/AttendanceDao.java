@@ -39,6 +39,12 @@ public class AttendanceDao {
         return DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, contentValues, selection, selectionArgs);
     }
 
+    public void changeAttendanceStatus(String date, String status) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, status);
+        updateAttendance(contentValues, DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{date});
+    }
+
     public void removeAllAttedance() {
         SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
         db.execSQL("DELETE from " + TABLE_NAME + " WHERE " + DatabaseHelper.KEY_SYNC_STATUS + " != '" + SyncStatus.FINALIZED + "'");

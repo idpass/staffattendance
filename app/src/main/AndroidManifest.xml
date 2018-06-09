@@ -28,6 +28,9 @@
             android:name=".attendence.AttendanceViewPagerActivity"
             android:exported="true" />
         <activity android:name=".jobs.SyncHistoryActivity" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="61f1ab9eb40ae0d7b3fdbc3417ad1ee196453e82" />
     </application>
 
 </manifest>

@@ -58,7 +58,7 @@ public class AttendanceDao {
                     cursor = DatabaseHelper
                             .getDatabaseHelper()
                             .getReadableDatabase()
-                            .rawQuery("SELECT * FROM " + TABLE_NAME, null);
+                            .query(TABLE_NAME, null, DatabaseHelper.KEY_SYNC_STATUS + "=?", new String[]{SyncStatus.FINALIZED}, null, null, null);
 
                     while (cursor.moveToNext()) {
                         String staffIds = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
@@ -84,8 +84,9 @@ public class AttendanceDao {
 
 
                         AttendanceResponse attendanceResponse = new AttendanceResponse(attendanceDate, updatedStaffIds);
-                        attendanceResponse.setDataSyncStatus(SyncStatus.FINALIZED);
-                        ContentValues values = getContentValuesForAttedance(attendanceResponse);
+                        ContentValues values = new ContentValues();
+                        values.put(DatabaseHelper.KEY_STAFFS_IDS, updatedStaffIds.toString());
+
                         int rowsAffected = update(values, DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{attendanceDate});
 
                         if (rowsAffected == 0) {
@@ -192,7 +193,7 @@ public class AttendanceDao {
         try {
             db.beginTransaction();
             for (AttendanceResponse staff : attendanceRespons) {
-
+                staff.setDataSyncStatus(SyncStatus.UPLOADED);
                 ContentValues values = getContentValuesForAttedance(staff);
                 long i = saveAttedance(db, values);
             }

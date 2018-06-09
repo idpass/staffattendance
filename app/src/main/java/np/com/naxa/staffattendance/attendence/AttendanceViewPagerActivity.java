@@ -273,112 +273,15 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                                         attendanceResponse.getAttendanceDate(false),
                                         attendanceResponse.getPresentStaffIds());
                     }
-                });
-    }
-
-    private void uploadNewStaffThenRefreshStaff() {
-
-
-        final NewStaffCall newStaffCall = new NewStaffCall();
-        final NewStaffDao newStaffDao = new NewStaffDao();
-        final AttendanceDao attendanceDao = new AttendanceDao();
-        ArrayList<NewStaffPojo> newStaffs = new NewStaffDao().getOfflineStaffs();
-        final String teamId = new TeamDao().getOneTeamIdForDemo();
-
-        Observable
-                .just(newStaffs)
-                .flatMap(new Func1<ArrayList<NewStaffPojo>, Observable<ArrayList<NewStaffPojo>>>() {
+                }).flatMap(new Func1<AttendanceResponse, Observable<?>>() {
                     @Override
-                    public Observable<ArrayList<NewStaffPojo>> call(ArrayList<NewStaffPojo> newStaffs) {
-                        if (newStaffs.isEmpty()) {
-                            uploadAllFinalizedAttendance();
-                        }
-
-                        if (TextUtils.isEmpty(teamId)) {
-                            repository.fetchMyTeam()
-                                    .subscribe(new Observer<Object>() {
-                                        @Override
-                                        public void onCompleted() {
-
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        @Override
-                                        public void onNext(Object o) {
-
-                                        }
-                                    });
-
-                            throw new RuntimeException("Your team has been deleted");
-                        }
-
-                        return Observable.just(newStaffs);
-                    }
-                })
-                .flatMapIterable(new Func1<ArrayList<NewStaffPojo>, Iterable<NewStaffPojo>>() {
-                    @Override
-                    public Iterable<NewStaffPojo> call(ArrayList<NewStaffPojo> newStaffPojos) {
-                        return newStaffPojos;
-                    }
-                })
-                .flatMap(new Func1<NewStaffPojo, Observable<Object>>() {
-                    @Override
-                    public Observable<Object> call(final NewStaffPojo newStaffPojo) {//old id
-
-                        final File photoToUpload = null;
-                        return newStaffCall.newStaffObservable(newStaffPojo, photoToUpload)
-                                .flatMap(new Func1<NewStaffPojo, Observable<NewStaffPojo>>() {
-                                    @Override
-                                    public Observable<NewStaffPojo> call(NewStaffPojo newStaffPojoResponse) {
-                                        //new id
-                                        //todo change ids from server
-                                        String oldStaffId = newStaffPojo.getId();
-                                        String newStaffId = newStaffPojoResponse.getId();
-                                        newStaffDao.deleteStaffById(String.valueOf(oldStaffId));
-                                        attendanceDao.updateStaffId(oldStaffId, newStaffId);
-
-                                        return Observable.just(newStaffPojoResponse);
-                                    }
-                                }).flatMap(new Func1<NewStaffPojo, Observable<?>>() {
-                                    @Override
-                                    public Observable<?> call(NewStaffPojo newStaffPojo) {
-                                        return repository.fetchMyTeam();
-                                    }
-                                }).flatMap(new Func1<Object, Observable<?>>() {
-                                    @Override
-                                    public Observable<?> call(Object o) {
-                                        return null;
-                                    }
-                                });
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Object>() {
-                    @Override
-                    public void onCompleted() {
-                        AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this, true);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        closePleaseWaitDialog();
-                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                                e.getMessage())
-                                .show();
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-                        uploadAllFinalizedAttendance();
+                    public Observable<?> call(AttendanceResponse attendanceResponse) {
+                        return repository.fetchMyTeam();
                     }
                 });
     }
+
+
 
     @Override
     protected void onPause() {

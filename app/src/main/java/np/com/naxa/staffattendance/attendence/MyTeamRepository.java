@@ -53,7 +53,7 @@ public class MyTeamRepository {
                 .flatMap(new Func1<ArrayList<AttendanceResponse>, Observable<?>>() {
                     @Override
                     public Observable<?> call(ArrayList<AttendanceResponse> attendanceRespons) {
-
+                        attendanceDao.removeAllAttedance();
                         return attendanceDao.saveAttendance(attendanceRespons);
                     }
                 });

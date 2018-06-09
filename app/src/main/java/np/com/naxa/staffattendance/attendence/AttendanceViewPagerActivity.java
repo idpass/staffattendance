@@ -14,16 +14,21 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.evernote.android.job.JobRequest;
 
 import java.io.File;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.List;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.NewStaffDao;
@@ -38,8 +43,10 @@ import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -100,6 +107,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 return true;
             }
         });
+
 
     }
 
@@ -191,25 +199,28 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     });
         } else {
             syncAttedanceWithOfflineStaff()
-                    .doOnSubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            showPleaseWaitDialog();
-                        }
-                    })
+                    .doOnSubscribe(this::showPleaseWaitDialog)
+                    .doOnTerminate(this::closePleaseWaitDialog)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
                     .subscribe(new Observer<Object>() {
                         @Override
                         public void onCompleted() {
-                            closePleaseWaitDialog();
+
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
-                            closePleaseWaitDialog();
-                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                                    e.getMessage())
-                                    .show();
+                            if (e instanceof HttpException) {
+                                String msg = ((HttpException) e).message();
+                                String code = String.valueOf(((HttpException) e).code());
+                                DialogFactory.createDataSyncErrorDialog(AttendanceViewPagerActivity.this, msg, code).show();
+                            } else {
+                                DialogFactory
+                                        .createGenericErrorDialog(AttendanceViewPagerActivity.this, "Failed to sync attendance information")
+                                        .show();
+                            }
                         }
 
                         @Override
@@ -230,29 +241,37 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         final String teamId = new TeamDao().getOneTeamIdForDemo();
 
 
-        return Observable
-                .just(newStaffs)
+        return Observable.just(newStaffs)
                 .flatMapIterable(new Func1<ArrayList<NewStaffPojo>, Iterable<NewStaffPojo>>() {
                     @Override
-                    public Iterable<NewStaffPojo> call(ArrayList<NewStaffPojo> newStaffPojos) {
-                        return newStaffPojos;
+                    public Iterable<NewStaffPojo> call(ArrayList<NewStaffPojo> offlineStaffs) {
+                        return offlineStaffs;
                     }
-                }).flatMap(new Func1<NewStaffPojo, Observable<Object>>() {
+                }).flatMap(new Func1<NewStaffPojo, Observable<Pair<String, String>>>() {
                     @Override
-                    public Observable<Object> call(final NewStaffPojo newStaffPojo) {
-                        return newStaffCall.newStaffObservable(newStaffPojo, null)
-                                .flatMap(new Func1<NewStaffPojo, Observable<Object>>() {
+                    public Observable<Pair<String, String>> call(NewStaffPojo offlineStaff) {
+                        return newStaffCall.newStaffObservable(offlineStaff, null)
+                                .map(new Func1<NewStaffPojo, Pair<String, String>>() {
                                     @Override
-                                    public Observable<Object> call(NewStaffPojo staffResponse) {
-                                        String oldStaffId = newStaffPojo.getId();
-                                        String newStaffId = staffResponse.getId();
-
-                                        newStaffDao.deleteStaffById(String.valueOf(oldStaffId));
-                                        attendanceDao.updateStaffId(oldStaffId, newStaffId);
-
-                                        return repository.fetchMyTeam();
+                                    public Pair<String, String> call(NewStaffPojo uploadedStaff) {
+                                        newStaffDao.deleteStaffById(String.valueOf(offlineStaff.getId()));
+                                        return Pair.create(offlineStaff.getId(), uploadedStaff.getId());
                                     }
                                 });
+                    }
+                }).toList()
+                .flatMap(new Func1<List<Pair<String, String>>, Observable<AttendanceResponse>>() {
+                    @Override
+                    public Observable<AttendanceResponse> call(List<Pair<String, String>> pairs) {
+                        return attendanceDao.updateStaffIdObservable(pairs);
+                    }
+                }).flatMap(new Func1<AttendanceResponse, Observable<AttendanceResponse>>() {
+                    @Override
+                    public Observable<AttendanceResponse> call(AttendanceResponse attendanceResponse) {
+                        return APIClient.getAPIService(getApplicationContext())
+                                .postAttendanceForTeam(teamId,
+                                        attendanceResponse.getAttendanceDate(false),
+                                        attendanceResponse.getPresentStaffIds());
                     }
                 });
     }
@@ -364,14 +383,18 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        closePleaseWaitDialog();
+        runOnUiThread(this::closePleaseWaitDialog);
+
     }
 
     private void showPleaseWaitDialog() {
-        dialog = DialogFactory.createProgressDialogHorizontal(AttendanceViewPagerActivity.this, "Please Wait");
-        if (!dialog.isShowing()) {
-            dialog.show();
-        }
+        runOnUiThread(() -> {
+            dialog = DialogFactory.createProgressDialogHorizontal(AttendanceViewPagerActivity.this, "Please Wait");
+            if (!dialog.isShowing()) {
+                dialog.show();
+            }
+        });
+
     }
 
     private void uploadAllFinalizedAttendance() {

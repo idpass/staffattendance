@@ -122,32 +122,21 @@ public class MyTeamRepository {
     public Observable<Object> bulkAttendanceUpload() {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         final String teamId = new TeamDao().getOneTeamIdForDemo();
+        ArrayList<AttendanceResponse> attendanceSheet = attendanceDao.getFinalizedAttendanceSheet();
 
-        return Observable.just(attendanceDao.getFinalizedAttendanceSheet())
-                .flatMapIterable(new Func1<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>() {
-                    @Override
-                    public Iterable<AttendanceResponse> call(ArrayList<AttendanceResponse> attendanceRespons) {
-                        return attendanceRespons;
-                    }
+        return Observable.just(attendanceSheet)
+                .flatMapIterable((Func1<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>) attendanceRespons -> attendanceRespons)
+                .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
+
+                    return apiInterface.postAttendanceForTeam(teamId,
+                            attendanceResponse.getAttendanceDate(false),
+                            attendanceResponse.getPresentStaffIds());
                 })
-                .flatMap(new Func1<AttendanceResponse, Observable<AttendanceResponse>>() {
-                    @Override
-                    public Observable<AttendanceResponse> call(AttendanceResponse attendanceResponse) {
-
-                        return apiInterface.postAttendanceForTeam(teamId, attendanceResponse.getAttendanceDate(false), attendanceResponse.getPresentStaffIds());
+                .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
+                    if (attendanceResponse != null) {
+                        attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
                     }
-                })
-                .flatMap(new Func1<AttendanceResponse, Observable<?>>() {
-                    @Override
-                    public Observable<?> call(AttendanceResponse attendanceResponse) {
-                        if (attendanceResponse != null) {
-                            attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
-                        }
-                        return null;
-                    }
-                }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-
-
+                    return null;
+                });
     }
 }

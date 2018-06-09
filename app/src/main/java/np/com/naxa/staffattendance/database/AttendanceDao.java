@@ -3,6 +3,7 @@ package np.com.naxa.staffattendance.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
@@ -16,14 +17,15 @@ import java.util.List;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import rx.Observable;
+import rx.Subscriber;
 import timber.log.Timber;
 
 public class AttendanceDao {
 
-    public void updateAttendance(String date, String teamId) {
+    public int updateAttendance(String date, String teamId) {
         String selection = DatabaseHelper.KEY_ATTENDACE_DATE + "=? AND " + DatabaseHelper.KEY_STAFF_TEAM_ID + "=?";
         String[] selectionArgs = new String[]{date, teamId};
-        updateAttendance(getContentValuesForStatusUpdate(), selection, selectionArgs);
+        return updateAttendance(getContentValuesForStatusUpdate(), selection, selectionArgs);
     }
 
 
@@ -33,8 +35,8 @@ public class AttendanceDao {
         return contentValues;
     }
 
-    private void updateAttendance(ContentValues contentValues, String selection, String[] selectionArgs) {
-        DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, contentValues, selection, selectionArgs);
+    private int updateAttendance(ContentValues contentValues, String selection, String[] selectionArgs) {
+        return DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, contentValues, selection, selectionArgs);
     }
 
     public void removeAllAttedance() {
@@ -43,29 +45,79 @@ public class AttendanceDao {
         db.close();
     }
 
-    public void query() {
-//        Cursor cursor = DatabaseHelper.getDatabaseHelper().getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
-//        while (cursor.moveToNext()) {
-//            String staffIds = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
-//            int[] staffIdList = new Gson().fromJson(staffIds, int[].class);
+
+    public Observable<AttendanceResponse> updateStaffIdObservable(List<Pair<String, String>> pairs) {
 
 
-        String list = "[1, 2, 11, 1, 5]";
-        Type type = new TypeToken<List<String>>() {
-        }.getType();
-        List<String> staffIdList = new Gson().fromJson(list, type);
+        return Observable.create(new Observable.OnSubscribe<AttendanceResponse>() {
+            Cursor cursor = null;
 
-        for (int i = 0; i < staffIdList.size(); i++) {
-            String oldStaffID = staffIdList.get(i);
-            if (oldStaffID.equals("11")) {
-                staffIdList.set(i, "33");
+            @Override
+            public void call(Subscriber<? super AttendanceResponse> subscriber) {
+                try {
+                    cursor = DatabaseHelper
+                            .getDatabaseHelper()
+                            .getReadableDatabase()
+                            .rawQuery("SELECT * FROM " + TABLE_NAME, null);
+
+                    while (cursor.moveToNext()) {
+                        String staffIds = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
+                        String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
+                        List<String> offlineIds = convertStaffIdsToList(staffIds);
+                        List<String> updatedStaffIds = new ArrayList<>();
+                        List<String> idsToRemove = new ArrayList<>();
+
+
+                        for (Pair<String, String> pair : pairs) {
+                            if (offlineIds.contains(pair.first)) {
+                                updatedStaffIds.add(pair.second);
+                            }
+
+                            idsToRemove.add(pair.first);
+                        }
+
+                        updatedStaffIds.addAll(offlineIds);
+                        updatedStaffIds.removeAll(idsToRemove);
+
+                        Log.i("British", "Updating to " + new ArrayList<>(updatedStaffIds) + attendanceDate);
+                        //we have ids and we have map to use to replace
+
+
+                        AttendanceResponse attendanceResponse = new AttendanceResponse(attendanceDate, updatedStaffIds);
+                        attendanceResponse.setDataSyncStatus(SyncStatus.FINALIZED);
+                        ContentValues values = getContentValuesForAttedance(attendanceResponse);
+                        int rowsAffected = update(values, DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{attendanceDate});
+
+                        if (rowsAffected == 0) {
+                            throw new RuntimeException("Mismatch no date exists to update");
+                        }
+
+                        subscriber.onNext(attendanceResponse);
+                    }
+
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                } finally {
+                    subscriber.onCompleted();
+                }
+
+
             }
-        }
+        });
 
-        Timber.i("Nishon %s", staffIdList.toString());
+
     }
 
+    private List<String> convertStaffIdsToList(String staffIds) {
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        List<String> staffIdList = new Gson().fromJson(staffIds, type);
+        return staffIdList;
+    }
+
+
     public void updateStaffId(String oldStaffId, String newStaffId) {
+
         Cursor cursor = DatabaseHelper.getDatabaseHelper().getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         while (cursor.moveToNext()) {
@@ -78,7 +130,7 @@ public class AttendanceDao {
             }.getType();
             List<String> staffIdList = new Gson().fromJson(staffIds, type);
 
-            if(!staffIdList.isEmpty()){
+            if (!staffIdList.isEmpty()) {
                 Timber.i("updateStaffId old list %s", staffIds);
             }
 
@@ -91,20 +143,24 @@ public class AttendanceDao {
             }
 
             AttendanceResponse attendanceResponse = new AttendanceResponse(attendanceDate, staffIdList);
+            attendanceResponse.setDataSyncStatus(SyncStatus.FINALIZED);
             ContentValues values = getContentValuesForAttedance(attendanceResponse);
             update(values, DatabaseHelper.KEY_ATTENDACE_DATE + "=?", new String[]{attendanceDate});
 
-            if(!staffIdList.isEmpty()){
+            if (!staffIdList.isEmpty()) {
                 Timber.i("updateStaffId new list %s", staffIds);
             }
+
+            Log.i("Apple", "array " + staffIdList);
         }
 
         closeCursor(cursor);
     }
 
-    private void update(ContentValues values, String selection, String[] selectionArgs) {
-        DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, values, selection, selectionArgs);
+    private int update(ContentValues values, String selection, String[] selectionArgs) {
+        return DatabaseHelper.getDatabaseHelper().getWritableDatabase().update(TABLE_NAME, values, selection, selectionArgs);
     }
+
 
     public final static class SyncStatus {
         public static String FINALIZED = "finalized";

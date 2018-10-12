@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
@@ -84,8 +85,8 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         initView();
         setupViewPager();
         setupToolbar();
-        syncStaffAttendancePeriodic();
-        syncStaffListPeriodic();
+//        syncStaffAttendancePeriodic();
+//        syncStaffListPeriodic();
 
         if (savedInstanceState != null) {
             staffAttedancelastJobId = savedInstanceState.getInt(LAST_JOB_ID, 0);
@@ -390,7 +391,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     private void syncStaffListPeriodic() {
         staffListlastJobId = new JobRequest.Builder(StaffDownloadJob.TAG)
-                .setPeriodic(JobRequest.MIN_INTERVAL, JobRequest.MIN_FLEX)
+                .setPeriodic(TimeUnit.DAYS.toMillis(1), JobRequest.MIN_FLEX)
                 .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
                 .build()
                 .schedule();

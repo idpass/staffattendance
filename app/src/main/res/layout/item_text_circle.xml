@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_marginRight="@dimen/spacing_large"
     android:layout_marginEnd="@dimen/spacing_large"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:id="@+id/icon_back"
@@ -25,7 +26,7 @@
             android:layout_centerInParent="true"
             android:background="@drawable/circle_green"
             android:padding="@dimen/spacing_medium"
-            android:src="@drawable/ic_check_blue_24dp" />
+            app:srcCompat="@drawable/ic_check_blue_24dp" />
     </RelativeLayout>
 
     <RelativeLayout

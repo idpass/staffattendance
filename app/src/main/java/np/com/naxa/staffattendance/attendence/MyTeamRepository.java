@@ -31,14 +31,17 @@ public class MyTeamRepository {
     }
 
     public Observable<Object> fetchMyTeam() {
-        final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
+        final ApiInterface apiInterface = APIClient
+                .getUploadClient()
+                .create(ApiInterface.class);
+
+        String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
 
         return myTeamObservable()
                 .filter(new Func1<List<TeamMemberResposne>, Boolean>() {
                     @Override
                     public Boolean call(List<TeamMemberResposne> teamMemberResposnes) {
                         staffDao.removeAllStaffList();
-                        String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
                         return !TextUtils.isEmpty(teamId);
                     }
                 })

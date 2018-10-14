@@ -50,13 +50,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         myTeamRepository = new MyTeamRepository();
         initUI();
 
-
-//        tvUserName.setText("dheerajkc47@gmail.com");
-//        tvPassword.setText("dheerajkc47");
-
-        tvUserName.setText("nishon.tan@gmail.com");
-        tvPassword.setText("12345678");
-
     }
 
     private void initUI() {

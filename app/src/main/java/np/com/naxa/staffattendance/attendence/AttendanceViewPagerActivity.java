@@ -49,6 +49,7 @@ import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -166,16 +167,11 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         final ArrayList<NewStaffPojo> newStaffs = new NewStaffDao().getOfflineStaffs();
 
         if (newStaffs.isEmpty()) {
-            repository
-                    .fetchMyTeam()
+
+            repository.fetchMyTeam()
+
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
-                    .flatMap(new Func1<Object, Observable<Object>>() {
-                        @Override
-                        public Observable<Object> call(Object o) {
-                            return repository.bulkAttendanceUpload();
-                        }
-                    })
                     .doOnSubscribe(new Action0() {
                         @Override
                         public void call() {
@@ -185,7 +181,29 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     .subscribe(new Observer<Object>() {
                         @Override
                         public void onCompleted() {
-                            closePleaseWaitDialog();
+
+                            repository.bulkAttendanceUpload()
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(new Subscriber<Object>() {
+                                        @Override
+                                        public void onCompleted() {
+                                            closePleaseWaitDialog();
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            closePleaseWaitDialog();
+                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
+                                                    e.getMessage())
+                                                    .show();
+                                        }
+
+                                        @Override
+                                        public void onNext(Object o) {
+                                            closePleaseWaitDialog();
+                                        }
+                                    });
                         }
 
                         @Override
@@ -202,6 +220,8 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
                         }
                     });
+
+
         } else {
             syncAttedanceWithOfflineStaff()
                     .doOnSubscribe(this::showPleaseWaitDialog)
@@ -211,7 +231,28 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     .subscribe(new Observer<Object>() {
                         @Override
                         public void onCompleted() {
+                            repository.bulkAttendanceUpload()
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(new Subscriber<Object>() {
+                                        @Override
+                                        public void onCompleted() {
+                                            closePleaseWaitDialog();
+                                        }
 
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            closePleaseWaitDialog();
+                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
+                                                    e.getMessage())
+                                                    .show();
+                                        }
+
+                                        @Override
+                                        public void onNext(Object o) {
+                                            closePleaseWaitDialog();
+                                        }
+                                    });
                         }
 
                         @Override

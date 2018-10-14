@@ -56,7 +56,7 @@
         android:layout_marginTop="4dp">
 
         <EditText
-            android:text="ABC"
+
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
             android:visibility="gone" />
 
         <EditText
-            android:text="2018-05-01"
+
             android:id="@+id/staff_dob_date"
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
@@ -156,7 +156,7 @@
         android:layout_marginTop="4dp">
 
         <android.support.design.widget.TextInputEditText
-            android:text="ABC"
+
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -188,7 +188,7 @@
     </LinearLayout>
 
     <EditText
-        android:text="ABC"
+
         android:id="@+id/staff_bank_other"
         style="@style/OfflineSiteEditText"
         android:layout_width="match_parent"
@@ -212,7 +212,7 @@
         android:visibility="gone">
 
         <android.support.design.widget.TextInputEditText
-            android:text="ABC"
+
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -233,7 +233,7 @@
         android:layout_marginTop="4dp">
 
         <android.support.design.widget.TextInputEditText
-            android:text="ABC"
+
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -252,7 +252,7 @@
         android:layout_marginTop="4dp">
 
         <android.support.design.widget.TextInputEditText
-            android:text="ABC"
+
 
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
@@ -272,7 +272,7 @@
         android:layout_marginTop="4dp">
 
         <android.support.design.widget.TextInputEditText
-            android:text="ABC"
+
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -301,7 +301,7 @@
             android:visibility="gone" />
 
         <EditText
-            android:text="2018-05-01"
+
             android:id="@+id/staff_contract_start_date_date"
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"
@@ -334,7 +334,7 @@
             android:visibility="gone" />
 
         <EditText
-            android:text="2018-05-01"
+
             android:id="@+id/staff_contract_end_date_date"
             style="@style/OfflineSiteEditText"
             android:layout_width="match_parent"

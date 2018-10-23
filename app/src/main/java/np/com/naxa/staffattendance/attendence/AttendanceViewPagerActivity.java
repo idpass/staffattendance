@@ -3,8 +3,10 @@ package np.com.naxa.staffattendance.attendence;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -160,36 +162,34 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                             .subscribe(new Observer<Object>() {
                                 @Override
                                 public void onCompleted() {
-                                    Timber.i("onCompleted");
                                     closePleaseWaitDialog();
+                                    DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
+                                    Timber.i("onCompleted");
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
                                     closePleaseWaitDialog();
-
-
                                     if (e instanceof HttpException) {
                                         try {
                                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,responseBody.string()).show();
+                                            showErrorDialog(responseBody.string());
                                         } catch (NullPointerException | IOException e1) {
-                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,"").show();
+                                            showErrorDialog("");
                                             e1.printStackTrace();
                                         }
                                     } else if (e instanceof SocketTimeoutException) {
-                                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,"Server took too long to respond").show();
+                                        showErrorDialog("Server took too long to respond");
                                     } else if (e instanceof IOException) {
-                                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,e.getMessage()).show();
+                                        showErrorDialog(e.getMessage());
                                     } else {
-                                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,"").show();
+                                        showErrorDialog(e.getMessage());
                                     }
                                 }
 
                                 @Override
                                 public void onNext(Object o) {
-                                    closePleaseWaitDialog();
-                                    Timber.i("onNext");
+
                                 }
                             });
 
@@ -204,6 +204,15 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showErrorDialog(String message) {
+
+        DialogFactory.createActionDialog(AttendanceViewPagerActivity.this, "Failed to sync", message)
+                .setPositiveButton("Ok", (dialog, which) -> AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this, true))
+                .setNegativeButton("Dismiss", null)
+                .show();
+
     }
 
 

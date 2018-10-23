@@ -23,6 +23,8 @@ import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobRequest;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,7 @@ import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import okhttp3.ResponseBody;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Observer;
@@ -149,32 +152,41 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
             case R.id.main_menu_refresh:
                 if (NetworkUtils.isInternetAvailable()) {
-                    TeamRemoteSource.getInstance().getAll()
-                            .doOnSubscribe(new Action0() {
-                                @Override
-                                public void call() {
-                                    showPleaseWaitDialog();
-                                }
-                            })
+                    TeamRemoteSource.getInstance()
+                            .getAll()
+//                            .doOnSubscribe(this::showPleaseWaitDialog)
                             .subscribe(new Observer<Object>() {
                                 @Override
                                 public void onCompleted() {
+                                    Timber.i("onCompleted");
                                     closePleaseWaitDialog();
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    closePleaseWaitDialog();
-                                    Timber.e("Error: %s", e.getMessage());
-                                    DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,e.getMessage()).show();
+                                    Timber.i("onError");
+                                    if (e instanceof HttpException) {
+                                        try {
+                                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                            responseBody.string();
+                                        } catch (NullPointerException | IOException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                    } else if (e instanceof SocketTimeoutException) {
+
+                                    } else if (e instanceof IOException) {
+
+                                    } else {
+
+                                    }
                                 }
 
                                 @Override
                                 public void onNext(Object o) {
-
+                                    Timber.i("onNext");
                                 }
                             });
-                    ;
+
                 } else {
                     ToastUtils.showLong(getString(R.string.no_internet));
                 }

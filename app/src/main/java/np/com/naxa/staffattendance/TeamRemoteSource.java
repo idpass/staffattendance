@@ -31,7 +31,7 @@ public class TeamRemoteSource implements BaseRemoteDataSource<Object> {
 
     public static TeamRemoteSource getInstance() {
         if (teamRemoteSource == null) {
-            return new TeamRemoteSource();
+            teamRemoteSource = new TeamRemoteSource();
         }
 
         return teamRemoteSource;
@@ -132,10 +132,11 @@ public class TeamRemoteSource implements BaseRemoteDataSource<Object> {
                         .flatMapIterable((Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>) teamMemberResposnes -> teamMemberResposnes)
                         .doOnSubscribe(() -> {
                             StaffDao.getInstance().removeAllStaffList();
+                            Timber.i("Removing all staff details");
                         })
                         .doOnNext(teamMemberResposne -> {
-
-                            teamMemberResposne.setTeamID(teamMemberResposne.getId());
+                            Timber.i("Inserting %s",teamMemberResposne.getFirstName());
+                            teamMemberResposne.setTeamID(myTeamResponse.getId());
                             teamMemberResposne.setTeamName(myTeamResponse.getName());
                             StaffDao.getInstance().saveStaff(teamMemberResposne);
 

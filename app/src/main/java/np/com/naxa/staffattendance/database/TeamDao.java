@@ -2,7 +2,8 @@ package np.com.naxa.staffattendance.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+
+import java.util.List;
 
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.application.StaffAttendance;
@@ -72,6 +73,22 @@ public class TeamDao {
 //        }
 
 //        return teamId;
+
+    }
+
+    public String getTeamMembers(List<String> membersIds) {
+        StringBuilder builder = new StringBuilder();
+        for (String id : membersIds) {
+            Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=?", new String[]{id});
+
+            if (cursor.getCount() != 1) break;
+            cursor.moveToFirst();
+            builder.append("\n");
+            builder.append("+ ");
+            builder.append(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FULL_NAME));
+        }
+
+        return builder.toString();
 
     }
 }

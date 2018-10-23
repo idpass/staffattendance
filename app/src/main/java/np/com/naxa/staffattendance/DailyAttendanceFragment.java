@@ -3,6 +3,7 @@ package np.com.naxa.staffattendance;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -24,10 +25,12 @@ import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.database.AttendanceDao;
+import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
+import rx.Observable;
 import timber.log.Timber;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
@@ -85,7 +88,19 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showMarkPresentDialog();
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        String peoplelist = TeamDao.getInstance().getTeamMembers(attedanceToUpload);
+                        String title = "Mark selected as present?";
+                        String msg = "%s.\n\nYou won't be able to change this once confirmed.";
+                        msg = String.format(msg, peoplelist);
+
+
+                        showMarkPresentDialog(title,msg);
+                    }
+                });
             }
         });
 
@@ -94,35 +109,37 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     }
 
 
-    private void showMarkPresentDialog() {
-        String title = "Mark selected as present?";
-        String msg = "You won't be able to change this once confirmed.";
-
-        DialogFactory.createActionDialog(getActivity(), title, msg)
-                .setPositiveButton("Mark Present", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+    private void showMarkPresentDialog(String title, String msg) {
+        getActivity().runOnUiThread(() -> {
+            DialogFactory.createActionDialog(getActivity(), title, msg)
+                    .setPositiveButton("Mark Present", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
 
-                        //saving it offline
-                        AttendanceDao attedanceDao = new AttendanceDao();
-                        AttendanceResponse attendanceResponse = new AttendanceResponse();
-                        attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
-                        attendanceResponse.setStaffs(stafflistAdapter.getSelectedStaffID());
-                        attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
+                            //saving it offline
+                            AttendanceDao attedanceDao = new AttendanceDao();
 
-                        ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
-                        attedanceDao.saveAttedance(contentValues);
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                AttendanceViewPagerActivity.start(getActivity(), true);
-                            }
-                        }, 1000);
+                            AttendanceResponse attendanceResponse = new AttendanceResponse();
+                            attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
+                            attendanceResponse.setStaffs(attedanceToUpload);
+                            attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
-                    }
-                }).setNegativeButton("Dismiss", null).show();
+                            ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
+                            attedanceDao.saveAttedance(contentValues);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AttendanceViewPagerActivity.start(getActivity(), true);
+                                }
+                            }, 1000);
+
+                        }
+                    }).setNegativeButton("Dismiss", null).show();
+        });
+
     }
 
 
@@ -159,10 +176,10 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         stafflistAdapter.toggleSelection(pos);
 
         if (attedanceToUpload.contains(staff.getId())) {
-            Timber.i("Removing staff id %s", staff.getId());
+            Timber.i("Removing %s / %s", staff.getId(), staff.getFirstName());
             attedanceToUpload.remove(staff.getId());
         } else {
-            Timber.i("Adding staff id %s", staff.getId());
+            Timber.i("Adding %s / %s", staff.getId(), staff.getFirstName());
             attedanceToUpload.add(staff.getId());
         }
 

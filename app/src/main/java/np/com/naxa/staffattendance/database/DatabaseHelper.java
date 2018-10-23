@@ -148,12 +148,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAFF);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NEW_STAFF);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
+        dropAll(db);
 
         // create new tables
         onCreate(db);
+    }
+
+    public void dropAll(SQLiteDatabase db){
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAFF);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NEW_STAFF);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
     }
 
 

@@ -38,6 +38,7 @@ import np.com.naxa.staffattendance.TeamRemoteSource;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.AttendanceDao;
+import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.jobs.StaffAttendanceSyncJob;
@@ -126,7 +127,11 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_people_white_24dp);
-        getSupportActionBar().setTitle(R.string.toolbar_title_attedance);
+
+        String teamName = TeamDao.getInstance().getTeamNameById(TeamDao.getInstance().getOneTeamIdForDemo());
+
+        getSupportActionBar().setTitle(TextUtils.isEmpty(teamName) ? teamName :
+                getString(R.string.toolbar_title_attedance));
     }
 
     @Override
@@ -149,6 +154,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
             case R.id.main_menu_logout:
                 TokenMananger.clearToken();
                 SharedPreferenceUtils.purge(getApplicationContext());
+                DatabaseHelper.getDatabaseHelper().dropAll(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
                 LoginActivity.start(AttendanceViewPagerActivity.this);
                 finish();
                 break;

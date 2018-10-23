@@ -34,6 +34,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -74,6 +75,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private BottomNavigationView bottomNavigationView;
     private Gson gson;
     private Dialog msgDialog;
+    DatePickerDialog datePickerDialog;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -250,7 +252,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         };
     }
 
-    private void updateDateOnView(final EditText view) {
+    private void updateDateOnView(final EditText view, String formatedDate) {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
         view.setText(sdf.format(calendar.getTime()));
@@ -404,9 +406,15 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void getDatePicker(final EditText view) {
-        new DatePickerDialog(this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show();
-        updateDateOnView((EditText) view);
+        new DatePickerDialog(this, (view1, year, month, dayOfMonth) -> {
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, dayOfMonth, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
+                    calendar.get(Calendar.SECOND));
+
+            String formattedDate = String.format(Locale.US, "%s-%02d-%02d", year, month + 1, dayOfMonth);
+            view.setText(formattedDate);
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
 

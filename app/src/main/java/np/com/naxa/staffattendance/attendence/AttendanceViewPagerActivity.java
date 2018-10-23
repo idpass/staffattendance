@@ -128,10 +128,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_people_white_24dp);
 
-        String teamName = TeamDao.getInstance().getTeamNameById(TeamDao.getInstance().getOneTeamIdForDemo());
-
-        getSupportActionBar().setTitle(TextUtils.isEmpty(teamName) ? teamName :
-                getString(R.string.toolbar_title_attedance));
+        getSupportActionBar().setTitle(R.string.toolbar_title_attedance);
     }
 
     @Override

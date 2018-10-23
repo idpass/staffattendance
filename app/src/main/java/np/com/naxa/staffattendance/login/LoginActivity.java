@@ -3,9 +3,12 @@ package np.com.naxa.staffattendance.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -13,6 +16,7 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.TeamRemoteSource;
@@ -52,6 +56,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initUI();
 
 
+        if (BuildConfig.DEBUG) {
+            tvUserName.setText(LoginHelper.getUserName());
+            tvPassword.setText(LoginHelper.getPWD());
+            new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
+
+        }
+
 
     }
 
@@ -80,7 +91,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     private void loginToServer(final String username, final String password) {
-        dialog.show();
+        try {
+            dialog.show();
+        } catch (WindowManager.BadTokenException e) {
+            //do nothing
+        }
         new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
             @Override
             public void onSuccess() {
@@ -92,8 +107,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onError() {
-                dialog.dismiss();
-                ToastUtils.showShort("Login Error");
+                try {
+                    dialog.dismiss();
+//                    ToastUtils.showShort("Login Error");
+                } catch (WindowManager.BadTokenException e) {
+                    //do nothing
+                }
+
             }
         });
     }

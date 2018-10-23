@@ -153,8 +153,10 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
             case R.id.main_menu_refresh:
                 if (NetworkUtils.isInternetAvailable()) {
                     TeamRemoteSource.getInstance()
-                            .getAll()
-//                            .doOnSubscribe(this::showPleaseWaitDialog)
+                            .syncAll()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSubscribe(this::showPleaseWaitDialog)
                             .subscribe(new Observer<Object>() {
                                 @Override
                                 public void onCompleted() {
@@ -164,25 +166,29 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    Timber.i("onError");
+                                    closePleaseWaitDialog();
+
+
                                     if (e instanceof HttpException) {
                                         try {
                                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                            responseBody.string();
+                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,responseBody.string()).show();
                                         } catch (NullPointerException | IOException e1) {
+                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,"").show();
                                             e1.printStackTrace();
                                         }
                                     } else if (e instanceof SocketTimeoutException) {
-
+                                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,"Server took too long to respond").show();
                                     } else if (e instanceof IOException) {
-
+                                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,e.getMessage()).show();
                                     } else {
-
+                                        DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,"").show();
                                     }
                                 }
 
                                 @Override
                                 public void onNext(Object o) {
+                                    closePleaseWaitDialog();
                                     Timber.i("onNext");
                                 }
                             });

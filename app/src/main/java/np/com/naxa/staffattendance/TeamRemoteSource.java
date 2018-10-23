@@ -24,7 +24,7 @@ import rx.functions.Func1;
 import timber.log.Timber;
 
 
-public class TeamRemoteSource implements BaseRemoteDataSource<Object> {
+public class TeamRemoteSource  {
 
 
     private static TeamRemoteSource teamRemoteSource;
@@ -87,7 +87,7 @@ public class TeamRemoteSource implements BaseRemoteDataSource<Object> {
         });
     }
 
-    public Observable<Object> getAll() {
+    public Observable<Object> syncAll() {
         final ApiInterface api = APIClient.getUploadClient()
                 .create(ApiInterface.class);
 
@@ -132,10 +132,9 @@ public class TeamRemoteSource implements BaseRemoteDataSource<Object> {
                         .flatMapIterable((Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>) teamMemberResposnes -> teamMemberResposnes)
                         .doOnSubscribe(() -> {
                             StaffDao.getInstance().removeAllStaffList();
-                            Timber.i("Removing all staff details");
                         })
                         .doOnNext(teamMemberResposne -> {
-                            Timber.i("Inserting %s",teamMemberResposne.getFirstName());
+
                             teamMemberResposne.setTeamID(myTeamResponse.getId());
                             teamMemberResposne.setTeamName(myTeamResponse.getName());
                             StaffDao.getInstance().saveStaff(teamMemberResposne);

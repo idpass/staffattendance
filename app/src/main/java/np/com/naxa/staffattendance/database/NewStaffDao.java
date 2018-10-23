@@ -17,6 +17,15 @@ public class NewStaffDao {
     public static String UPLOADED = "uploaded";
 
 
+    private static NewStaffDao newStaffDao;
+
+    public static NewStaffDao getInstance() {
+        if (newStaffDao == null) {
+            return new NewStaffDao();
+        }
+        return newStaffDao;
+    }
+
     public void saveNewStaff(NewStaffPojo newStaffPojo) {
         DatabaseHelper.getDatabaseHelper().getWritableDatabase().insert(DatabaseHelper.TABLE_NEW_STAFF, null, getContentValues(newStaffPojo));
     }
@@ -60,7 +69,7 @@ public class NewStaffDao {
                 .setContractEnd(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_CONTRACT_END_DATE))
                 .setPhoto(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_PHOTO))
                 .setStatus(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DETAIL_STATUS))
-                .setID(DatabaseHelper.getStringFromCursor(cursor,DatabaseHelper.KEY_ID))
+                .setID(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID))
                 .createNewStaffPojo();
     }
 

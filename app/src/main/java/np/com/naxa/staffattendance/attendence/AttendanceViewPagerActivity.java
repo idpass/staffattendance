@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.TeamRemoteSource;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.AttendanceDao;
@@ -54,6 +55,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
 
@@ -147,7 +149,32 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
             case R.id.main_menu_refresh:
                 if (NetworkUtils.isInternetAvailable()) {
-                    uploadNewStaffThenRefresh();
+                    TeamRemoteSource.getInstance().getAll()
+                            .doOnSubscribe(new Action0() {
+                                @Override
+                                public void call() {
+                                    showPleaseWaitDialog();
+                                }
+                            })
+                            .subscribe(new Observer<Object>() {
+                                @Override
+                                public void onCompleted() {
+                                    closePleaseWaitDialog();
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    closePleaseWaitDialog();
+                                    Timber.e("Error: %s", e.getMessage());
+                                    DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,e.getMessage()).show();
+                                }
+
+                                @Override
+                                public void onNext(Object o) {
+
+                                }
+                            });
+                    ;
                 } else {
                     ToastUtils.showLong(getString(R.string.no_internet));
                 }
@@ -312,7 +339,8 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                                     }
                                 });
                     }
-                }).toList()
+                })
+                .toList()
                 .flatMap(new Func1<List<Pair<String, String>>, Observable<AttendanceResponse>>() {
                     @Override
                     public Observable<AttendanceResponse> call(List<Pair<String, String>> pairs) {

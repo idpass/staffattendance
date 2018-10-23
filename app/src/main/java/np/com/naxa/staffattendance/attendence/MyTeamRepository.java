@@ -15,6 +15,7 @@ import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -30,6 +31,9 @@ public class MyTeamRepository {
         attendanceDao = new AttendanceDao();
     }
 
+
+
+
     public Observable<Object> fetchMyTeam() {
         final ApiInterface apiInterface = APIClient
                 .getUploadClient()
@@ -38,11 +42,10 @@ public class MyTeamRepository {
         String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
 
         return myTeamObservable()
-                .filter(new Func1<List<TeamMemberResposne>, Boolean>() {
+                .doOnSubscribe(new Action0() {
                     @Override
-                    public Boolean call(List<TeamMemberResposne> teamMemberResposnes) {
+                    public void call() {
                         staffDao.removeAllStaffList();
-                        return !TextUtils.isEmpty(teamId);
                     }
                 })
                 .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttendanceResponse>>>() {

@@ -22,6 +22,17 @@ import timber.log.Timber;
 
 public class AttendanceDao {
 
+    private static AttendanceDao attendanceDao;
+
+    public static AttendanceDao getInstance() {
+        if (attendanceDao == null) {
+            return new AttendanceDao();
+        }
+
+        return attendanceDao;
+    }
+
+
     public int updateAttendance(String date, String teamId) {
         String selection = DatabaseHelper.KEY_ATTENDACE_DATE + "=? AND " + DatabaseHelper.KEY_STAFF_TEAM_ID + "=?";
         String[] selectionArgs = new String[]{date, teamId};

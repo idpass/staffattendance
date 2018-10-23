@@ -103,12 +103,12 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void setFakeData(){
+    private void setFakeData() {
         firstName.getEditText().setText(randomName());
-        try{
+        try {
 //            bank.setSelection(1);
 //            designation.setSelection(1);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -205,7 +205,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             msgDialog.dismiss();
         }
     }
-
 
 
     private void initSpinners() {
@@ -413,7 +412,25 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     public NewStaffPojo getNewStaffDetail() {
 
-        return new NewStaffPojoBuilder().setDesignation(designation.getSelectedItemPosition()).setFirstName(firstName.getEditText().getText().toString()).setLastName(lastName.getEditText().getText().toString()).setDateOfBirth(dob.getText().toString()).setGender(getGender()).setEthnicity(ethinicity.getEditText().getText().toString()).setBank(getBankId()).setBankName(bankNameOther.getText().toString()).setAccountNumber(accountNumber.getEditText().getText().toString()).setPhoneNumber(contactNumber.getEditText().getText().toString()).setEmail(email.getEditText().getText().toString()).setAddress(address.getEditText().getText().toString()).setContractStart(contractStartDate.getText().toString()).setContractEnd(contractEndDate.getText().toString()).setPhoto(getPhotoLocation()).setStatus(NewStaffDao.SAVED).createNewStaffPojo();
+
+        return new NewStaffPojoBuilder()
+                .setDesignation(designation.getSelectedItemPosition())
+                .setFirstName(firstName.getEditText().getText().toString())
+                .setLastName(lastName.getEditText().getText().toString())
+                .setDateOfBirth(dob.getText().toString())
+                .setGender(getGender())
+                .setEthnicity(ethinicity.getEditText().getText().toString())
+                .setBank(getBankId())
+                .setBankName(bankNameOther.getText().toString())
+                .setAccountNumber(accountNumber.getEditText().getText().toString())
+                .setPhoneNumber(contactNumber.getEditText().getText().toString())
+                .setEmail(email.getEditText().getText().toString())
+                .setAddress(address.getEditText().getText().toString())
+                .setContractStart(contractStartDate.getText().toString())
+                .setContractEnd(contractEndDate.getText().toString())
+                .setPhoto(getPhotoLocation())
+                .setStatus(NewStaffDao.SAVED)
+                .createNewStaffPojo();
     }
 
     private String getPhotoLocation() {
@@ -505,13 +522,13 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
     public static String randomName() {
-      final String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+        final String ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
 
 
-        final Random random=new Random();
+        final Random random = new Random();
         int sizeOfRandomString = 10;
-        final StringBuilder sb=new StringBuilder(sizeOfRandomString);
-        for(int i=0;i<sizeOfRandomString;++i)
+        final StringBuilder sb = new StringBuilder(sizeOfRandomString);
+        for (int i = 0; i < sizeOfRandomString; ++i)
             sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
         return sb.toString();
     }

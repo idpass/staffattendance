@@ -23,7 +23,19 @@ import rx.schedulers.Schedulers;
 
 public class StaffDao {
 
+
+    private static StaffDao staffDao;
+
     private final String TABLE_NAME = DatabaseHelper.TABLE_STAFF;
+
+
+    public static StaffDao getInstance() {
+        if (staffDao == null) {
+            return new StaffDao();
+        }
+
+        return staffDao;
+    }
 
     public long saveStaff(TeamMemberResposne staff) {
         return saveStaff(getContentValuesFronSaff(staff));
@@ -133,9 +145,6 @@ public class StaffDao {
                     }
                 }).toList();
     }
-
-
-
 
 
 }

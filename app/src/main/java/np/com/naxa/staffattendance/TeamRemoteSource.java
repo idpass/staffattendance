@@ -158,7 +158,15 @@ public class TeamRemoteSource  {
         final String teamId = new TeamDao().getOneTeamIdForDemo();
         ArrayList<AttendanceResponse> attendanceResponses = AttendanceDao.getInstance().getFinalizedAttendanceSheet();
 
+
         Observable<AttendanceResponse> attendanceSheet = Observable.just(attendanceResponses)
+                .map(new Func1<ArrayList<AttendanceResponse>, ArrayList<AttendanceResponse>>() {
+                    @Override
+                    public ArrayList<AttendanceResponse> call(ArrayList<AttendanceResponse> attendanceResponses) {
+                        if(TextUtils.isEmpty(teamId))throw new RuntimeException("Team ID is missing");
+                        return attendanceResponses;
+                    }
+                })
                 .flatMapIterable((Func1<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>) attendanceRespons -> attendanceRespons)
                 .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
 

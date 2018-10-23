@@ -47,31 +47,31 @@ public class TeamDao {
 
     public String getOneTeamIdForDemo() {
 
-//        return SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, "");
+        return SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, "");
 
-        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
-        Cursor cursor = null;
-        String teamId = "";
+//        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
+//        Cursor cursor = null;
+//        String teamId = "";
+//
+//        try {
+//            cursor = db.query(true, TABLE_NAME, null, null, null, null, null, null, null);
+//            cursor.moveToFirst();
+//            teamId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_ID);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//
+//            if (cursor != null) {
+//                cursor.close();
+//                db.close();
+//            }
+//
+//            if (db != null) {
+//                db.close();
+//            }
+//        }
 
-        try {
-            cursor = db.query(true, TABLE_NAME, null, null, null, null, null, null, null);
-            cursor.moveToFirst();
-            teamId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_ID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-
-            if (cursor != null) {
-                cursor.close();
-                db.close();
-            }
-
-            if (db != null) {
-                db.close();
-            }
-        }
-
-        return teamId;
+//        return teamId;
 
     }
 }

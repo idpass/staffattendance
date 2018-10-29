@@ -24,7 +24,7 @@ import rx.functions.Func1;
 import timber.log.Timber;
 
 
-public class TeamRemoteSource  {
+public class TeamRemoteSource {
 
 
     private static TeamRemoteSource teamRemoteSource;
@@ -150,6 +150,7 @@ public class TeamRemoteSource  {
                     @Override
                     public Observable<?> call(ArrayList<AttendanceResponse> attendanceResponses) {
                         AttendanceDao.getInstance().removeAllAttedance();
+
                         return AttendanceDao.getInstance().saveAttendance(attendanceResponses);
                     }
                 });
@@ -163,7 +164,8 @@ public class TeamRemoteSource  {
                 .map(new Func1<ArrayList<AttendanceResponse>, ArrayList<AttendanceResponse>>() {
                     @Override
                     public ArrayList<AttendanceResponse> call(ArrayList<AttendanceResponse> attendanceResponses) {
-                        if(TextUtils.isEmpty(teamId))throw new RuntimeException("Team ID is missing");
+                        if (TextUtils.isEmpty(teamId))
+                            throw new RuntimeException("Team ID is missing");
                         return attendanceResponses;
                     }
                 })
@@ -173,16 +175,10 @@ public class TeamRemoteSource  {
                     return api.postAttendanceForTeam(teamId,
                             attendanceResponse.getAttendanceDate(false),
                             attendanceResponse.getPresentStaffIds());
-                })
-                .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
-                    if (attendanceResponse != null) {
-                        AttendanceDao.getInstance().updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
-                    }
-                    return null;
                 });
 
 
-        return Observable.concat(uploadNewStaff, teamlist, pastAttendance, attendanceSheet);
+        return Observable.concat(uploadNewStaff, teamlist, pastAttendance, attendanceSheet, pastAttendance);
 
     }
 

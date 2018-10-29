@@ -34,7 +34,8 @@ public class AttendanceDao {
 
 
     public int updateAttendance(String date, String teamId) {
-        String selection = DatabaseHelper.KEY_ATTENDACE_DATE + "=? AND " + DatabaseHelper.KEY_STAFF_TEAM_ID + "=?";
+//        String selection = DatabaseHelper.KEY_ATTENDACE_DATE + "=? AND " + DatabaseHelper.KEY_STAFF_TEAM_ID + "=?";
+        String selection = DatabaseHelper.KEY_ATTENDACE_DATE ;
         String[] selectionArgs = new String[]{date, teamId};
         return updateAttendance(getContentValuesForStatusUpdate(), selection, selectionArgs);
     }

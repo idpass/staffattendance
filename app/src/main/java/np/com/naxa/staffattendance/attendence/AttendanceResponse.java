@@ -25,6 +25,9 @@ public class AttendanceResponse {
     @Expose
     private List<String> staffs = null;
 
+
+    private String teamId;
+
     public AttendanceResponse(String attendanceDate, List<String> staffs) {
         this.attendanceDate = attendanceDate;
         this.staffs = staffs;
@@ -34,6 +37,13 @@ public class AttendanceResponse {
 
     }
 
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
+    }
 
     private String dataSyncStatus;
 

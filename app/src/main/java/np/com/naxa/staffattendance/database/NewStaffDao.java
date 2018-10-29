@@ -27,7 +27,11 @@ public class NewStaffDao {
     }
 
     public void saveNewStaff(NewStaffPojo newStaffPojo) {
-        DatabaseHelper.getDatabaseHelper().getWritableDatabase().insert(DatabaseHelper.TABLE_NEW_STAFF, null, getContentValues(newStaffPojo));
+        DatabaseHelper.getDatabaseHelper()
+                .getWritableDatabase()
+                .insert(DatabaseHelper.TABLE_NEW_STAFF,
+                        null,
+                        getContentValues(newStaffPojo));
     }
 
 
@@ -75,6 +79,7 @@ public class NewStaffDao {
 
     private ContentValues getContentValues(NewStaffPojo pojo) {
         ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.KEY_ID,pojo.getId());
         values.put(DatabaseHelper.KEY_STAFF_DESIGNATION, pojo.getDesignation());
         values.put(DatabaseHelper.KEY_STAFF_FIRST_NAME, pojo.getFirstName());
         values.put(DatabaseHelper.KEY_STAFF_LAST_NAME, pojo.getLastName());

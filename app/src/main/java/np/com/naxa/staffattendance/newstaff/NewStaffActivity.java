@@ -365,6 +365,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setDesignation(newStaffDetail.getDesignation())
                 .setTeamID(id)
                 .setTeamName(new TeamDao().getTeamNameById(id))
+                .setId(newStaffDetail.getId())
                 .createTeamMemberResposne();
 
         new StaffDao().saveStaff(member);
@@ -422,6 +423,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
         return new NewStaffPojoBuilder()
+                .setID(String.valueOf(System.currentTimeMillis()))
                 .setDesignation(designation.getSelectedItemPosition())
                 .setFirstName(firstName.getEditText().getText().toString())
                 .setLastName(lastName.getEditText().getText().toString())

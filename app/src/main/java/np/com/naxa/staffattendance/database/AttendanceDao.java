@@ -82,6 +82,7 @@ public class AttendanceDao {
                         String staffIds = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
                         String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
                         List<String> offlineIds = convertStaffIdsToList(staffIds);
+
                         List<String> updatedStaffIds = new ArrayList<>();
                         List<String> idsToRemove = new ArrayList<>();
 

@@ -57,8 +57,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         if (false) {
-            tvUserName.setText(LoginHelper.getUserName());
-            tvPassword.setText(LoginHelper.getPWD());
+//            tvUserName.setText(LoginHelper.getUserName());
+//            tvPassword.setText(LoginHelper.getPWD());
             new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
 
         }

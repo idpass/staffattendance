@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -149,11 +151,44 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.main_menu_logout:
-                TokenMananger.clearToken();
-                SharedPreferenceUtils.purge(getApplicationContext());
-                DatabaseHelper.getDatabaseHelper().delteAllRows(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
-                LoginActivity.start(AttendanceViewPagerActivity.this);
-                finish();
+
+                int a = DatabaseHelper.getDatabaseHelper().getNewStaffCount(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
+                int b = DatabaseHelper.getDatabaseHelper().getFinalizedCount(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
+
+                if ((a + b) == 0) {
+                    TokenMananger.clearToken();
+                    SharedPreferenceUtils.purge(getApplicationContext());
+                    DatabaseHelper.getDatabaseHelper().delteAllRows(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
+                    LoginActivity.start(AttendanceViewPagerActivity.this);
+                    finish();
+                } else {
+                    String msg = "";
+                    if (a > 0) msg += String.format("%d new staff/s", a);
+                    if (b > 0) msg += String.format("\n%d finalized attendance", b);
+                    msg += "\nwill be lost.";
+
+                    DialogFactory.createActionDialog(this, "Alert", msg)
+                            .setPositiveButton("Log Out", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    TokenMananger.clearToken();
+                                    SharedPreferenceUtils.purge(getApplicationContext());
+                                    DatabaseHelper.getDatabaseHelper().delteAllRows(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
+                                    LoginActivity.start(AttendanceViewPagerActivity.this);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                            .create()
+                            .show();
+
+                }
                 break;
             case R.id.main_menu_refresh:
                 if (NetworkUtils.isInternetAvailable()) {

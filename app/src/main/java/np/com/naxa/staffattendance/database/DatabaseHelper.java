@@ -154,13 +154,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void dropAll(SQLiteDatabase db){
+    public void dropAll(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAFF);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NEW_STAFF);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
     }
 
-    public void delteAllRows(SQLiteDatabase db){
+    public void delteAllRows(SQLiteDatabase db) {
         db.execSQL("DELETE FROM " + TABLE_STAFF);
         db.execSQL("DELETE FROM  " + TABLE_NEW_STAFF);
         db.execSQL("DELETE FROM  " + TABLE_ATTENDANCE);
@@ -168,5 +168,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static String getStringFromCursor(Cursor cursor, String columnName) {
         return cursor.getString(cursor.getColumnIndex(columnName));
+    }
+
+    public int getNewStaffCount(SQLiteDatabase db) {
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NEW_STAFF, null);
+        int count = cursor.getCount();
+        return count;
+    }
+
+    public int getFinalizedCount(SQLiteDatabase db) {
+        String query = String.format("SELECT * FROM %s WHERE %s = 'finalized'", TABLE_ATTENDANCE, KEY_SYNC_STATUS);
+        Cursor cursor = db.rawQuery(query, null);
+        int count = cursor.getCount();
+        return count;
     }
 }

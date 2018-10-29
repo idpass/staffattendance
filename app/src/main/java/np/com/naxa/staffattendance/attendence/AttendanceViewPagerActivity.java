@@ -32,6 +32,7 @@ import java.net.SocketTimeoutException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import np.com.naxa.staffattendance.R;
@@ -110,22 +111,10 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.action_add_staff:
 
-                        boolean hasTeam = !TextUtils.isEmpty(TeamDao.getInstance().getOneTeamIdForDemo());
-                        if (hasTeam) {
-                            NewStaffActivity.start(AttendanceViewPagerActivity.this, false);
-                            finish();
-                        } else {
-                            DialogFactory.createActionDialog(AttendanceViewPagerActivity.this, "Not assigned to a team",
-                                    "Cannot add team member because you have not been to an team yet")
-                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            bottomNavigationView.setSelectedItemId(R.id.action_attedance);
-                                        }
-                                    })
-                                    .show();
 
-                        }
+                        NewStaffActivity.start(AttendanceViewPagerActivity.this, false);
+                        finish();
+
                         break;
 
                     case R.id.action_attedance:
@@ -177,13 +166,13 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     LoginActivity.start(AttendanceViewPagerActivity.this);
                     finish();
                 } else {
-                    String msg = "";
-                    if (a > 0) msg += String.format("%d new staff/s", a);
-                    if (b > 0) msg += String.format("\n%d finalized attendance", b);
-                    msg += "\nwill be lost.";
+                    String msg = "If you logout all your account data including";
+                    if (a > 0) msg += String.format(Locale.US, "%d un-synced staff(s)", a);
+                    if (b > 0) msg += String.format(Locale.US, "\n %d finalized attendance(s)", b);
+                    msg += "\nwill be deleted.";
 
-                    DialogFactory.createActionDialog(this, "Alert", msg)
-                            .setPositiveButton("Log Out", new DialogInterface.OnClickListener() {
+                    DialogFactory.createActionDialog(this, "Caution", msg)
+                            .setPositiveButton("Delete and logout", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     dialogInterface.dismiss();
@@ -194,7 +183,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                                     finish();
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     dialogInterface.dismiss();

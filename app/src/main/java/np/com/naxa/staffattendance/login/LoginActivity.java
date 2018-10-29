@@ -2,10 +2,12 @@ package np.com.naxa.staffattendance.login;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,6 +16,8 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 import np.com.naxa.staffattendance.BuildConfig;
@@ -24,12 +28,21 @@ import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.R;
+import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.TokenMananger;
+import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ProgressDialogUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import okhttp3.ResponseBody;
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -56,9 +69,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initUI();
 
 
-        if (false) {
-//            tvUserName.setText(LoginHelper.getUserName());
-//            tvPassword.setText(LoginHelper.getPWD());
+        if (true) {
+            tvUserName.setText(LoginHelper.getUserName());
+            tvPassword.setText(LoginHelper.getPWD());
             new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
 
         }
@@ -96,10 +109,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } catch (WindowManager.BadTokenException e) {
             //do nothing
         }
+
+
         new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
             @Override
             public void onSuccess() {
-                APIClient.removeRetrofitClient();
+
                 fetchMyTeam();
                 getBanksAndDesignation();
 
@@ -170,21 +185,48 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void fetchMyTeam() {
 
         myTeamRepository.fetchMyTeam()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onCompleted() {
                         dialog.dismiss();
+
                         AttendanceViewPagerActivity.start(LoginActivity.this, false);
                         finish();
+
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-
+                        TokenMananger.clearToken();
                         dialog.dismiss();
-                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
-                        finish();
+                        if (e instanceof HttpException) {
+                            try {
+                                HttpException httpException = (HttpException) e;
+                                ResponseBody responseBody = httpException.response().errorBody();
+                                switch (httpException.code()) {
+                                    case 404:
+                                        showErrorDialog("You are not assigned to a team yet");
+                                        break;
+                                    default:
+                                        showErrorDialog(responseBody.string());
+                                        break;
+                                }
+
+                            } catch (NullPointerException | IOException e1) {
+                                showErrorDialog("");
+                                e1.printStackTrace();
+                            }
+                        } else if (e instanceof SocketTimeoutException) {
+                            showErrorDialog("Server took too long to respond");
+                        } else if (e instanceof IOException) {
+                            showErrorDialog(e.getMessage());
+                        } else {
+                            showErrorDialog(e.getMessage());
+                        }
                     }
 
                     @Override
@@ -192,6 +234,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     }
                 });
+    }
+
+    private void showErrorDialog(String message) {
+
+        DialogFactory.createActionDialog(LoginActivity.this, "Failed to login", message)
+                .setPositiveButton("Ok",null)
+                  .show();
+
     }
 
     private boolean validate() {

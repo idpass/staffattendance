@@ -35,6 +35,15 @@ public interface ApiInterface {
             @Field("password") String password
     );
 
+
+    @FormUrlEncoded
+    @POST("users/api/get-auth-token/")
+    Observable<LoginResponse> getLoginDetailsObservable(
+            @Field("email_or_username") String username,
+            @Field("password") String password
+    );
+
+
     @Multipart
     @POST("staff/api/staff/{team_id}/")
     Observable<NewStaffPojo> uploadNewStaff(

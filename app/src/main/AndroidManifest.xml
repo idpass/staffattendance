@@ -26,7 +26,7 @@
             android:name=".newstaff.NewStaffActivity" />
         <activity
             android:name=".attendence.AttendanceViewPagerActivity"
-            android:exported="true" />
+          />
         <activity android:name=".jobs.SyncHistoryActivity" />
         <meta-data
             android:name="io.fabric.ApiKey"

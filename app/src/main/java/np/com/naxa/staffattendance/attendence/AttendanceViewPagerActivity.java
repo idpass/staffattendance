@@ -107,8 +107,23 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_add_staff:
-                        NewStaffActivity.start(AttendanceViewPagerActivity.this, false);
-                        finish();
+
+                        boolean hasTeam = !TextUtils.isEmpty(TeamDao.getInstance().getOneTeamIdForDemo());
+                        if (hasTeam) {
+                            NewStaffActivity.start(AttendanceViewPagerActivity.this, false);
+                            finish();
+                        } else {
+                            DialogFactory.createActionDialog(AttendanceViewPagerActivity.this, "Not assigned to a team",
+                                    "Cannot add team member because you have not been to an team yet")
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            bottomNavigationView.setSelectedItemId(R.id.action_attedance);
+                                        }
+                                    })
+                                    .show();
+
+                        }
                         break;
 
                     case R.id.action_attedance:
@@ -217,123 +232,6 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     }
 
-
-    private void uploadNewStaffThenRefresh() {
-
-        final ArrayList<NewStaffPojo> newStaffs = new NewStaffDao().getOfflineStaffs();
-
-        if (newStaffs.isEmpty()) {
-
-            repository.fetchMyTeam()
-
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .doOnSubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            showPleaseWaitDialog();
-                        }
-                    })
-                    .subscribe(new Observer<Object>() {
-                        @Override
-                        public void onCompleted() {
-
-                            repository.bulkAttendanceUpload()
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(new Subscriber<Object>() {
-                                        @Override
-                                        public void onCompleted() {
-                                            closePleaseWaitDialog();
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            closePleaseWaitDialog();
-                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                                                    e.getMessage())
-                                                    .show();
-                                        }
-
-                                        @Override
-                                        public void onNext(Object o) {
-                                            closePleaseWaitDialog();
-                                        }
-                                    });
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            closePleaseWaitDialog();
-                            Crashlytics.logException(e);
-                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                                    e.getMessage())
-                                    .show();
-                        }
-
-                        @Override
-                        public void onNext(Object o) {
-
-                        }
-                    });
-
-
-        } else {
-            syncAttedanceWithOfflineStaff()
-                    .doOnSubscribe(this::showPleaseWaitDialog)
-                    .doOnTerminate(this::closePleaseWaitDialog)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new Observer<Object>() {
-                        @Override
-                        public void onCompleted() {
-                            repository.bulkAttendanceUpload()
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(new Subscriber<Object>() {
-                                        @Override
-                                        public void onCompleted() {
-                                            closePleaseWaitDialog();
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            closePleaseWaitDialog();
-                                            DialogFactory.createGenericErrorDialog(AttendanceViewPagerActivity.this,
-                                                    e.getMessage())
-                                                    .show();
-                                        }
-
-                                        @Override
-                                        public void onNext(Object o) {
-                                            closePleaseWaitDialog();
-                                        }
-                                    });
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
-                            Crashlytics.logException(e);
-                            if (e instanceof HttpException) {
-                                String msg = ((HttpException) e).message();
-                                String code = String.valueOf(((HttpException) e).code());
-                                DialogFactory.createDataSyncErrorDialog(AttendanceViewPagerActivity.this, msg, code).show();
-                            } else {
-                                DialogFactory
-                                        .createGenericErrorDialog(AttendanceViewPagerActivity.this, e.getMessage())
-                                        .show();
-                            }
-                        }
-
-                        @Override
-                        public void onNext(Object o) {
-
-                        }
-
-                    });
-        }
-    }
 
     private Observable<Object> syncAttedanceWithOfflineStaff() {
 

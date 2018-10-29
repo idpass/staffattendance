@@ -160,6 +160,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
     }
 
+    public void delteAllRows(SQLiteDatabase db){
+        db.execSQL("DELETE FROM " + TABLE_STAFF);
+        db.execSQL("DELETE FROM  " + TABLE_NEW_STAFF);
+        db.execSQL("DELETE FROM  " + TABLE_ATTENDANCE);
+    }
 
     public static String getStringFromCursor(Cursor cursor, String columnName) {
         return cursor.getString(cursor.getColumnIndex(columnName));

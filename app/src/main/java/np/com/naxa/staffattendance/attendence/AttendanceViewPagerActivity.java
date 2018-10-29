@@ -151,7 +151,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
             case R.id.main_menu_logout:
                 TokenMananger.clearToken();
                 SharedPreferenceUtils.purge(getApplicationContext());
-                DatabaseHelper.getDatabaseHelper().dropAll(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
+                DatabaseHelper.getDatabaseHelper().delteAllRows(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
                 LoginActivity.start(AttendanceViewPagerActivity.this);
                 finish();
                 break;

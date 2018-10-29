@@ -213,7 +213,6 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
         DialogFactory.createActionDialog(AttendanceViewPagerActivity.this, "Failed to sync", message)
                 .setPositiveButton("Ok", (dialog, which) -> AttendanceViewPagerActivity.start(AttendanceViewPagerActivity.this, true))
-                .setNegativeButton("Dismiss", null)
                 .show();
 
     }

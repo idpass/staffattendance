@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 import np.com.naxa.staffattendance.BuildConfig;
@@ -29,6 +30,7 @@ import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.data.ApiInterface;
+import np.com.naxa.staffattendance.data.MyTeamResponse;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
@@ -72,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (true) {
             tvUserName.setText(LoginHelper.getUserName());
             tvPassword.setText(LoginHelper.getPWD());
-            new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
+//            new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
 
         }
 
@@ -111,26 +113,66 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
 
-        new LoginCall().login(username, password, new LoginCall.LoginCallListener() {
-            @Override
-            public void onSuccess() {
+        Observable<Object> login = APIClient.getUploadClient()
+                .create(ApiInterface.class)
+                .getLoginDetailsObservable(username, password)
+                .flatMap(new Func1<LoginResponse, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(LoginResponse loginResponse) {
+                        TokenMananger.saveToken(loginResponse.getToken());
+                        APIClient.removeRetrofitClient();
 
-                fetchMyTeam();
-                getBanksAndDesignation();
+                        return APIClient.getUploadClient()
+                                .create(ApiInterface.class)
+                                .getMyTeam()
+                                .map((Func1<ArrayList<MyTeamResponse>, Object>) myTeamResponses -> {
+                                    if (myTeamResponses.isEmpty()) {
+                                        TokenMananger.clearToken();
+                                        throw new RuntimeException("You are not assigned to a team yet");
+                                    }
 
-            }
+                                    return Observable.empty();
+                                });
+                    }
+                });
 
-            @Override
-            public void onError() {
-                try {
-                    dialog.dismiss();
-//                    ToastUtils.showShort("Login Error");
-                } catch (WindowManager.BadTokenException e) {
-                    //do nothing
-                }
+        login.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
 
-            }
-        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dialog.dismiss();
+                        if (e instanceof HttpException) {
+                            try {
+                                HttpException httpException = (HttpException) e;
+                                ResponseBody responseBody = httpException.response().errorBody();
+                                showErrorDialog(responseBody.string());
+                            } catch (NullPointerException | IOException e1) {
+                                showErrorDialog("");
+                                e1.printStackTrace();
+                            }
+                        } else if (e instanceof SocketTimeoutException) {
+                            showErrorDialog("Server took too long to respond");
+                        } else if (e instanceof IOException) {
+                            showErrorDialog(e.getMessage());
+                        } else {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        APIClient.removeRetrofitClient();
+                        getBanksAndDesignation();
+                        fetchMyTeam();
+                    }
+                });
+
     }
 
 
@@ -201,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        TokenMananger.clearToken();
+
                         dialog.dismiss();
                         if (e instanceof HttpException) {
                             try {
@@ -239,8 +281,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void showErrorDialog(String message) {
 
         DialogFactory.createActionDialog(LoginActivity.this, "Failed to login", message)
-                .setPositiveButton("Ok",null)
-                  .show();
+                .setPositiveButton("Ok", null)
+                .show();
 
     }
 

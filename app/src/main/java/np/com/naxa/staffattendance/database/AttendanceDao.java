@@ -35,7 +35,7 @@ public class AttendanceDao {
 
     public int updateAttendance(String date, String teamId) {
 //        String selection = DatabaseHelper.KEY_ATTENDACE_DATE + "=? AND " + DatabaseHelper.KEY_STAFF_TEAM_ID + "=?";
-        String selection = DatabaseHelper.KEY_ATTENDACE_DATE ;
+        String selection = DatabaseHelper.KEY_ATTENDACE_DATE;
         String[] selectionArgs = new String[]{date, teamId};
         return updateAttendance(getContentValuesForStatusUpdate(), selection, selectionArgs);
     }
@@ -84,19 +84,16 @@ public class AttendanceDao {
                         List<String> offlineIds = convertStaffIdsToList(staffIds);
 
                         List<String> updatedStaffIds = new ArrayList<>();
-                        List<String> idsToRemove = new ArrayList<>();
 
 
                         for (Pair<String, String> pair : pairs) {
                             if (offlineIds.contains(pair.first)) {
                                 updatedStaffIds.add(pair.second);
+                            } else {
+                                updatedStaffIds.add(pair.second);
                             }
-
-                            idsToRemove.add(pair.first);
                         }
 
-                        updatedStaffIds.addAll(offlineIds);
-                        updatedStaffIds.removeAll(idsToRemove);
 
                         Log.i("British", "Updating to " + new ArrayList<>(updatedStaffIds) + attendanceDate);
                         //we have ids and we have map to use to replace
@@ -296,6 +293,22 @@ public class AttendanceDao {
         ArrayList<AttendanceResponse> list = getAttendanceFromCursor(cursor);
         closeCursor(cursor);
         return list;
+    }
+
+    public Observable<ArrayList<AttendanceResponse>> getFinalizedAttedanceSheetObservable() {
+        return Observable.create(subscriber -> {
+            try {
+                Cursor cursor = getCursor(DatabaseHelper.KEY_SYNC_STATUS + "=?", new String[]{SyncStatus.FINALIZED});
+                ArrayList<AttendanceResponse> list = getAttendanceFromCursor(cursor);
+                closeCursor(cursor);
+                subscriber.onNext(list);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+
+
+        });
     }
 
 

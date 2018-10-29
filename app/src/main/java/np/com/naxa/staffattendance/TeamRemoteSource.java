@@ -160,7 +160,7 @@ public class TeamRemoteSource {
         ArrayList<AttendanceResponse> attendanceResponses = AttendanceDao.getInstance().getFinalizedAttendanceSheet();
 
 
-        Observable<AttendanceResponse> attendanceSheet = Observable.just(attendanceResponses)
+        Observable<AttendanceResponse> attendanceSheet = AttendanceDao.getInstance().getFinalizedAttedanceSheetObservable()
                 .map(new Func1<ArrayList<AttendanceResponse>, ArrayList<AttendanceResponse>>() {
                     @Override
                     public ArrayList<AttendanceResponse> call(ArrayList<AttendanceResponse> attendanceResponses) {

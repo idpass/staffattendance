@@ -17,6 +17,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
@@ -304,7 +305,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         attendanceViewPagerActivity.startActivity(intent);
     }
 
-    public static void startNonActivity(Context context){
+    public static void startNonActivity(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

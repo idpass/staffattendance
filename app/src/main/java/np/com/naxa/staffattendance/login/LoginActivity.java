@@ -77,8 +77,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //            new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
 
         }
-
-
     }
 
     private void initUI() {
@@ -94,9 +92,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.btn_login:
                 dialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
                 if (validate()) {
-
                     loginToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
-
                 } else {
                     ToastUtils.showShort("Enter valid credentials..");
                 }
@@ -111,7 +107,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } catch (WindowManager.BadTokenException e) {
             //do nothing
         }
-
 
         Observable<Object> login = APIClient.getUploadClient()
                 .create(ApiInterface.class)

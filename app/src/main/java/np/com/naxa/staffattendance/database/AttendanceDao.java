@@ -83,21 +83,7 @@ public class AttendanceDao {
                         String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
                         List<String> offlineIds = convertStaffIdsToList(staffIds);
 
-                        List<String> updatedStaffIds = new ArrayList<>();
-
-
-                        for (Pair<String, String> pair : pairs) {
-                            if (offlineIds.contains(pair.first)) {
-                                updatedStaffIds.add(pair.second);
-                            } else {
-                                updatedStaffIds.add(pair.second);
-                            }
-                        }
-
-
-                        Log.i("British", "Updating to " + new ArrayList<>(updatedStaffIds) + attendanceDate);
-                        //we have ids and we have map to use to replace
-
+                        List<String> updatedStaffIds = matchAndReplaceIds(offlineIds, pairs);
 
                         AttendanceResponse attendanceResponse = new AttendanceResponse(attendanceDate, updatedStaffIds);
                         ContentValues values = new ContentValues();
@@ -125,11 +111,29 @@ public class AttendanceDao {
 
     }
 
+    private List<String> matchAndReplaceIds(List<String> offlineIds, List<Pair<String, String>> offlineOnlineIdMap) {
+
+        List<String> updatedIds = new ArrayList<>();
+
+        for (String offlineId : offlineIds) {
+            for (Pair pair : offlineOnlineIdMap) {
+                String keyOfflineId = (String) pair.first;
+                String keyOnlineId = (String) pair.second;
+
+                if (offlineId.equals(keyOfflineId)) {
+                    updatedIds.add(keyOnlineId);
+                } else {
+                    updatedIds.add(offlineId);
+                }
+            }
+        }
+        return updatedIds;
+    }
+
     private List<String> convertStaffIdsToList(String staffIds) {
         Type type = new TypeToken<List<String>>() {
         }.getType();
-        List<String> staffIdList = new Gson().fromJson(staffIds, type);
-        return staffIdList;
+        return new Gson().fromJson(staffIds, type);
     }
 
 

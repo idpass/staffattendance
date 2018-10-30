@@ -318,4 +318,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent = new Intent(attendanceViewPagerActivity, LoginActivity.class);
         attendanceViewPagerActivity.startActivity(intent);
     }
+
+    public static void startNonActivity(Context context){
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+
+    }
 }

@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -7,15 +8,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
+import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
+import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.AttendanceDao;
+import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffCall;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import rx.Observable;
@@ -127,6 +133,20 @@ public class TeamRemoteSource {
 
 
         Observable<List<TeamMemberResposne>> teamlist = api.getMyTeam()
+                .map(new Func1<ArrayList<MyTeamResponse>, ArrayList<MyTeamResponse>>() {
+                    @Override
+                    public ArrayList<MyTeamResponse> call(ArrayList<MyTeamResponse> myTeamResponses) {
+                        if (myTeamResponses.isEmpty()) {
+                            Context context = StaffAttendance.getStaffAttendance().getApplicationContext();
+                            TokenMananger.clearToken();
+                            SharedPreferenceUtils.purge(StaffAttendance.getStaffAttendance().getApplicationContext());
+                            DatabaseHelper.getDatabaseHelper().delteAllRows(DatabaseHelper.getDatabaseHelper().getWritableDatabase());
+                            LoginActivity.startNonActivity(context);
+
+                        }
+                        return myTeamResponses;
+                    }
+                })
                 .flatMapIterable((Func1<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>) myTeamResponses -> myTeamResponses)
                 .flatMap((Func1<MyTeamResponse, Observable<List<TeamMemberResposne>>>) myTeamResponse -> api.getTeamMember(myTeamResponse.getId())
                         .flatMapIterable((Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>) teamMemberResposnes -> teamMemberResposnes)

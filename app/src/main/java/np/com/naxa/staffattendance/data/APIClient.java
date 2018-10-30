@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.readystatesoftware.chuck.ChuckInterceptor;
 
 
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class APIClient {
 
         OkHttpClient.Builder okHttpClientBuidler = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
-//                .addInterceptor(new ChuckInterceptor(StaffAttendance.getStaffAttendance().getApplicationContext()))
+                .addInterceptor(new ChuckInterceptor(StaffAttendance.getStaffAttendance().getApplicationContext()))
                 .connectTimeout(4, TimeUnit.MINUTES)
                 .readTimeout(4, TimeUnit.MINUTES);
 

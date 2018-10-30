@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initUI();
 
 
-        if (false) {
+        if (BuildConfig.DEBUG) {
             tvUserName.setText(LoginHelper.getUserName());
             tvPassword.setText(LoginHelper.getPWD());
 //            new Handler().postDelayed(() -> btnLogin.performClick(), 3000);
@@ -126,7 +126,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onCompleted() {
-
+                        APIClient.removeRetrofitClient();
+                        getBanksAndDesignation();
+                        fetchMyTeam();
                     }
 
                     @Override
@@ -152,9 +154,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     @Override
                     public void onNext(Object o) {
-                        APIClient.removeRetrofitClient();
-                        getBanksAndDesignation();
-                        fetchMyTeam();
+
                     }
                 });
 
@@ -302,5 +302,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public static void start(Context attendanceViewPagerActivity) {
         Intent intent = new Intent(attendanceViewPagerActivity, LoginActivity.class);
         attendanceViewPagerActivity.startActivity(intent);
+    }
+
+    public static void startNonActivity(Context context){
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+
     }
 }

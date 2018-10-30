@@ -330,8 +330,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
                     //progressDialog.show();
 
-                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
-                    putDataInStafftable(getNewStaffDetail());
+                    NewStaffPojo staff = getNewStaffDetail();
+                    new NewStaffDao().saveNewStaff(staff);
+                    putDataInStafftable(staff);
                     AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                     finish();
 

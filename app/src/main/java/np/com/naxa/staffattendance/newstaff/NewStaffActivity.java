@@ -7,6 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +26,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -52,6 +56,7 @@ import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
+import np.com.naxa.staffattendance.utlils.ScrollUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -376,31 +381,35 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         boolean validation = false;
 
         if (designation.getSelectedItem().equals(getResources().getString(R.string.default_option))) {
-            ToastUtils.showShort("Select a designation");
+            showValidationError("Select a designation",designation);
         } else if (firstName.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter first name");
+            showValidationError("Enter first name",firstName.getEditText());
         } else if (lastName.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter last name");
+            showValidationError("Enter last name",lastName.getEditText());
         } else if (dob.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose date of birth");
+            showValidationError("Choose date of birth",dob);
         } else if (gender.getCheckedRadioButtonId() == -1) {
             ToastUtils.showShort("Select gender");
         } else if (ethinicity.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter ethnicity");
+            showValidationError("Enter ethnicity",ethinicity.getEditText());
         } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
-            ToastUtils.showShort("Choose a option");
+            showValidationError("Choose a option",bank);
+
         } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter bank name");
+            showValidationError("Enter bank name",bankNameOther);
+
         } else if (!bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter account number");
+
+            showValidationError("Enter account number",accountNumber.getEditText());
+
         } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter contact number");
+            showValidationError("Enter contact number",contactNumber.getEditText());
         } else if (address.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter address");
+            showValidationError("Enter address",address.getEditText());
         } else if (contractStartDate.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose contract start date");
+            showValidationError("Choose contract start date",contractStartDate);
         } else if (contractEndDate.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose contract end date");
+            showValidationError("Choose contract end date",contractEndDate);
         } else {
             validation = true;
         }
@@ -416,7 +425,28 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             String formattedDate = String.format(Locale.US, "%s-%02d-%02d", year, month + 1, dayOfMonth);
             view.setText(formattedDate);
+            view.setError(null);
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void scrollToView(final View view) {
+        view.getParent().requestChildFocus(view, view);
+//        view.requestFocus();
+//        ScrollUtils.scrollToView(findViewById(R.id.scrollView),view);
+    }
+
+    private void showValidationError(String message, View view) {
+        scrollToView(view);
+        if (view instanceof EditText) {
+            EditText et = (EditText) view;
+            et.setError(message);
+        }else if(view instanceof Spinner){
+            Spinner spinner = (Spinner) view;
+            TextView errorText = (TextView)spinner.getSelectedView();
+            errorText.setError("");
+            errorText.setTextColor(Color.RED);
+            errorText.setText(message);
+        }
     }
 
 

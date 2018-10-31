@@ -9,7 +9,9 @@ public class SharedPreferenceUtils {
 
     public static class KEY {
         public static String Bank = "bank_list";
+        public static String Bank_v2 = "bank_list_v2";
         public static String Designation = "designation_list";
+        public static String Designation_v2 = "designation_list_v2";
         public static String TeamID = "TEAM_ID";
     }
 

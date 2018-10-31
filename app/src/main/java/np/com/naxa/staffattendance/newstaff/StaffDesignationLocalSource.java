@@ -21,22 +21,22 @@ import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.common.BaseLocalDataSource;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 
-public class BankLocalSource implements BaseLocalDataSource<BankPojo> {
+public class StaffDesignationLocalSource implements BaseLocalDataSource<BankPojo> {
 
-    private static BankLocalSource INSTANCE;
+    private static StaffDesignationLocalSource INSTANCE;
     private Gson gson;
     private Type typeToken = null;
 
-    private BankLocalSource() {
+    private StaffDesignationLocalSource() {
         this.gson = new Gson();
-        this.typeToken = new TypeToken<ArrayList<BankPojo>>() {
+        this.typeToken = new TypeToken<ArrayList<ArrayList<String>>>() {
         }.getType();
 
     }
 
-    public static BankLocalSource getInstance() {
+    public static StaffDesignationLocalSource getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new BankLocalSource();
+            INSTANCE = new StaffDesignationLocalSource();
         }
         return INSTANCE;
     }
@@ -59,19 +59,19 @@ public class BankLocalSource implements BaseLocalDataSource<BankPojo> {
                 Context context = StaffAttendance.getStaffAttendance().getApplicationContext();
                 List<Pair> pairs = new ArrayList<>();
 
-                String banks = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.Bank_v2, "");
+                String banks = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.Designation_v2, "");
                 if (banks == null || banks.length() == 0)
-                    throw new IllegalArgumentException("Banks is not present in shared pref");
+                    throw new IllegalArgumentException("Designation is not present in shared pref");
 
 
-                List<BankPojo> bankPojoList = gson.fromJson(banks, typeToken);
+                ArrayList<ArrayList<String>> staffDesignationList = gson.fromJson(banks, typeToken);
 
-                pairs.add(Pair.create(-1,context.getString(R.string.default_option)));
-                for (BankPojo bankPojo : bankPojoList) {
-                    Pair<Integer, String> pair = Pair.create(bankPojo.getId(), bankPojo.getName());
+                pairs.add(Pair.create(-1, context.getString(R.string.default_option)));
+                for (ArrayList<String> list : staffDesignationList) {
+                    Pair<Integer, String> pair = Pair.create(Integer.valueOf(list.get(0)), list.get(1));
                     pairs.add(pair);
                 }
-                pairs.add(Pair.create(1,context.getString(R.string.bank_other)));
+
 
                 e.onNext(pairs);
                 e.onComplete();

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.lang.reflect.Array;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
@@ -56,14 +57,13 @@ public class NewStaffDao {
     private NewStaffPojo mapCursorToPojo(Cursor cursor) {
 
 
-        return new NewStaffPojoBuilder()
+        NewStaffPojoBuilder builder = new NewStaffPojoBuilder()
                 .setDesignation(Integer.valueOf(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DESIGNATION)))
                 .setFirstName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FIRST_NAME))
                 .setLastName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_LAST_NAME))
                 .setDateOfBirth(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DOB))
                 .setGender(Integer.valueOf(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_GENDER)))
                 .setEthnicity(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_ETHNICITY))
-                .setBank(Integer.valueOf(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_BANK_ID)))
                 .setBankName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_BANK_NAME))
                 .setAccountNumber(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_ACCOUNT_NUMBER))
                 .setPhoneNumber(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_CONTACT_NUMBER))
@@ -73,13 +73,25 @@ public class NewStaffDao {
                 .setContractEnd(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_CONTRACT_END_DATE))
                 .setPhoto(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_PHOTO))
                 .setStatus(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DETAIL_STATUS))
-                .setID(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID))
-                .createNewStaffPojo();
+                .setID(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID));
+
+
+        String bankId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_BANK_ID);
+        try {
+            int bankIdInt = Integer.valueOf(bankId);
+            builder.setBank(bankIdInt);
+        } catch (NumberFormatException e) {
+            //do nothing
+        }
+
+
+        return builder.createNewStaffPojo();
+
     }
 
     private ContentValues getContentValues(NewStaffPojo pojo) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.KEY_ID,pojo.getId());
+        values.put(DatabaseHelper.KEY_ID, pojo.getId());
         values.put(DatabaseHelper.KEY_STAFF_DESIGNATION, pojo.getDesignation());
         values.put(DatabaseHelper.KEY_STAFF_FIRST_NAME, pojo.getFirstName());
         values.put(DatabaseHelper.KEY_STAFF_LAST_NAME, pojo.getLastName());

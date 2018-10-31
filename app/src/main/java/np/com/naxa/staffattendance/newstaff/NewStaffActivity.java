@@ -381,35 +381,35 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         boolean validation = false;
 
         if (designation.getSelectedItem().equals(getResources().getString(R.string.default_option))) {
-            showValidationError("Select a designation",designation);
+            showValidationError("Select a designation", designation);
         } else if (firstName.getEditText().getText().toString().isEmpty()) {
-            showValidationError("Enter first name",firstName.getEditText());
+            showValidationError("Enter first name", firstName.getEditText());
         } else if (lastName.getEditText().getText().toString().isEmpty()) {
-            showValidationError("Enter last name",lastName.getEditText());
+            showValidationError("Enter last name", lastName.getEditText());
         } else if (dob.getText().toString().isEmpty()) {
-            showValidationError("Choose date of birth",dob);
+            showValidationError("Choose date of birth", dob);
         } else if (gender.getCheckedRadioButtonId() == -1) {
             ToastUtils.showShort("Select gender");
         } else if (ethinicity.getEditText().getText().toString().isEmpty()) {
-            showValidationError("Enter ethnicity",ethinicity.getEditText());
+            showValidationError("Enter ethnicity", ethinicity.getEditText());
         } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
-            showValidationError("Choose a option",bank);
+            showValidationError("Choose a option", bank);
 
         } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
-            showValidationError("Enter bank name",bankNameOther);
+            showValidationError("Enter bank name", bankNameOther);
 
         } else if (!bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
 
-            showValidationError("Enter account number",accountNumber.getEditText());
+            showValidationError("Enter account number", accountNumber.getEditText());
 
         } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
-            showValidationError("Enter contact number",contactNumber.getEditText());
+            showValidationError("Enter contact number", contactNumber.getEditText());
         } else if (address.getEditText().getText().toString().isEmpty()) {
-            showValidationError("Enter address",address.getEditText());
+            showValidationError("Enter address", address.getEditText());
         } else if (contractStartDate.getText().toString().isEmpty()) {
-            showValidationError("Choose contract start date",contractStartDate);
+            showValidationError("Choose contract start date", contractStartDate);
         } else if (contractEndDate.getText().toString().isEmpty()) {
-            showValidationError("Choose contract end date",contractEndDate);
+            showValidationError("Choose contract end date", contractEndDate);
         } else {
             validation = true;
         }
@@ -440,9 +440,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         if (view instanceof EditText) {
             EditText et = (EditText) view;
             et.setError(message);
-        }else if(view instanceof Spinner){
+        } else if (view instanceof Spinner) {
             Spinner spinner = (Spinner) view;
-            TextView errorText = (TextView)spinner.getSelectedView();
+            TextView errorText = (TextView) spinner.getSelectedView();
             errorText.setError("");
             errorText.setTextColor(Color.RED);
             errorText.setText(message);
@@ -453,7 +453,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     public NewStaffPojo getNewStaffDetail() {
 
 
-        return new NewStaffPojoBuilder()
+        NewStaffPojoBuilder builder = new NewStaffPojoBuilder()
                 .setID(String.valueOf(System.currentTimeMillis()))
                 .setDesignation(designation.getSelectedItemPosition())
                 .setFirstName(firstName.getEditText().getText().toString())
@@ -461,7 +461,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setDateOfBirth(dob.getText().toString())
                 .setGender(getGender())
                 .setEthnicity(ethinicity.getEditText().getText().toString())
-                .setBank(getBankId())
                 .setBankName(bankNameOther.getText().toString())
                 .setAccountNumber(accountNumber.getEditText().getText().toString())
                 .setPhoneNumber(contactNumber.getEditText().getText().toString())
@@ -470,8 +469,15 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setContractStart(contractStartDate.getText().toString())
                 .setContractEnd(contractEndDate.getText().toString())
                 .setPhoto(getPhotoLocation())
-                .setStatus(NewStaffDao.SAVED)
-                .createNewStaffPojo();
+                .setStatus(NewStaffDao.SAVED);
+
+
+        if (getBankId() != 1) {
+            builder.setBank(getBankId());
+        }
+
+        return builder.createNewStaffPojo();
+
     }
 
     private String getPhotoLocation() {

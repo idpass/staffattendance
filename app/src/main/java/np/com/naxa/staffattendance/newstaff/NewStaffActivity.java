@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.newstaff;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +46,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import np.com.naxa.staffattendance.FormCall;
@@ -53,6 +58,8 @@ import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
+import np.com.naxa.staffattendance.common.Constant;
+import np.com.naxa.staffattendance.common.GeoPointActivity;
 import np.com.naxa.staffattendance.common.PairSpinnerAdapter;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
@@ -66,11 +73,19 @@ import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.ResponseBody;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observer;
 
+import static np.com.naxa.staffattendance.common.Constant.EXTRA_MESSAGE;
+
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
+
+    @BindView(R.id.act_new_staff_btn_location)
+    public Button btnLocation;
 
     private Spinner spinnerBank, spinnerDesgination;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
@@ -88,6 +103,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Gson gson;
     private Dialog msgDialog;
     DatePickerDialog datePickerDialog;
+    private String latitude,longitude,accurary;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -99,6 +115,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_staff);
+        ButterKnife.bind(this);
         gson = new Gson();
 
         initUI();
@@ -127,17 +144,17 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         if (e instanceof HttpException) {
                             try {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                showErrorDialog("Failed to download banks",responseBody.string());
+                                showErrorDialog("Failed to download banks", responseBody.string());
                             } catch (NullPointerException | IOException e1) {
-                                showErrorDialog("Failed to download banks","");
+                                showErrorDialog("Failed to download banks", "");
                                 e1.printStackTrace();
                             }
                         } else if (e instanceof SocketTimeoutException) {
-                            showErrorDialog("Failed to download banks","Server took too long to respond");
+                            showErrorDialog("Failed to download banks", "Server took too long to respond");
                         } else if (e instanceof IOException) {
-                            showErrorDialog("Failed to download banks",e.getMessage());
+                            showErrorDialog("Failed to download banks", e.getMessage());
                         } else {
-                            showErrorDialog("Failed to download banks",e.getMessage());
+                            showErrorDialog("Failed to download banks", e.getMessage());
                         }
                     }
 
@@ -159,17 +176,17 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         if (e instanceof HttpException) {
                             try {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                showErrorDialog("Failed to download designation",responseBody.string());
+                                showErrorDialog("Failed to download designation", responseBody.string());
                             } catch (NullPointerException | IOException e1) {
-                                showErrorDialog("Failed to download designation","");
+                                showErrorDialog("Failed to download designation", "");
                                 e1.printStackTrace();
                             }
                         } else if (e instanceof SocketTimeoutException) {
-                            showErrorDialog("Failed to download designation","Server took too long to respond");
+                            showErrorDialog("Failed to download designation", "Server took too long to respond");
                         } else if (e instanceof IOException) {
-                            showErrorDialog("Failed to download designation",e.getMessage());
+                            showErrorDialog("Failed to download designation", e.getMessage());
                         } else {
-                            showErrorDialog("Failed to download designation",e.getMessage());
+                            showErrorDialog("Failed to download designation", e.getMessage());
                         }
                     }
 
@@ -186,7 +203,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void showErrorDialog(String title,String message) {
+    private void showErrorDialog(String title, String message) {
         DialogFactory.createSimpleOkErrorDialog(NewStaffActivity.this,
                 title,
                 message)
@@ -700,10 +717,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         builder.show();
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) return;
+
 
         EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
@@ -717,7 +735,19 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 photo.setText("Change Photo");
             }
         });
+
+        switch (requestCode) {
+            case Constant.Key.GEOPOINT_RESULT_CODE:
+                String location = data.getStringExtra(EXTRA_MESSAGE);
+                String[] locationSplit = location.split(" ");
+                latitude = locationSplit[0];
+                longitude = locationSplit[1];
+                accurary = locationSplit[3];
+                btnLocation.setText(getString(R.string.message_location_recorded,accurary));
+                break;
+        }
     }
+
 
 
     @Override
@@ -744,4 +774,30 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
+    @AfterPermissionGranted(Constant.Key.RC_LOCATION)
+    @OnClick(R.id.act_new_staff_btn_location)
+    public void getLocation() {
+        String perms = Manifest.permission.ACCESS_FINE_LOCATION;
+
+        boolean hasPermission = EasyPermissions.hasPermissions(this, perms);
+
+        if (hasPermission) {
+            Intent toGeoPointWidget = new Intent(this, GeoPointActivity.class);
+            startActivityForResult(toGeoPointWidget, Constant.Key.GEOPOINT_RESULT_CODE);
+        } else {
+            EasyPermissions.requestPermissions(
+                    new PermissionRequest.Builder(this, Constant.Key.RC_LOCATION, perms)
+                            .setRationale(R.string.rationale_location_permission)
+                            .setPositiveButtonText(R.string.dialog_action_ok)
+                            .setNegativeButtonText(R.string.dialog_action_dismiss)
+                            .build());
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
 }

@@ -3,104 +3,109 @@ package np.com.naxa.staffattendance.pojo;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "users")
+import static np.com.naxa.staffattendance.pojo.Constants.Staff.*;
+
+
+@Entity(tableName = "staff")
 public class Staff {
 
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = KEY_ID)
     @SerializedName("id")
     @Expose
-    @PrimaryKey
-    @ColumnInfo(name = "id")
     private String id;
 
-    @ColumnInfo(name = "first_name")
+    @ColumnInfo(name = KEY_STAFF_FIRST_NAME)
     @SerializedName("first_name")
     @Expose
     private String firstName;
 
-    @ColumnInfo(name = "last_name")
+    @ColumnInfo(name = KEY_STAFF_LAST_NAME)
     @SerializedName("last_name")
     @Expose
     private String lastName;
 
-    @ColumnInfo(name = "email")
+    @ColumnInfo(name = KEY_STAFF_EMAIL)
     @SerializedName("email")
     @Expose
     private String email;
 
-    @ColumnInfo(name = "gender")
+    @ColumnInfo(name = KEY_STAFF_GENDER)
     @SerializedName("gender")
     @Expose
     private Integer gender;
 
-    @ColumnInfo(name = "ethnicity")
+    @ColumnInfo(name = KEY_STAFF_ETHNICITY)
     @SerializedName("ethnicity")
     @Expose
     private String ethnicity;
 
-    @ColumnInfo(name = "address")
+    @ColumnInfo(name = KEY_STAFF_ADDRESS)
     @SerializedName("address")
     @Expose
     private String address;
 
-    @ColumnInfo(name = "phone_number")
+    @ColumnInfo(name = KEY_STAFF_CONTACT_NUMBER)
     @SerializedName("phone_number")
     @Expose
     private String phoneNumber;
 
-    @ColumnInfo(name = "bank_name")
+    @ColumnInfo(name = KEY_STAFF_BANK_NAME)
     @SerializedName("bank_name")
     @Expose
     private String bankName;
 
-    @ColumnInfo(name = "account_number")
+    @ColumnInfo(name = KEY_STAFF_ACCOUNT_NUMBER)
     @SerializedName("account_number")
     @Expose
     private String accountNumber;
 
-    @ColumnInfo(name = "photo")
+    @ColumnInfo(name = KEY_STAFF_PHOTO)
     @SerializedName("photo")
     @Expose
     private String photo;
 
-    @ColumnInfo(name = "designation")
+    @ColumnInfo(name = KEY_STAFF_DESIGNATION)
     @SerializedName("designation")
     @Expose
     private Integer designation;
 
-    @ColumnInfo(name = "dob")
+    @ColumnInfo(name = KEY_STAFF_DOB)
     @SerializedName("date_of_birth")
     @Expose
     private String dateOfBirth;
 
-    @ColumnInfo(name = "contract_start_date")
+    @ColumnInfo(name = KEY_STAFF_CONTRACT_START_DATE)
     @SerializedName("contract_start")
     @Expose
     private String contractStart;
 
-    @ColumnInfo(name = "contract_end_date")
+    @ColumnInfo(name = KEY_STAFF_CONTRACT_END_DATE)
     @SerializedName("contract_end")
     @Expose
     private String contractEnd;
 
-    @ColumnInfo(name = "bank_id")
+    @ColumnInfo(name = KEY_STAFF_BANK_ID)
     @SerializedName("bank")
     @Expose
     private Integer bank;
 
-    @ColumnInfo(name = "status")
+    @ColumnInfo(name = KEY_STAFF_DETAIL_STATUS)
     private String status;
 
-    @ColumnInfo(name = "team_id")
+    @ColumnInfo(name = KEY_STAFF_TEAM_ID)
     private String teamID;
 
-    @ColumnInfo(name = "team_name")
+    @ColumnInfo(name = KEY_STAFF_TEAM_NAME)
     private String teamName;
 
-    @ColumnInfo(name = "staff_type")
+    @ColumnInfo(name = KEY_STAFF_TYPE)
     private String staffType;
 
     public String getId() {

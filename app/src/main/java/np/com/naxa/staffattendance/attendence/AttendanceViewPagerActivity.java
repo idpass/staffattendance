@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.attendence;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.List;
 import java.util.Locale;
 
 import np.com.naxa.staffattendance.R;
@@ -29,6 +31,9 @@ import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
+import np.com.naxa.staffattendance.pojo.Staff;
+import np.com.naxa.staffattendance.pojo.StaffAttendenceDatabase;
+import np.com.naxa.staffattendance.pojo.StaffViewModel;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;

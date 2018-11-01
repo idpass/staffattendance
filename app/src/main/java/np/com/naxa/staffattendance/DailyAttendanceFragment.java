@@ -89,6 +89,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
             @Override
             public void onClick(View view) {
 
+
+
+
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -110,6 +113,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
 
     private void showMarkPresentDialog(String title, String msg) {
+
+
         getActivity().runOnUiThread(() -> {
             DialogFactory.createActionDialog(getActivity(), title, msg)
                     .setPositiveButton("Mark Present", new DialogInterface.OnClickListener() {

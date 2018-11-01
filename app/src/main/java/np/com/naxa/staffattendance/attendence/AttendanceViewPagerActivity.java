@@ -2,15 +2,18 @@ package np.com.naxa.staffattendance.attendence;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +30,7 @@ import java.util.Locale;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.TeamRemoteSource;
+import np.com.naxa.staffattendance.common.GeoPointForegroundService;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
@@ -63,6 +67,20 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         if (disableTransition) ((Activity) context).overridePendingTransition(0, 0);
     }
 
+    private BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            ToastUtils.showShort(message);
+        }
+    };
+
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(locationReceiver, new IntentFilter("location_result"));
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +90,11 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         initView();
         setupViewPager();
         setupToolbar();
+
+
+        Intent intent = new Intent(this, GeoPointForegroundService.class);
+        intent.setAction(GeoPointForegroundService.ACTION_START_FOREGROUND_SERVICE);
+        startService(intent);
 
         if (savedInstanceState != null) {
             staffAttedancelastJobId = savedInstanceState.getInt(LAST_JOB_ID, 0);
@@ -227,6 +250,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         runOnUiThread(this::closePleaseWaitDialog);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(locationReceiver);
 
     }
 

@@ -35,6 +35,13 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="61f1ab9eb40ae0d7b3fdbc3417ad1ee196453e82" />
+
+        <!-- Declare foreground service -->
+        <service
+            android:enabled="true"
+            android:exported="true"
+            android:name=".common.GeoPointForegroundService" />
+
     </application>
 
 </manifest>

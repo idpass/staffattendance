@@ -20,9 +20,9 @@ import java.util.List;
 import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
-import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
+import np.com.naxa.staffattendance.common.GeoPointForegroundService;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.data.MyTeamResponse;
@@ -54,6 +54,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         getWindow().setBackgroundDrawableResource(R.drawable.login_background);
         if (TokenMananger.doesTokenExist()) {
+
+
             AttendanceViewPagerActivity.start(this, false);
             finish();
         }

@@ -1,12 +1,17 @@
 package np.com.naxa.staffattendance.common.network;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.util.TimeUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,7 +37,7 @@ public class ConnectionTest {
     private int AVERAGE_BANDWIDTH = 550;
     private int GOOD_BANDWIDTH = 2000;
 
-    private String TAG = this.getClass().getSimpleName();
+    private String TAG = "ConnectionTest";
 
     public static ConnectionTest getINSTANCE() {
         if (INSTANCE == null) {
@@ -42,12 +47,27 @@ public class ConnectionTest {
         return INSTANCE;
     }
 
+
     public void download(ConnectionTestCallback callback) {
+        callback.onStart();
         startTime = System.currentTimeMillis();
 
         Request request = new Request.Builder()
                 .url("https://fieldsight.s3.amazonaws.com/logo/Asia_P3_Hub.jpg")
                 .build();
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                double timeTakenMills = Math.floor(System.currentTimeMillis() - startTime);
+                if (timeTakenMills >= 10000) {
+                    callback.message("Taking longer than expected");
+                    timer.cancel();
+                }
+            }
+        }, 0, 1000);
+
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -75,9 +95,13 @@ public class ConnectionTest {
                     }
                     byte[] docBuffer = bos.toByteArray();
                     fileSize = bos.size();
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                     callback.networkQuality(NetworkSpeed.UNKNOWN);
+                } catch (SocketTimeoutException e) {
+                    e.printStackTrace();
+                    callback.networkQuality(NetworkSpeed.UNKNOWN);
+
                 }
 
 
@@ -91,10 +115,10 @@ public class ConnectionTest {
 
                 if (kilobytePerSec <= POOR_BANDWIDTH) {
                     callback.networkQuality(NetworkSpeed.POOR);
-                } else if (kilobytePerSec <= AVERAGE_BANDWIDTH) {
+                } else if (kilobytePerSec <= GOOD_BANDWIDTH) {
                     callback.networkQuality(NetworkSpeed.AVERAGE);
-                } else if (kilobytePerSec >= GOOD_BANDWIDTH) {
-                    callback.networkQuality(NetworkSpeed.AVERAGE);
+                } else {
+                    callback.networkQuality(NetworkSpeed.GOOD);
                 }
 
 
@@ -105,6 +129,12 @@ public class ConnectionTest {
                 Log.d(TAG, "kilobyte per sec: " + kilobytePerSec);
                 Log.d(TAG, "Download Speed: " + speed);
                 Log.d(TAG, "File size: " + fileSize);
+                try {
+                    Thread.sleep(2000);
+                    callback.onEnd();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -113,9 +143,15 @@ public class ConnectionTest {
 
     public interface ConnectionTestCallback {
         void networkQuality(NetworkSpeed networkSpeed);
+
+        void onStart();
+
+        void onEnd();
+
+        void message(String message);
     }
 
-    enum NetworkSpeed {
+    public enum NetworkSpeed {
         POOR,
         AVERAGE,
         GOOD,

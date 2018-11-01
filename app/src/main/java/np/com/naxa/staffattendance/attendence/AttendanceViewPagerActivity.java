@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -27,6 +28,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
@@ -34,6 +37,7 @@ import np.com.naxa.staffattendance.TeamRemoteSource;
 import np.com.naxa.staffattendance.common.GeoPointForegroundService;
 import np.com.naxa.staffattendance.common.GeoTagHelper;
 import np.com.naxa.staffattendance.common.MessageEvent;
+import np.com.naxa.staffattendance.common.network.ConnectionTest;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
@@ -46,6 +50,7 @@ import okhttp3.ResponseBody;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -90,7 +95,6 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
         setupToolbar();
 
 
-
         if (savedInstanceState != null) {
             staffAttedancelastJobId = savedInstanceState.getInt(LAST_JOB_ID, 0);
             staffListlastJobId = savedInstanceState.getInt(LAST_JOB_ID_STAFF_LIST, 0);
@@ -110,6 +114,52 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void runSync() {
+        TeamRemoteSource.getInstance()
+                .syncAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        showPleaseWaitDialog();
+                    }
+                })
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+                        closePleaseWaitDialog();
+                        DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
+                        Timber.i("onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        closePleaseWaitDialog();
+                        if (e instanceof HttpException) {
+                            try {
+                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                showErrorDialog(responseBody.string());
+                            } catch (NullPointerException | IOException e1) {
+                                showErrorDialog("");
+                                e1.printStackTrace();
+                            }
+                        } else if (e instanceof SocketTimeoutException) {
+                            showErrorDialog("Server took too long to respond");
+                        } else if (e instanceof IOException) {
+                            showErrorDialog(e.getMessage());
+                        } else {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
     }
 
     private void setupToolbar() {
@@ -150,7 +200,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                     LoginActivity.start(AttendanceViewPagerActivity.this);
                     finish();
                 } else {
-                    String msg = "If you logout all your account data including";
+                    String msg = "If you logout all your account data including ";
                     if (a > 0) msg += String.format(Locale.US, "%d un-synced staff(s)", a);
                     if (b > 0) msg += String.format(Locale.US, "\n %d finalized attendance(s)", b);
                     msg += "\nwill be deleted.";
@@ -175,54 +225,68 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                             })
                             .create()
                             .show();
-
                 }
                 break;
 
             case R.id.main_menu_refresh:
-                if (NetworkUtils.isInternetAvailable()) {
-                    TeamRemoteSource.getInstance()
-                            .syncAll()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnSubscribe(this::showPleaseWaitDialog)
-                            .subscribe(new Observer<Object>() {
-                                @Override
-                                public void onCompleted() {
-                                    closePleaseWaitDialog();
-                                    DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
-                                    Timber.i("onCompleted");
-                                }
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    closePleaseWaitDialog();
-                                    if (e instanceof HttpException) {
-                                        try {
-                                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                            showErrorDialog(responseBody.string());
-                                        } catch (NullPointerException | IOException e1) {
-                                            showErrorDialog("");
-                                            e1.printStackTrace();
-                                        }
-                                    } else if (e instanceof SocketTimeoutException) {
-                                        showErrorDialog("Server took too long to respond");
-                                    } else if (e instanceof IOException) {
-                                        showErrorDialog(e.getMessage());
-                                    } else {
-                                        showErrorDialog(e.getMessage());
-                                    }
-                                }
+                ProgressDialog networkDialog = DialogFactory.createProgressDialogHorizontal(this, "Estimating network quality");
 
-                                @Override
-                                public void onNext(Object o) {
+                ConnectionTest.getINSTANCE().download(new ConnectionTest.ConnectionTestCallback() {
+                    @Override
+                    public void networkQuality(ConnectionTest.NetworkSpeed networkSpeed) {
+                        String message = "";
+                        switch (networkSpeed) {
+                            case POOR:
+                                message = "Poor network quality detected";
+                                break;
+                            case GOOD:
+                                message = "Good network quality detected";
+                                break;
+                            case AVERAGE:
+                                message = "Average network quality detected";
+                                break;
+                            case UNKNOWN:
+                                message = "Network quality unknown";
+                                break;
+                        }
+                        String finalMessage = message;
+                        runOnUiThread(() -> {
+                            networkDialog.setTitle(finalMessage);
+                        });
 
-                                }
-                            });
+                    }
 
-                } else {
-                    ToastUtils.showLong(getString(R.string.no_internet));
-                }
+                    @Override
+                    public void onStart() {
+                        networkDialog.show();
+                    }
+
+                    @Override
+                    public void onEnd() {
+                        networkDialog.dismiss();
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                runSync();
+                            }
+                        },1000);
+
+
+                    }
+
+                    @Override
+                    public void message(String message) {
+                        runOnUiThread(()->{
+                            networkDialog.setTitle(message);
+                            
+                        });
+
+                    }
+
+                });
+
+
                 break;
 
             case R.id.main_menu_setting:
@@ -230,7 +294,10 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 //                    new AttendanceDao().getAllUnfinilizedAttendanceListInPair();
                 break;
         }
-        return super.onOptionsItemSelected(item);
+        return super.
+
+                onOptionsItemSelected(item);
+
     }
 
     private void showErrorDialog(String message) {
@@ -251,7 +318,8 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     private void showPleaseWaitDialog() {
         runOnUiThread(() -> {
-            dialog = DialogFactory.createProgressDialogHorizontal(AttendanceViewPagerActivity.this, "Please Wait");
+            dialog = DialogFactory.createProgressDialogHorizontal(AttendanceViewPagerActivity.this, "Syncing");
+
             if (!dialog.isShowing()) {
                 dialog.show();
             }

@@ -96,11 +96,11 @@ class GeoPointForegroundService : Service(), LocationListener {
 
                 startForeground()
                 setupLocationServices(intent);
-                Toast.makeText(applicationContext, "Capturing location", Toast.LENGTH_LONG).show()
+
             }
             ACTION_STOP_FOREGROUND_SERVICE -> {
                 stopForegroundService()
-                Toast.makeText(applicationContext, "Foreground service is stopped.", Toast.LENGTH_LONG).show()
+
             }
         }
 
@@ -166,7 +166,6 @@ class GeoPointForegroundService : Service(), LocationListener {
                 locationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, this)
             }
         }
-
     }
 
 
@@ -176,8 +175,6 @@ class GeoPointForegroundService : Service(), LocationListener {
         if (locationManager != null) {
             locationManager!!.removeUpdates(this)
         }
-
-
     }
 
 
@@ -307,4 +304,6 @@ class GeoPointForegroundService : Service(), LocationListener {
     fun hasPermission(): Boolean {
         return EasyPermissions.hasPermissions(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION);
     }
+
+
 }

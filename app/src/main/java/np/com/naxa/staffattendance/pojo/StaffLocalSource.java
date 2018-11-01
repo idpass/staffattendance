@@ -7,7 +7,7 @@ import java.util.List;
 
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
 import np.com.naxa.staffattendance.application.StaffAttendance;
-import np.com.naxa.staffattendance.utlils.BaseLocalDataSource;
+import np.com.naxa.staffattendance.common.BaseLocalDataSource;
 
 public class StaffLocalSource implements BaseLocalDataSource<Staff> {
 

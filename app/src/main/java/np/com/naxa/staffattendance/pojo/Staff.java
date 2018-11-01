@@ -108,6 +108,29 @@ public class Staff {
     @ColumnInfo(name = KEY_STAFF_TYPE)
     private String staffType;
 
+    public Staff(@NonNull String id, String firstName, String lastName, String email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, String dateOfBirth, String contractStart, String contractEnd, Integer bank, String status, String teamID, String teamName, String staffType) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.gender = gender;
+        this.ethnicity = ethnicity;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.photo = photo;
+        this.designation = designation;
+        this.dateOfBirth = dateOfBirth;
+        this.contractStart = contractStart;
+        this.contractEnd = contractEnd;
+        this.bank = bank;
+        this.status = status;
+        this.teamID = teamID;
+        this.teamName = teamName;
+        this.staffType = staffType;
+    }
+
     public String getId() {
         return id;
     }

@@ -1,22 +1,51 @@
 package np.com.naxa.staffattendance.pojo;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class StaffRepository {
+import np.com.naxa.staffattendance.common.BaseRepository;
 
-    private StaffDao mStaffDao;
-    private LiveData<List<Staff>> mStaffs;
+public class StaffRepository implements BaseRepository<Staff> {
 
-    public StaffRepository(Application application) {
-        StaffAttendenceDatabase db = StaffAttendenceDatabase.getDatabase(application);
-        mStaffDao = db.staffDao();
-        mStaffs = mStaffDao.getAllStaffs();
+    private static StaffRepository INSTANCE;
+    private static StaffLocalSource localSource;
+    private static StaffRemoteSource remoteSource;
+
+    public StaffRepository(StaffLocalSource localSource, StaffRemoteSource remoteSource) {
+        this.localSource = localSource;
+        this.remoteSource = remoteSource;
     }
 
-    public LiveData<List<Staff>> getmStaffs() {
-        return mStaffs;
+    public static StaffRepository getInstance() {
+        return getInstance(StaffLocalSource.getInstance(), StaffRemoteSource.getInstance());
+    }
+
+    public static StaffRepository getInstance(StaffLocalSource localSource, StaffRemoteSource remoteSource) {
+        if (INSTANCE == null) {
+            INSTANCE = new StaffRepository(localSource, remoteSource);
+        }
+        return INSTANCE;
+    }
+
+    @Override
+    public LiveData<List<Staff>> getAll(boolean forceUpdate) {
+        return localSource.getAll();
+    }
+
+    @Override
+    public void save(Staff... items) {
+        localSource.save(items);
+    }
+
+    @Override
+    public void save(ArrayList<Staff> items) {
+        localSource.save(items);
+    }
+
+    @Override
+    public void updateAll(ArrayList<Staff> items) {
+        localSource.updateAll(items);
     }
 }

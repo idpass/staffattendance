@@ -129,8 +129,6 @@ public class TeamRemoteSource {
                                 });
                     }
                 });
-        ;
-
 
         Observable<List<TeamMemberResposne>> teamlist = api.getMyTeam()
                 .map(new Func1<ArrayList<MyTeamResponse>, ArrayList<MyTeamResponse>>() {

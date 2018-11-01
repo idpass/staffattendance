@@ -62,6 +62,8 @@ public interface ApiInterface {
             @Part("address") RequestBody address,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
+            @Part("latitude") RequestBody latitude,
+            @Part("longitude") RequestBody longitude,
             @Part MultipartBody.Part photo
     );
 

@@ -54,6 +54,10 @@ public class NewStaffCall {
     public Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo, File photoFileToUpload) {
         Context context = StaffAttendance.getStaffAttendance();
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
+
+        RequestBody lat = RequestBody.create(MediaType.parse("text/plain"), "0");
+        RequestBody lon = RequestBody.create(MediaType.parse("text/plain"), "0");
+
         return apiInterface.uploadNewStaff(
                 new TeamDao().getOneTeamIdForDemo(),
                 pojo.getDesignation(),
@@ -70,6 +74,8 @@ public class NewStaffCall {
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getAddress()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractStart()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractEnd()),
+                lat,
+                lon,
                 getImageFile(photoFileToUpload)
         );
     }

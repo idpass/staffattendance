@@ -3,10 +3,12 @@ package np.com.naxa.staffattendance.application;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.evernote.android.job.JobManager;
 import com.facebook.stetho.Stetho;
 
 import io.fabric.sdk.android.Fabric;
+import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.jobs.DataSyncJobCreator;
 import timber.log.Timber;
 
@@ -20,7 +22,7 @@ public class StaffAttendance extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        configureCrashReporting();
         staffAttendance = this;
         Stetho.initializeWithDefaults(this);
         Timber.plant(new Timber.DebugTree());
@@ -30,5 +32,12 @@ public class StaffAttendance extends Application {
 
     public static StaffAttendance getStaffAttendance(){
         return staffAttendance ;
+    }
+
+    private void configureCrashReporting() {
+        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
+                .disabled(BuildConfig.DEBUG)
+                .build();
+        Fabric.with(this, new Crashlytics.Builder().core(crashlyticsCore).build());
     }
 }

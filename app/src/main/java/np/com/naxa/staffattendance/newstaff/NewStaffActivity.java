@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.newstaff;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -7,6 +8,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +18,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,42 +29,65 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.observers.DisposableObserver;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
+import np.com.naxa.staffattendance.common.Constant;
+import np.com.naxa.staffattendance.common.GeoPointActivity;
+import np.com.naxa.staffattendance.common.PairSpinnerAdapter;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
+import okhttp3.ResponseBody;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observer;
+
+import static np.com.naxa.staffattendance.common.Constant.EXTRA_MESSAGE;
 
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
 
-    private Spinner bank, designation;
+    @BindView(R.id.act_new_staff_btn_location)
+    public Button btnLocation;
+
+    private Spinner spinnerBank, spinnerDesgination;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
     private EditText dob, contractStartDate, contractEndDate, bankNameOther;
     private Button photo, save, create;
@@ -76,6 +103,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Gson gson;
     private Dialog msgDialog;
     DatePickerDialog datePickerDialog;
+    private String latitude,longitude,accurary;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -87,6 +115,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_staff);
+        ButterKnife.bind(this);
         gson = new Gson();
 
         initUI();
@@ -95,9 +124,78 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         initListeners();
 
-        spinnerValues();
 
-        initSpinners();
+        if (!NetworkUtils.isInternetAvailable()) {
+            loadBanks();
+            loadStaffDesignation();
+        }
+
+
+        FormCall formCall = new FormCall();
+        formCall.getBankList()
+                .subscribe(new Observer<List<String>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof HttpException) {
+                            try {
+                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                showErrorDialog("Failed to download banks", responseBody.string());
+                            } catch (NullPointerException | IOException e1) {
+                                showErrorDialog("Failed to download banks", "");
+                                e1.printStackTrace();
+                            }
+                        } else if (e instanceof SocketTimeoutException) {
+                            showErrorDialog("Failed to download banks", "Server took too long to respond");
+                        } else if (e instanceof IOException) {
+                            showErrorDialog("Failed to download banks", e.getMessage());
+                        } else {
+                            showErrorDialog("Failed to download banks", e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onNext(List<String> strings) {
+                        loadBanks();
+                    }
+                });
+
+        formCall.getDesignation()
+                .subscribe(new Observer<ArrayList<ArrayList<String>>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof HttpException) {
+                            try {
+                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                showErrorDialog("Failed to download designation", responseBody.string());
+                            } catch (NullPointerException | IOException e1) {
+                                showErrorDialog("Failed to download designation", "");
+                                e1.printStackTrace();
+                            }
+                        } else if (e instanceof SocketTimeoutException) {
+                            showErrorDialog("Failed to download designation", "Server took too long to respond");
+                        } else if (e instanceof IOException) {
+                            showErrorDialog("Failed to download designation", e.getMessage());
+                        } else {
+                            showErrorDialog("Failed to download designation", e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<ArrayList<String>> arrayLists) {
+                        loadStaffDesignation();
+                    }
+                });
+
 
         bottomNavigationView.setSelectedItemId(R.id.action_add_staff);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -105,15 +203,60 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void setFakeData() {
-        firstName.getEditText().setText(randomName());
-        try {
-//            bank.setSelection(1);
-//            designation.setSelection(1);
-        } catch (Exception e) {
-
-        }
+    private void showErrorDialog(String title, String message) {
+        DialogFactory.createSimpleOkErrorDialog(NewStaffActivity.this,
+                title,
+                message)
+                .show();
     }
+
+    private void loadStaffDesignation() {
+
+        StaffDesignationLocalSource.getInstance().getAsPairs()
+                .subscribe(new DisposableObserver<List<Pair>>() {
+                    @Override
+                    public void onNext(List<Pair> designation) {
+                        setupSpinnerDesgination(designation);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        showErrorDialog("Failed to load designation", "Connect to then internet and reopen form to get designation");
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void loadBanks() {
+        BankLocalSource.getInstance()
+                .getAsPairs()
+                .subscribe(new DisposableObserver<List<Pair>>() {
+                    @Override
+                    public void onNext(List<Pair> banks) {
+                        setupSpinner(banks);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        DialogFactory.createSimpleOkErrorDialog(NewStaffActivity.this,
+                                "Failed to load banks",
+                                "Connect to then internet and reopen form to get banks")
+                                .show();
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
 
     private void spinnerValues() {
         FormCall formCall = new FormCall();
@@ -127,7 +270,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             if (TextUtils.isEmpty(designations) || TextUtils.isEmpty(banks)) {
                 msgDialog = DialogFactory
-                        .createMessageDialog(NewStaffActivity.this, "Message", "Connect to then internet and reopen form to get banks and designations");
+                        .createMessageDialog(NewStaffActivity.this, "Message",
+                                "Connect to then internet and reopen form to get banks and designations");
                 msgDialog.show();
             } else {
                 Type typeToken = new TypeToken<ArrayList<String>>() {
@@ -146,29 +290,23 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         if (designationList.isEmpty()) {
             designationList.add(getResources().getString(R.string.default_option));
-            formCall.getDesignation()
-                    .subscribe(new Observer<List<String>>() {
-                        @Override
-                        public void onCompleted() {
 
-                        }
+            formCall.getDesignation().subscribe(new Observer<ArrayList<ArrayList<String>>>() {
+                @Override
+                public void onCompleted() {
 
-                        @Override
-                        public void onError(Throwable e) {
+                }
 
-                        }
+                @Override
+                public void onError(Throwable e) {
 
-                        @Override
-                        public void onNext(List<String> strings) {
-                            designationList.addAll(strings);
+                }
 
-                            SharedPreferenceUtils
-                                    .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Designation,
-                                            gson.toJson(designationList));
+                @Override
+                public void onNext(ArrayList<ArrayList<String>> arrayLists) {
 
-
-                        }
-                    });
+                }
+            });
         }
 
         if (bankList.isEmpty()) {
@@ -209,17 +347,27 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    private void initSpinners() {
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, designationList);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        designation.setAdapter(spinnerAdapter);
+    private void setupSpinnerDesgination(@NonNull List<Pair> desgination) {
 
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, bankList);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        bank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        PairSpinnerAdapter pairSpinnerAdapter = null;
+
+        //desgination spinner
+        pairSpinnerAdapter = new PairSpinnerAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, desgination);
+        pairSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDesgination.setAdapter(pairSpinnerAdapter);
+    }
+
+    private void setupSpinner(@NonNull List<Pair> banks) {
+        PairSpinnerAdapter pairSpinnerAdapter = null;
+
+        pairSpinnerAdapter = new PairSpinnerAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, banks);
+        pairSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerBank.setAdapter(pairSpinnerAdapter);
+
+        spinnerBank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String choice = adapterView.getItemAtPosition(i).toString();
+                String choice = (String) ((Pair) adapterView.getItemAtPosition(i)).second;
                 if (choice.equals(getResources().getString(R.string.default_option))) {
                     accountNumber.setVisibility(View.GONE);
                     bankNameOther.setVisibility(View.GONE);
@@ -237,7 +385,41 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
-        bank.setAdapter(this.spinnerAdapter);
+    }
+
+    private void initSpinners() {
+        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, designationList);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDesgination.setAdapter(spinnerAdapter);
+
+        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, bankList);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+        spinnerBank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String choice = (String) ((Pair) adapterView.getItemAtPosition(i)).second;
+                if (choice.equals(getResources().getString(R.string.default_option))) {
+                    accountNumber.setVisibility(View.GONE);
+                    bankNameOther.setVisibility(View.GONE);
+                } else if (choice.equals(getResources().getString(R.string.bank_other))) {
+                    accountNumber.setVisibility(View.VISIBLE);
+                    bankNameOther.setVisibility(View.VISIBLE);
+                } else {
+                    accountNumber.setVisibility(View.VISIBLE);
+                    bankNameOther.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        spinnerBank.setAdapter(this.spinnerAdapter);
     }
 
     private void initCalender() {
@@ -259,7 +441,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initUI() {
-        designation = findViewById(R.id.staff_designation);
+        spinnerDesgination = findViewById(R.id.staff_designation);
         firstName = findViewById(R.id.staff_first_name);
         lastName = findViewById(R.id.staff_last_name);
         dob = findViewById(R.id.staff_dob_date);
@@ -268,7 +450,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         female = findViewById(R.id.gender_female);
         other = findViewById(R.id.gender_other);
         ethinicity = findViewById(R.id.staff_ethinicity);
-        bank = findViewById(R.id.staff_bank);
+        spinnerBank = findViewById(R.id.staff_bank);
         accountNumber = findViewById(R.id.staff_bank_account);
         bankNameOther = findViewById(R.id.staff_bank_other);
         contactNumber = findViewById(R.id.staff_contact_number);
@@ -316,6 +498,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.staff_save:
+
+
                 if (validate()) {
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     finish();
@@ -325,6 +509,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.staff_send:
+
                 if (validate()) {
                     final ProgressDialog progressDialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
 
@@ -375,32 +560,41 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private boolean validate() {
         boolean validation = false;
 
-        if (designation.getSelectedItem().equals(getResources().getString(R.string.default_option))) {
-            ToastUtils.showShort("Select a designation");
+        String selectedDesgination = (String) ((Pair) spinnerDesgination.getSelectedItem()).second;
+        String selectedBank = (String) ((Pair) spinnerBank.getSelectedItem()).second;
+
+        String defaultOption = getResources().getString(R.string.default_option);
+
+        if (defaultOption.equalsIgnoreCase(selectedDesgination)) {
+            showValidationError("Select a designation", spinnerDesgination);
         } else if (firstName.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter first name");
+            showValidationError("Enter first name", firstName.getEditText());
         } else if (lastName.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter last name");
+            showValidationError("Enter last name", lastName.getEditText());
         } else if (dob.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose date of birth");
+            showValidationError("Choose date of birth", dob);
         } else if (gender.getCheckedRadioButtonId() == -1) {
             ToastUtils.showShort("Select gender");
         } else if (ethinicity.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter ethnicity");
-        } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
-            ToastUtils.showShort("Choose a option");
-        } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter bank name");
-        } else if (!bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter account number");
+            showValidationError("Enter ethnicity", ethinicity.getEditText());
+        } else if (defaultOption.equalsIgnoreCase(selectedBank)) {
+            showValidationError("Choose a option", spinnerBank);
+
+        } else if (spinnerBank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
+            showValidationError("Enter spinnerBank name", bankNameOther);
+
+        } else if (!spinnerBank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
+
+            showValidationError("Enter account number", accountNumber.getEditText());
+
         } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter contact number");
+            showValidationError("Enter contact number", contactNumber.getEditText());
         } else if (address.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter address");
+            showValidationError("Enter address", address.getEditText());
         } else if (contractStartDate.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose contract start date");
+            showValidationError("Choose contract start date", contractStartDate);
         } else if (contractEndDate.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose contract end date");
+            showValidationError("Choose contract end date", contractEndDate);
         } else {
             validation = true;
         }
@@ -416,22 +610,49 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             String formattedDate = String.format(Locale.US, "%s-%02d-%02d", year, month + 1, dayOfMonth);
             view.setText(formattedDate);
+            view.setError(null);
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void scrollToView(final View view) {
+        view.getParent().requestChildFocus(view, view);
+//        view.requestFocus();
+//        ScrollUtils.scrollToView(findViewById(R.id.scrollView),view);
+    }
+
+    private void showValidationError(String message, View view) {
+        scrollToView(view);
+        if (view instanceof EditText) {
+            EditText et = (EditText) view;
+            et.setError(message);
+        } else if (view instanceof Spinner) {
+            Spinner spinner = (Spinner) view;
+            TextView errorText = (TextView) spinner.getSelectedView();
+            errorText.setError("");
+            errorText.setTextColor(Color.RED);
+            errorText.setText(message);
+        }
     }
 
 
     public NewStaffPojo getNewStaffDetail() {
 
+        Pair selectedDesignation = ((Pair) spinnerDesgination.getSelectedItem());
+        Integer selectedDesignationId = (Integer) selectedDesignation.first;
+        String selectedDesignationLabel = (String) selectedDesignation.second;
 
-        return new NewStaffPojoBuilder()
+        Pair selectedBank = ((Pair) spinnerBank.getSelectedItem());
+        Integer selectedBankId = (Integer) selectedBank.first;
+        String selectedBankLabel = (String) selectedBank.second;
+
+        NewStaffPojoBuilder builder = new NewStaffPojoBuilder()
                 .setID(String.valueOf(System.currentTimeMillis()))
-                .setDesignation(designation.getSelectedItemPosition())
+                .setDesignation(selectedDesignationId)
                 .setFirstName(firstName.getEditText().getText().toString())
                 .setLastName(lastName.getEditText().getText().toString())
                 .setDateOfBirth(dob.getText().toString())
                 .setGender(getGender())
                 .setEthnicity(ethinicity.getEditText().getText().toString())
-                .setBank(getBankId())
                 .setBankName(bankNameOther.getText().toString())
                 .setAccountNumber(accountNumber.getEditText().getText().toString())
                 .setPhoneNumber(contactNumber.getEditText().getText().toString())
@@ -440,8 +661,15 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setContractStart(contractStartDate.getText().toString())
                 .setContractEnd(contractEndDate.getText().toString())
                 .setPhoto(getPhotoLocation())
-                .setStatus(NewStaffDao.SAVED)
-                .createNewStaffPojo();
+                .setStatus(NewStaffDao.SAVED);
+
+
+        if (selectedBankId != 1) {
+            builder.setBank(selectedBankId);
+        }
+
+        return builder.createNewStaffPojo();
+
     }
 
     private String getPhotoLocation() {
@@ -461,8 +689,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private Integer getBankId() {
-        int bankId = 2;
-        if (bank.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
+        int bankId = 1;
+
+        if (spinnerBank.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
             bankId = 1;
         }
         return bankId;
@@ -488,10 +717,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         builder.show();
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) return;
+
 
         EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
@@ -505,7 +735,19 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 photo.setText("Change Photo");
             }
         });
+
+        switch (requestCode) {
+            case Constant.Key.GEOPOINT_RESULT_CODE:
+                String location = data.getStringExtra(EXTRA_MESSAGE);
+                String[] locationSplit = location.split(" ");
+                latitude = locationSplit[0];
+                longitude = locationSplit[1];
+                accurary = locationSplit[3];
+                btnLocation.setText(getString(R.string.message_location_recorded,accurary));
+                break;
+        }
     }
+
 
 
     @Override
@@ -532,16 +774,30 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    public static String randomName() {
-        final String ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
+    @AfterPermissionGranted(Constant.Key.RC_LOCATION)
+    @OnClick(R.id.act_new_staff_btn_location)
+    public void getLocation() {
+        String perms = Manifest.permission.ACCESS_FINE_LOCATION;
 
+        boolean hasPermission = EasyPermissions.hasPermissions(this, perms);
 
-        final Random random = new Random();
-        int sizeOfRandomString = 10;
-        final StringBuilder sb = new StringBuilder(sizeOfRandomString);
-        for (int i = 0; i < sizeOfRandomString; ++i)
-            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
-        return sb.toString();
+        if (hasPermission) {
+            Intent toGeoPointWidget = new Intent(this, GeoPointActivity.class);
+            startActivityForResult(toGeoPointWidget, Constant.Key.GEOPOINT_RESULT_CODE);
+        } else {
+            EasyPermissions.requestPermissions(
+                    new PermissionRequest.Builder(this, Constant.Key.RC_LOCATION, perms)
+                            .setRationale(R.string.rationale_location_permission)
+                            .setPositiveButtonText(R.string.dialog_action_ok)
+                            .setNegativeButtonText(R.string.dialog_action_dismiss)
+                            .build());
+        }
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
 }

@@ -89,6 +89,18 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="no_internet">Device is offline</string>
+    <string name="get_location">Records Location</string>
+    <string name="location_accuracy">Accuracy is %1$f m</string>
+    <string name="location_provider_accuracy">Using %1$s. Accuracy is %2$s m.</string>
+    <string name="cancel_location">Cancel</string>
+    <string name="please_wait_long">Please wait. This could take a few minutes.</string>
+    <string name="getting_location">Loading Location</string>
+    <string name="save_point">Record Location</string>
+    <string name="provider_disabled_error">Sorry, Location providers are disabled!</string>
+    <string name="location_runtime_permissions_denied_title">Location permissions</string>
+    <string name="dialog_action_dismiss">Dismiss</string>
+    <string name="rationale_location_permission">Without these permissions app can\'t record your location. </string>
+    <string name="message_location_recorded">Location Recorded (Accuracy %s)</string>
 
 
 </resources>

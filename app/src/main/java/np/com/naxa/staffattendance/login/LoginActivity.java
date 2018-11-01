@@ -166,28 +166,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final Gson gson = new Gson();
         FormCall formCall = new FormCall();
 
-        formCall.getDesignation()
-                .subscribe(new Observer<List<String>>() {
-                    @Override
-                    public void onCompleted() {
+        formCall.getDesignation().subscribe(new Observer<ArrayList<ArrayList<String>>>() {
+            @Override
+            public void onCompleted() {
 
-                    }
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
 
-                    }
+            }
 
-                    @Override
-                    public void onNext(List<String> designationList) {
-                        SharedPreferenceUtils
-                                .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Designation,
-                                        gson.toJson(designationList));
+            @Override
+            public void onNext(ArrayList<ArrayList<String>> designationList) {
 
-
-                    }
-                });
-
+            }
+        });
 
         formCall.getBankList().subscribe(new Observer<List<String>>() {
             @Override
@@ -201,13 +195,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
 
             @Override
-            public void onNext(List<String> bankList) {
-                SharedPreferenceUtils
-                        .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Bank,
-                                gson.toJson(bankList));
+            public void onNext(List<String> strings) {
 
             }
         });
+
+
     }
 
     private void fetchMyTeam() {

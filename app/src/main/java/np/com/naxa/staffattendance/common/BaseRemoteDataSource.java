@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance;
+package np.com.naxa.staffattendance.common;
 
 import rx.Observable;
 

@@ -67,6 +67,9 @@ import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
+import np.com.naxa.staffattendance.pojo.Staff;
+import np.com.naxa.staffattendance.pojo.StaffBuilder;
+import np.com.naxa.staffattendance.pojo.StaffRepository;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -103,7 +106,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Gson gson;
     private Dialog msgDialog;
     DatePickerDialog datePickerDialog;
-    private String latitude,longitude,accurary;
+    private String latitude, longitude, accurary;
+
+    private StaffRepository staffRepository;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -117,6 +122,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_new_staff);
         ButterKnife.bind(this);
         gson = new Gson();
+        staffRepository = StaffRepository.getInstance();
 
         initUI();
 
@@ -498,8 +504,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.staff_save:
-
-
                 if (validate()) {
                     new NewStaffDao().saveNewStaff(getNewStaffDetail());
                     finish();
@@ -514,6 +518,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                     final ProgressDialog progressDialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
 
                     //progressDialog.show();
+
+                    Staff newStaff = getNewStaff();
+                    staffRepository.save(newStaff);
 
                     NewStaffPojo staff = getNewStaffDetail();
                     new NewStaffDao().saveNewStaff(staff);
@@ -543,6 +550,46 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private Staff getNewStaff() {
+        String id = new TeamDao().getOneTeamIdForDemo();
+
+        Pair selectedDesignation = ((Pair) spinnerDesgination.getSelectedItem());
+        Integer selectedDesignationId = (Integer) selectedDesignation.first;
+        String selectedDesignationLabel = (String) selectedDesignation.second;
+
+        Pair selectedBank = ((Pair) spinnerBank.getSelectedItem());
+        Integer selectedBankId = (Integer) selectedBank.first;
+        String selectedBankLabel = (String) selectedBank.second;
+
+        StaffBuilder builder = new StaffBuilder()
+                .setId(String.valueOf(System.currentTimeMillis()))
+                .setDesignation(selectedDesignationId)
+                .setFirstName(firstName.getEditText().getText().toString())
+                .setLastName(lastName.getEditText().getText().toString())
+                .setDateOfBirth(dob.getText().toString())
+                .setGender(getGender())
+                .setEthnicity(ethinicity.getEditText().getText().toString())
+                .setBankName(bankNameOther.getText().toString())
+                .setAccountNumber(accountNumber.getEditText().getText().toString())
+                .setPhoneNumber(contactNumber.getEditText().getText().toString())
+                .setEmail(email.getEditText().getText().toString())
+                .setAddress(address.getEditText().getText().toString())
+                .setContractStart(contractStartDate.getText().toString())
+                .setContractEnd(contractEndDate.getText().toString())
+                .setPhoto(getPhotoLocation())
+                .setTeamID(id)
+                .setTeamName(new TeamDao().getTeamNameById(id))
+                .setStatus(NewStaffDao.SAVED);
+
+
+        if (selectedBankId != 1) {
+            builder.setBank(selectedBankId);
+        }
+
+        return builder.createStaff();
+
+    }
+
     private void putDataInStafftable(NewStaffPojo newStaffDetail) {
         String id = new TeamDao().getOneTeamIdForDemo();
         TeamMemberResposne member = new TeamMemberResposneBuilder()
@@ -556,6 +603,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         new StaffDao().saveStaff(member);
     }
+
 
     private boolean validate() {
         boolean validation = false;
@@ -743,11 +791,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 latitude = locationSplit[0];
                 longitude = locationSplit[1];
                 accurary = locationSplit[3];
-                btnLocation.setText(getString(R.string.message_location_recorded,accurary));
+                btnLocation.setText(getString(R.string.message_location_recorded, accurary));
                 break;
         }
     }
-
 
 
     @Override

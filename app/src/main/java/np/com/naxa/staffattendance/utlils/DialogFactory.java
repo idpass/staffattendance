@@ -55,7 +55,7 @@ public final class DialogFactory {
     }
 
 
-    public static Dialog createMessageDialog(final Context context, String title, String message) {
+    public static AlertDialog createMessageDialog(final Context context, String title, String message) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context, R.style.RiseUpDialog)
                 .setTitle(title)
                 .setMessage(message)

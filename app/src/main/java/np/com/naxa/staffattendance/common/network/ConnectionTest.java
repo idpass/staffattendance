@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.common.network;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TimeUtils;
@@ -27,9 +28,7 @@ public class ConnectionTest {
     private long endTime;
     private long fileSize;
 
-
-    public static ConnectionTest INSTANCE;
-
+    private static ConnectionTest INSTANCE;
     private OkHttpClient client = new OkHttpClient();
 
     // bandwidth in kbps
@@ -69,75 +68,78 @@ public class ConnectionTest {
         }, 0, 1000);
 
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                callback.networkQuality(NetworkSpeed.UNKNOWN);
-            }
-
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-                Headers responseHeaders = response.headers();
-                for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                    Log.d(TAG, responseHeaders.name(i) + ": " + responseHeaders.value(i));
-                }
-
-                try (InputStream input = response.body().byteStream()) {
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024];
-
-                    while (input.read(buffer) != -1) {
-                        bos.write(buffer);
+        client.newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        e.printStackTrace();
+                        callback.networkQuality(NetworkSpeed.UNKNOWN);
                     }
-                    byte[] docBuffer = bos.toByteArray();
-                    fileSize = bos.size();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                    callback.networkQuality(NetworkSpeed.UNKNOWN);
-                } catch (SocketTimeoutException e) {
-                    e.printStackTrace();
-                    callback.networkQuality(NetworkSpeed.UNKNOWN);
-
-                }
 
 
-                endTime = System.currentTimeMillis();
-
-                // calculate how long it took by subtracting endtime from starttime
-
-                double timeTakenMills = Math.floor(endTime - startTime);  // time taken in milliseconds
-                double timeTakenSecs = timeTakenMills / 1000;  // divide by 1000 to get time in seconds
-                final int kilobytePerSec = (int) Math.round(1024 / timeTakenSecs);
-
-                if (kilobytePerSec <= POOR_BANDWIDTH) {
-                    callback.networkQuality(NetworkSpeed.POOR);
-                } else if (kilobytePerSec <= GOOD_BANDWIDTH) {
-                    callback.networkQuality(NetworkSpeed.AVERAGE);
-                } else {
-                    callback.networkQuality(NetworkSpeed.GOOD);
-                }
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (!response.isSuccessful()){
+                            throw new IOException("Unexpected code " + response);
+                        }
 
 
-                // get the download speed by dividing the file size by time taken to download
-                double speed = fileSize / timeTakenMills;
+                        Headers responseHeaders = response.headers();
+                        for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+                            Log.d(TAG, responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                        }
 
-                Log.d(TAG, "Time taken in secs: " + timeTakenSecs);
-                Log.d(TAG, "kilobyte per sec: " + kilobytePerSec);
-                Log.d(TAG, "Download Speed: " + speed);
-                Log.d(TAG, "File size: " + fileSize);
-                try {
-                    Thread.sleep(2000);
-                    callback.onEnd();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                        try (InputStream input = response.body().byteStream()) {
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            byte[] buffer = new byte[1024];
 
-            }
-        });
+                            while (input.read(buffer) != -1) {
+                                bos.write(buffer);
+                            }
+                            byte[] docBuffer = bos.toByteArray();
+                            fileSize = bos.size();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                            callback.networkQuality(NetworkSpeed.UNKNOWN);
+                        } catch (SocketTimeoutException e) {
+                            e.printStackTrace();
+                            callback.networkQuality(NetworkSpeed.UNKNOWN);
+
+                        }
+
+
+                        endTime = System.currentTimeMillis();
+
+                        // calculate how long it took by subtracting endtime from starttime
+                        double timeTakenMills = Math.floor(endTime - startTime);  // time taken in milliseconds
+                        double timeTakenSecs = timeTakenMills / 1000;  // divide by 1000 to get time in seconds
+                        final int kilobytePerSec = (int) Math.round(1024 / timeTakenSecs);
+
+                        if (kilobytePerSec <= POOR_BANDWIDTH) {
+                            callback.networkQuality(NetworkSpeed.POOR);
+                        } else if (kilobytePerSec <= GOOD_BANDWIDTH) {
+                            callback.networkQuality(NetworkSpeed.AVERAGE);
+                        } else {
+                            callback.networkQuality(NetworkSpeed.GOOD);
+                        }
+
+
+                        // get the download speed by dividing the file size by time taken to download
+                        double speed = fileSize / timeTakenMills;
+
+                        Log.d(TAG, "Time taken in secs: " + timeTakenSecs);
+                        Log.d(TAG, "kilobyte per sec: " + kilobytePerSec);
+                        Log.d(TAG, "Download Speed: " + speed);
+                        Log.d(TAG, "File size: " + fileSize);
+                        try {
+                            Thread.sleep(2000);
+                            callback.onEnd();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
     }
 
 

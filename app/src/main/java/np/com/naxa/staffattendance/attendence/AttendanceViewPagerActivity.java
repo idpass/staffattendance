@@ -1,6 +1,8 @@
 package np.com.naxa.staffattendance.attendence;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,11 +23,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.apache.http.conn.ConnectTimeoutException;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Locale;
 import java.util.Timer;
@@ -146,10 +150,9 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                                 showErrorDialog("");
                                 e1.printStackTrace();
                             }
-                        } else if (e instanceof SocketTimeoutException) {
-                            showErrorDialog("Server took too long to respond");
-                        } else if (e instanceof IOException) {
-                            showErrorDialog(e.getMessage());
+                        } else if (e instanceof SocketTimeoutException | e instanceof ConnectTimeoutException | e instanceof SocketException) {
+                            showTimeoutDialog();
+//                            showErrorDialog("Server took too long to respond, perhaps internet is slower than usual");
                         } else {
                             showErrorDialog(e.getMessage());
                         }
@@ -230,61 +233,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
             case R.id.main_menu_refresh:
 
-                ProgressDialog networkDialog = DialogFactory.createProgressDialogHorizontal(this, "Estimating network quality");
-
-                ConnectionTest.getINSTANCE().download(new ConnectionTest.ConnectionTestCallback() {
-                    @Override
-                    public void networkQuality(ConnectionTest.NetworkSpeed networkSpeed) {
-                        String message = "";
-                        switch (networkSpeed) {
-                            case POOR:
-                                message = "Poor network quality detected";
-                                break;
-                            case GOOD:
-                                message = "Good network quality detected";
-                                break;
-                            case AVERAGE:
-                                message = "Average network quality detected";
-                                break;
-                            case UNKNOWN:
-                                message = "Network quality unknown";
-                                break;
-                        }
-                        String finalMessage = message;
-                        runOnUiThread(() -> {
-                            networkDialog.setTitle(finalMessage);
-                        });
-
-                    }
-
-                    @Override
-                    public void onStart() {
-                        networkDialog.show();
-                    }
-
-                    @Override
-                    public void onEnd() {
-                        networkDialog.dismiss();
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                runSync();
-                            }
-                        },1000);
-
-
-                    }
-
-                    @Override
-                    public void message(String message) {
-                        runOnUiThread(()->{
-                            networkDialog.setTitle(message);
-                            
-                        });
-
-                    }
-
-                });
+                runSync();
 
 
                 break;
@@ -300,6 +249,60 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     }
 
+
+    private void runSpeedTest() {
+        ProgressDialog networkDialog = DialogFactory.createProgressDialogHorizontal(this, "Estimating network quality");
+        android.support.v7.app.AlertDialog resultDialog = DialogFactory.createMessageDialog(this, "Network quality results", "");
+
+        ConnectionTest.getINSTANCE().download(new ConnectionTest.ConnectionTestCallback() {
+            @Override
+            public void networkQuality(ConnectionTest.NetworkSpeed networkSpeed) {
+                String message = "";
+                switch (networkSpeed) {
+                    case POOR:
+                        message = "Poor network quality detected";
+                        break;
+                    case GOOD:
+                        message = "Good network quality detected";
+                        break;
+                    case AVERAGE:
+                        message = "Average network quality detected";
+                        break;
+                    case UNKNOWN:
+                        message = "Network quality unknown";
+                        break;
+                }
+                String finalMessage = message;
+                runOnUiThread(() -> resultDialog.setMessage(finalMessage));
+
+            }
+
+            @Override
+            public void onStart() {
+                runOnUiThread(networkDialog::show);
+
+            }
+
+            @Override
+            public void onEnd() {
+                runOnUiThread(() -> {
+                    networkDialog.dismiss();
+                    resultDialog.show();
+                });
+
+            }
+
+            @Override
+            public void message(String message) {
+                runOnUiThread(() -> {
+                    resultDialog.setMessage(message);
+                });
+
+            }
+
+        });
+    }
+
     private void showErrorDialog(String message) {
 
         DialogFactory.createActionDialog(AttendanceViewPagerActivity.this, "Failed to sync", message)
@@ -307,6 +310,21 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 .show();
 
     }
+
+    private void showTimeoutDialog() {
+        DialogFactory.createActionDialog(AttendanceViewPagerActivity.this, "Slow Internet", "This took longer than expected, perhaps internet is slower than usual?")
+                .setPositiveButton("Try Again", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        runSync();
+                    }
+                })
+                .setNegativeButton("Dismiss", null)
+                .setNeutralButton("Run Speed test", (dialog, which) -> {
+                    runSpeedTest();
+                }).show();
+    }
+
 
     @Override
     protected void onPause() {

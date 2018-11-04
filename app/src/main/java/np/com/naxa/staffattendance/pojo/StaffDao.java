@@ -11,6 +11,8 @@ import android.arch.persistence.room.Update;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface StaffDao {
 
@@ -29,11 +31,13 @@ public interface StaffDao {
     @Query("SELECT * from staff")
     LiveData<List<Staff>> getAllStaffs();
 
-    @Query("SELECT * from staff WHERE team_id = :teamId")
+    @Query("SELECT * from staff WHERE teamID = :teamId")
     LiveData<List<Staff>> getStaffFromTeamId(String teamId);
 
     @Query("SELECT * from staff WHERE id = :staffId")
     LiveData<Staff> getStaffFromId(String staffId);
 
+    @Query("SELECT * from staff WHERE status = :status")
+    LiveData<List<Staff>> getStaffFromStatus(String status);
 
 }

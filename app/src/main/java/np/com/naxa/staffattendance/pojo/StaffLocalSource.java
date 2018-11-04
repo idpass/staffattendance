@@ -46,12 +46,16 @@ public class StaffLocalSource implements BaseLocalDataSource<Staff> {
         AsyncTask.execute(() -> dao.update(items));
     }
 
-    public LiveData<Staff> getStaffById(String staffId) {
+    public LiveData<Staff> getStaffFromId(String staffId) {
         return dao.getStaffFromId(staffId);
     }
 
-    public LiveData<List<Staff>> getStaffByTeamId(String teamId) {
+    public LiveData<List<Staff>> getStaffFromTeamId(String teamId) {
         return dao.getStaffFromTeamId(teamId);
+    }
+
+    public LiveData<List<Staff>> getStaffFromStatus(String status){
+        return dao.getStaffFromStatus(status);
     }
 
 

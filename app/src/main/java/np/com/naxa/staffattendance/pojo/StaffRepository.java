@@ -2,10 +2,12 @@ package np.com.naxa.staffattendance.pojo;
 
 import android.arch.lifecycle.LiveData;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import np.com.naxa.staffattendance.common.BaseRepository;
+import rx.Observable;
 
 public class StaffRepository implements BaseRepository<Staff> {
 
@@ -47,5 +49,13 @@ public class StaffRepository implements BaseRepository<Staff> {
     @Override
     public void updateAll(ArrayList<Staff> items) {
         localSource.updateAll(items);
+    }
+
+    public LiveData<List<Staff>> getStaffFromStatus(String status) {
+        return localSource.getStaffFromStatus(status);
+    }
+
+    public Observable<Staff> upload(Staff staff, File filePhoto) {
+        return remoteSource.newStaffObservable(staff, filePhoto);
     }
 }

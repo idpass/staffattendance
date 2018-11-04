@@ -22,11 +22,13 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import rx.Observer;
+
 import timber.log.Timber;
 
 
@@ -87,12 +89,17 @@ public class StaffAttendanceSyncJob extends Job {
                 .bulkAttendanceUpload()
                 .subscribe(new Observer<Object>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         result = Result.FAILURE;
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override

@@ -17,6 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +28,12 @@ import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
+import np.com.naxa.staffattendance.common.MessageEvent;
 import np.com.naxa.staffattendance.database.AttendanceDao;
-import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import rx.Observable;
 import timber.log.Timber;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
@@ -89,6 +92,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
             @Override
             public void onClick(View view) {
 
+
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -98,7 +102,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         msg = String.format(msg, peoplelist);
 
 
-                        showMarkPresentDialog(title,msg);
+                        showMarkPresentDialog(title, msg);
                     }
                 });
             }
@@ -110,6 +114,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
 
     private void showMarkPresentDialog(String title, String msg) {
+
+
         getActivity().runOnUiThread(() -> {
             DialogFactory.createActionDialog(getActivity(), title, msg)
                     .setPositiveButton("Mark Present", new DialogInterface.OnClickListener() {
@@ -128,6 +134,10 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
                             ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
                             attedanceDao.saveAttedance(contentValues);
+
+
+                            ((AttendanceViewPagerActivity) getActivity()).geoTagHelper.start(DateConvertor.getCurrentDate());
+
 
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -196,4 +206,31 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public void onStaffLongClick(int pos) {
         Timber.i("Saving staffIds %s", attedanceToUpload.toString());
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLocationCapturedEvent(MessageEvent event) {
+        String attedanceId = event.getItem("id");
+        String location = event.getMessage();
+        String[] locationSplit = location.split(" ");
+
+        String latitude = locationSplit[0];
+        String longitude = locationSplit[1];
+        String accurary = locationSplit[3];
+
+
+    }
+
+    @Override
+    public void onStart() {
+        EventBus.getDefault().register(this);
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
 }

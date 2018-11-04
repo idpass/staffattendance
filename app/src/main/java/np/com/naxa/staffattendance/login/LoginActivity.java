@@ -17,10 +17,16 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
-import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
@@ -30,12 +36,8 @@ import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.ResponseBody;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import retrofit2.HttpException;
+
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -54,6 +56,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         getWindow().setBackgroundDrawableResource(R.drawable.login_background);
         if (TokenMananger.doesTokenExist()) {
+
+
             AttendanceViewPagerActivity.start(this, false);
             finish();
         }
@@ -102,22 +106,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Observable<Object> login = APIClient.getUploadClient()
                 .create(ApiInterface.class)
                 .getLoginDetailsObservable(username, password)
-                .flatMap(new Func1<LoginResponse, Observable<?>>() {
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Function<LoginResponse, ObservableSource<?>>() {
                     @Override
-                    public Observable<?> call(LoginResponse loginResponse) {
+                    public ObservableSource<?> apply(LoginResponse loginResponse) throws Exception {
                         TokenMananger.saveToken(loginResponse.getToken());
                         APIClient.removeRetrofitClient();
 
                         return APIClient.getUploadClient()
                                 .create(ApiInterface.class)
                                 .getMyTeam()
-                                .map((Func1<ArrayList<MyTeamResponse>, Object>) myTeamResponses -> {
-                                    if (myTeamResponses.isEmpty()) {
-                                        TokenMananger.clearToken();
-                                        throw new RuntimeException("You are not assigned to a team yet");
+                                .subscribeOn(Schedulers.io())
+                                .map(new Function<ArrayList<MyTeamResponse>, Object>() {
+                                    @Override
+                                    public Object apply(ArrayList<MyTeamResponse> myTeamResponses) throws Exception {
+                                        if (myTeamResponses.isEmpty()) {
+                                            TokenMananger.clearToken();
+                                            throw new RuntimeException("You are not assigned to a team yet");
+                                        }
+                                        return Observable.empty();
                                     }
-
-                                    return Observable.empty();
                                 });
                     }
                 });
@@ -125,13 +133,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
-                    @Override
-                    public void onCompleted() {
-                        APIClient.removeRetrofitClient();
-                        getBanksAndDesignation();
-                        fetchMyTeam();
-                    }
-
                     @Override
                     public void onError(Throwable e) {
                         dialog.dismiss();
@@ -154,6 +155,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
 
                     @Override
+                    public void onComplete() {
+                        APIClient.removeRetrofitClient();
+                        getBanksAndDesignation();
+                        fetchMyTeam();
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
                     public void onNext(Object o) {
 
                     }
@@ -168,7 +181,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         formCall.getDesignation().subscribe(new Observer<ArrayList<ArrayList<String>>>() {
             @Override
-            public void onCompleted() {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(ArrayList<ArrayList<String>> arrayLists) {
 
             }
 
@@ -178,14 +196,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
 
             @Override
-            public void onNext(ArrayList<ArrayList<String>> designationList) {
+            public void onComplete() {
 
             }
         });
 
         formCall.getBankList().subscribe(new Observer<List<String>>() {
             @Override
-            public void onCompleted() {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(List<String> strings) {
 
             }
 
@@ -195,7 +218,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
 
             @Override
-            public void onNext(List<String> strings) {
+            public void onComplete() {
 
             }
         });
@@ -210,12 +233,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {
                     @Override
-                    public void onCompleted() {
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
                         dialog.dismiss();
 
                         AttendanceViewPagerActivity.start(LoginActivity.this, false);
                         finish();
+                    }
+                });
 
+        myTeamRepository.fetchMyTeam()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
 
                     }
 
@@ -251,7 +302,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
 
                     @Override
-                    public void onNext(Object o) {
+                    public void onComplete() {
 
                     }
                 });

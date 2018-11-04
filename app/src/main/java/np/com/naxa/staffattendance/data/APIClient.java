@@ -6,21 +6,24 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.GsonBuilder;
 import com.readystatesoftware.chuck.ChuckInterceptor;
 
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.schedulers.Schedulers;
+
 
 public class APIClient {
 
@@ -29,7 +32,8 @@ public class APIClient {
 
     private static Retrofit retrofit = null;
     private static OkHttpClient okHttpClient;
-    private static RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
+    private static RxJava2CallAdapterFactory rxAdapter = RxJava2CallAdapterFactory.create();
+
 
     public static ApiInterface getAPIService(Context context) {
         return APIClient.getUploadClient().create(ApiInterface.class);

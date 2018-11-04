@@ -2,38 +2,40 @@ package np.com.naxa.staffattendance.newstaff;
 
 
 import android.content.Context;
-import android.net.Uri;
-import android.support.v4.content.FileProvider;
+
+import org.reactivestreams.Subscriber;
 
 import java.io.File;
 
-import np.com.naxa.staffattendance.AttendanceFormEditActivity;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.Response;
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
 public class NewStaffCall {
 
     public void upload(final NewStaffPojo pojo, File photoFileToUpload, final NewStaffCallListener listener) {
         newStaffObservable(pojo, photoFileToUpload).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<NewStaffPojo>() {
+                .subscribe(new Observer<NewStaffPojo>() {
                     @Override
-                    public void onCompleted() {
+                    public void onSubscribe(Disposable d) {
 
+                    }
+
+                    @Override
+                    public void onNext(NewStaffPojo newStaffPojo) {
+                        new NewStaffDao().deleteStaffById(String.valueOf(newStaffPojo.getId()));
+                        listener.onSuccess();
                     }
 
                     @Override
@@ -43,9 +45,8 @@ public class NewStaffCall {
                     }
 
                     @Override
-                    public void onNext(NewStaffPojo newStaffPojo) {
-                        new NewStaffDao().deleteStaffById(String.valueOf(newStaffPojo.getId()));
-                        listener.onSuccess();
+                    public void onComplete() {
+
                     }
                 });
     }
@@ -54,6 +55,9 @@ public class NewStaffCall {
     public Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo, File photoFileToUpload) {
         Context context = StaffAttendance.getStaffAttendance();
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
+
+
+
         return apiInterface.uploadNewStaff(
                 new TeamDao().getOneTeamIdForDemo(),
                 pojo.getDesignation(),
@@ -70,6 +74,7 @@ public class NewStaffCall {
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getAddress()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractStart()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractEnd()),
+
                 getImageFile(photoFileToUpload)
         );
     }

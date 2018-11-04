@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance.common;
 
-import rx.Observable;
+
+import io.reactivex.Observable;
 
 public interface BaseRemoteDataSource<T> {
 

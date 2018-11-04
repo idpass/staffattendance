@@ -8,9 +8,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
-import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
@@ -24,10 +28,6 @@ import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffCall;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Func1;
-import timber.log.Timber;
 
 
 public class TeamRemoteSource {
@@ -44,55 +44,6 @@ public class TeamRemoteSource {
     }
 
 
-    public void test() {
-        Observable<Integer> a = Observable.just(11, 22, 33)
-                .map(new Func1<Integer, Integer>() {
-                    @Override
-                    public Integer call(Integer s) {
-                        if (true) throw new RuntimeException("We have an error");
-                        return s;
-                    }
-                });
-        Observable<Integer> b = Observable.just(1, 2, 3, 4);
-
-        Observable.concat(a, b).subscribe(new Observer<Integer>() {
-            @Override
-            public void onCompleted() {
-                Timber.i("Completed");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e("Error: %s", e.getMessage());
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(Integer integer) {
-                Timber.i("Integer: %s", integer);
-            }
-        });
-
-
-        Observable.concat(b, a).subscribe(new Observer<Integer>() {
-            @Override
-            public void onCompleted() {
-                Timber.i("Completed");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e("Error: %s", e.getMessage());
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(Integer integer) {
-                Timber.i("Integer: %s", integer);
-            }
-        });
-    }
-
     public Observable<Object> syncAll() {
         final ApiInterface api = APIClient.getUploadClient()
                 .create(ApiInterface.class);
@@ -102,40 +53,42 @@ public class TeamRemoteSource {
 
         ArrayList<NewStaffPojo> unsyncedStaffList = new NewStaffDao().getOfflineStaffs();
         Observable<Object> uploadNewStaff = Observable.just(unsyncedStaffList)
-                .flatMapIterable((Func1<ArrayList<NewStaffPojo>, Iterable<NewStaffPojo>>) newStaffPojos -> newStaffPojos)
-                .flatMap(new Func1<NewStaffPojo, Observable<?>>() {
+                .flatMapIterable((Function<ArrayList<NewStaffPojo>, Iterable<NewStaffPojo>>) newStaffPojos -> newStaffPojos)
+                .flatMap(new Function<NewStaffPojo, Observable<?>>() {
                     @Override
-                    public Observable<?> call(NewStaffPojo newStaffPojo) {
+                    public Observable<?> apply(NewStaffPojo newStaffPojo) {
                         String filePath = newStaffPojo.getPhoto();
                         File file = null;
                         if (!TextUtils.isEmpty(filePath)) {
                             file = new File(filePath);
                         }
 
+
+                        newStaffCall.newStaffObservable(newStaffPojo, file);
+
                         return newStaffCall.newStaffObservable(newStaffPojo, file)
-                                .map(new Func1<NewStaffPojo, Pair<String, String>>() {
+                                .map(new Function<NewStaffPojo, Pair<String, String>>() {
                                     @Override
-                                    public Pair<String, String> call(NewStaffPojo uploadedStaff) {
+                                    public Pair<String, String> apply(NewStaffPojo uploadedStaff) {
                                         NewStaffDao.getInstance().deleteStaffById(String.valueOf(newStaffPojo.getId()));
                                         return Pair.create(newStaffPojo.getId(), uploadedStaff.getId());
                                     }
                                 })
                                 .toList()
-                                .flatMap(new Func1<List<Pair<String, String>>, Observable<AttendanceResponse>>() {
+                                .toObservable()
+                                .flatMap(new Function<List<Pair<String, String>>, Observable<AttendanceResponse>>() {
                                     @Override
-                                    public Observable<AttendanceResponse> call(List<Pair<String, String>> pairs) {
+                                    public Observable<AttendanceResponse> apply(List<Pair<String, String>> pairs) {
                                         return AttendanceDao.getInstance().updateStaffIdObservable(pairs);
                                     }
                                 });
                     }
                 });
-        ;
 
-
-        Observable<List<TeamMemberResposne>> teamlist = api.getMyTeam()
-                .map(new Func1<ArrayList<MyTeamResponse>, ArrayList<MyTeamResponse>>() {
+        Observable<Object> teamlist = api.getMyTeam()
+                .map(new Function<ArrayList<MyTeamResponse>, ArrayList<MyTeamResponse>>() {
                     @Override
-                    public ArrayList<MyTeamResponse> call(ArrayList<MyTeamResponse> myTeamResponses) {
+                    public ArrayList<MyTeamResponse> apply(ArrayList<MyTeamResponse> myTeamResponses) {
                         if (myTeamResponses.isEmpty()) {
                             Context context = StaffAttendance.getStaffAttendance().getApplicationContext();
                             TokenMananger.clearToken();
@@ -147,30 +100,46 @@ public class TeamRemoteSource {
                         return myTeamResponses;
                     }
                 })
-                .flatMapIterable((Func1<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>) myTeamResponses -> myTeamResponses)
-                .flatMap((Func1<MyTeamResponse, Observable<List<TeamMemberResposne>>>) myTeamResponse -> api.getTeamMember(myTeamResponse.getId())
-                        .flatMapIterable((Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>) teamMemberResposnes -> teamMemberResposnes)
-                        .doOnSubscribe(() -> {
-                            StaffDao.getInstance().removeAllStaffList();
-                        })
-                        .doOnNext(teamMemberResposne -> {
-
-                            teamMemberResposne.setTeamID(myTeamResponse.getId());
-                            teamMemberResposne.setTeamName(myTeamResponse.getName());
-                            StaffDao.getInstance().saveStaff(teamMemberResposne);
-
-                        })
-                        .toList());
-
+                .flatMapIterable((Function<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>) myTeamResponses -> myTeamResponses)
+                .flatMap(new Function<MyTeamResponse, ObservableSource<?>>() {
+                    @Override
+                    public ObservableSource<?> apply(MyTeamResponse myTeamResponse) throws Exception {
+                        return api.getTeamMember(myTeamResponse.getId())
+                                .flatMapIterable(new Function<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
+                                    @Override
+                                    public Iterable<TeamMemberResposne> apply(ArrayList<TeamMemberResposne> teamMemberResposnes) throws Exception {
+                                        return teamMemberResposnes;
+                                    }
+                                }).doOnNext(new Consumer<TeamMemberResposne>() {
+                                    @Override
+                                    public void accept(TeamMemberResposne teamMemberResposne) throws Exception {
+                                        teamMemberResposne.setTeamID(myTeamResponse.getId());
+                                        teamMemberResposne.setTeamName(myTeamResponse.getName());
+                                        StaffDao.getInstance().saveStaff(teamMemberResposne);
+                                    }
+                                })
+                                .doOnSubscribe(new Consumer<Disposable>() {
+                                    @Override
+                                    public void accept(Disposable disposable) throws Exception {
+                                        StaffDao.getInstance().removeAllStaffList();
+                                    }
+                                })
+                                .toList()
+                                .toObservable();
+                    }
+                });
 
         Observable<Object> pastAttendance = api.getMyTeam()
-                .flatMapIterable((Func1<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>) myTeamResponses -> myTeamResponses)
-                .flatMap((Func1<MyTeamResponse, Observable<ArrayList<AttendanceResponse>>>) myTeamResponse -> api.getPastAttendanceList(myTeamResponse.getId()))
-                .flatMap(new Func1<ArrayList<AttendanceResponse>, Observable<?>>() {
+                .flatMapIterable((Function<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>) myTeamResponses -> myTeamResponses)
+                .flatMap(new Function<MyTeamResponse, ObservableSource<ArrayList<AttendanceResponse>>>() {
                     @Override
-                    public Observable<?> call(ArrayList<AttendanceResponse> attendanceResponses) {
+                    public ObservableSource<ArrayList<AttendanceResponse>> apply(MyTeamResponse myTeamResponse) throws Exception {
+                        return api.getPastAttendanceList(myTeamResponse.getId());
+                    }
+                }).flatMap(new Function<ArrayList<AttendanceResponse>, ObservableSource<?>>() {
+                    @Override
+                    public ObservableSource<?> apply(ArrayList<AttendanceResponse> attendanceResponses) throws Exception {
                         AttendanceDao.getInstance().removeAllAttedance();
-
                         return AttendanceDao.getInstance().saveAttendance(attendanceResponses);
                     }
                 });
@@ -181,16 +150,16 @@ public class TeamRemoteSource {
 
 
         Observable<AttendanceResponse> attendanceSheet = AttendanceDao.getInstance().getFinalizedAttedanceSheetObservable()
-                .map(new Func1<ArrayList<AttendanceResponse>, ArrayList<AttendanceResponse>>() {
+                .map(new Function<ArrayList<AttendanceResponse>, ArrayList<AttendanceResponse>>() {
                     @Override
-                    public ArrayList<AttendanceResponse> call(ArrayList<AttendanceResponse> attendanceResponses) {
+                    public ArrayList<AttendanceResponse> apply(ArrayList<AttendanceResponse> attendanceResponses) {
                         if (TextUtils.isEmpty(teamId))
                             throw new RuntimeException("Team ID is missing");
                         return attendanceResponses;
                     }
                 })
-                .flatMapIterable((Func1<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>) attendanceRespons -> attendanceRespons)
-                .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
+                .flatMapIterable((Function<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>) attendanceRespons -> attendanceRespons)
+                .flatMap((Function<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
 
                     return api.postAttendanceForTeam(teamId,
                             attendanceResponse.getAttendanceDate(false),
@@ -198,7 +167,7 @@ public class TeamRemoteSource {
                 });
 
 
-        return Observable.concat(uploadNewStaff, teamlist, pastAttendance, attendanceSheet, pastAttendance);
+        return Observable.concatArray(uploadNewStaff, teamlist, pastAttendance, attendanceSheet,pastAttendance);
 
     }
 

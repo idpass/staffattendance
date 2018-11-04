@@ -7,15 +7,17 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.pojo.BankPojo;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+
+
 
 public class FormCall {
 
@@ -24,9 +26,10 @@ public class FormCall {
         return apiService.getDesignation()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<ArrayList<ArrayList<String>>, ArrayList<ArrayList<String>>>() {
+
+                .map(new Function<ArrayList<ArrayList<String>>, ArrayList<ArrayList<String>>>() {
                     @Override
-                    public ArrayList<ArrayList<String>> call(ArrayList<ArrayList<String>> designationList) {
+                    public ArrayList<ArrayList<String>> apply(ArrayList<ArrayList<String>> designationList) {
                         Context context = StaffAttendance.getStaffAttendance().getApplicationContext();
 
                         SharedPreferenceUtils
@@ -38,14 +41,15 @@ public class FormCall {
 
     }
 
+
     public Observable<List<String>> getBankList(  ) {
         ApiInterface apiService = APIClient.getUploadClient().create(ApiInterface.class);
         return apiService.getBankist()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<ArrayList<BankPojo>, ArrayList<BankPojo>>() {
+                .map(new Function<ArrayList<BankPojo>, ArrayList<BankPojo>>() {
                     @Override
-                    public ArrayList<BankPojo> call(ArrayList<BankPojo> bankPojos) {
+                    public ArrayList<BankPojo> apply(ArrayList<BankPojo> bankPojos) {
                         Context context = StaffAttendance.getStaffAttendance().getApplicationContext();
                         SharedPreferenceUtils
                                 .saveToPrefs(context, SharedPreferenceUtils.KEY.Bank_v2,
@@ -53,18 +57,18 @@ public class FormCall {
                         return bankPojos;
                     }
                 })
-                .flatMapIterable(new Func1<ArrayList<BankPojo>, Iterable<BankPojo>>() {
+                .flatMapIterable(new Function<ArrayList<BankPojo>, Iterable<BankPojo>>() {
                     @Override
-                    public Iterable<BankPojo> call(ArrayList<BankPojo> bankPojos) {
+                    public Iterable<BankPojo> apply(ArrayList<BankPojo> bankPojos) {
                         return bankPojos;
                     }
                 })
-                .flatMap(new Func1<BankPojo, Observable<String>>() {
+                .flatMap(new Function<BankPojo, Observable<String>>() {
                     @Override
-                    public Observable<String> call(BankPojo bankPojo) {
+                    public Observable<String> apply(BankPojo bankPojo) {
                         return Observable.just(bankPojo.getName());
                     }
-                }).toList();
+                }).toList().toObservable();
 
     }
 

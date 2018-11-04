@@ -8,8 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
-import rx.Observer;
+
 import timber.log.Timber;
 
 import static np.com.naxa.staffattendance.jobs.StaffAttendanceSyncJob.DATE_FORMAT;
@@ -36,13 +38,18 @@ public class StaffDownloadJob extends Job {
 
         new MyTeamRepository().fetchMyTeam().subscribe(new Observer<Object>() {
             @Override
-            public void onCompleted() {
+            public void onComplete() {
 
             }
 
             @Override
             public void onError(Throwable e) {
                 result = Result.FAILURE;
+
+            }
+
+            @Override
+            public void onSubscribe(Disposable d) {
 
             }
 

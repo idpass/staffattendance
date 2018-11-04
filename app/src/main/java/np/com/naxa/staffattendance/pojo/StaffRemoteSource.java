@@ -2,6 +2,7 @@ package np.com.naxa.staffattendance.pojo;
 
 import java.io.File;
 
+import io.reactivex.Observable;
 import np.com.naxa.staffattendance.common.BaseRemoteDataSource;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
@@ -9,7 +10,7 @@ import np.com.naxa.staffattendance.database.TeamDao;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import rx.Observable;
+
 
 public class StaffRemoteSource implements BaseRemoteDataSource<Staff> {
 

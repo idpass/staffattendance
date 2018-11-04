@@ -3,6 +3,12 @@ package np.com.naxa.staffattendance.attendence;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
@@ -11,11 +17,6 @@ import np.com.naxa.staffattendance.data.MyTeamResponse;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 
 public class MyTeamRepository {
@@ -30,8 +31,6 @@ public class MyTeamRepository {
     }
 
 
-
-
     public Observable<Object> fetchMyTeam() {
         final ApiInterface apiInterface = APIClient
                 .getUploadClient()
@@ -40,23 +39,23 @@ public class MyTeamRepository {
         String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
 
         return myTeamObservable()
-                .doOnSubscribe(new Action0() {
+                .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void call() {
+                    public void accept(Disposable disposable) throws Exception {
                         staffDao.removeAllStaffList();
                     }
                 })
-                .flatMap(new Func1<List<TeamMemberResposne>, Observable<ArrayList<AttendanceResponse>>>() {
+                .flatMap(new Function<List<TeamMemberResposne>, Observable<ArrayList<AttendanceResponse>>>() {
                     @Override
-                    public Observable<ArrayList<AttendanceResponse>> call(List<TeamMemberResposne> teamMemberResposnes) {
+                    public Observable<ArrayList<AttendanceResponse>> apply(List<TeamMemberResposne> teamMemberResposnes) {
                         String teamId = SharedPreferenceUtils.getFromPrefs(StaffAttendance.getStaffAttendance(), SharedPreferenceUtils.KEY.TeamID, "");
                         staffDao.saveStafflist(teamMemberResposnes);
                         return apiInterface.getPastAttendanceList(teamId);
                     }
                 })
-                .flatMap(new Func1<ArrayList<AttendanceResponse>, Observable<?>>() {
+                .flatMap(new Function<ArrayList<AttendanceResponse>, Observable<?>>() {
                     @Override
-                    public Observable<?> call(ArrayList<AttendanceResponse> attendanceRespons) {
+                    public Observable<?> apply(ArrayList<AttendanceResponse> attendanceRespons) {
                         attendanceDao.removeAllAttedance();
                         return attendanceDao.saveAttendance(attendanceRespons);
                     }
@@ -70,27 +69,27 @@ public class MyTeamRepository {
         return apiInterface.getMyTeam()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMapIterable(new Func1<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>() {
+                .flatMapIterable(new Function<ArrayList<MyTeamResponse>, Iterable<MyTeamResponse>>() {
                     @Override
-                    public Iterable<MyTeamResponse> call(ArrayList<MyTeamResponse> myTeamResponses) {
+                    public Iterable<MyTeamResponse> apply(ArrayList<MyTeamResponse> myTeamResponses) {
                         return myTeamResponses;
                     }
                 })
-                .flatMap(new Func1<MyTeamResponse, Observable<TeamMemberResposne>>() {
+                .flatMap(new Function<MyTeamResponse, Observable<TeamMemberResposne>>() {
                     @Override
-                    public Observable<TeamMemberResposne> call(final MyTeamResponse myTeamResponse) {
+                    public Observable<TeamMemberResposne> apply(final MyTeamResponse myTeamResponse) {
                         final String teamId = myTeamResponse.getId();//get team id
                         SharedPreferenceUtils.saveToPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, teamId);
 
                         return apiInterface.getTeamMember(teamId)//request team memeber for each id
-                                .flatMapIterable(new Func1<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
+                                .flatMapIterable(new Function<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
                                     @Override
-                                    public Iterable<TeamMemberResposne> call(ArrayList<TeamMemberResposne> teamMemberResposnes) {
+                                    public Iterable<TeamMemberResposne> apply(ArrayList<TeamMemberResposne> teamMemberResposnes) {
                                         return teamMemberResposnes;//make team response iterable (loopable)
                                     }
-                                }).flatMap(new Func1<TeamMemberResposne, Observable<TeamMemberResposne>>() {
+                                }).flatMap(new Function<TeamMemberResposne, Observable<TeamMemberResposne>>() {
                                     @Override
-                                    public Observable<TeamMemberResposne> call(TeamMemberResposne teamMemberResposne) {
+                                    public Observable<TeamMemberResposne> apply(TeamMemberResposne teamMemberResposne) {
                                         //add team id and team name is team member obj
 
                                         teamMemberResposne.setTeamID(teamId);
@@ -99,7 +98,9 @@ public class MyTeamRepository {
                                     }
                                 });
                     }
-                }).toList();
+                })
+                .toList()
+                .toObservable();
 
     }
 
@@ -107,14 +108,14 @@ public class MyTeamRepository {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
 
         return staffDao.getStaffIdFromObject(stafflist)
-                .flatMap(new Func1<List<String>, Observable<AttendanceResponse>>() {
+                .flatMap(new Function<List<String>, Observable<AttendanceResponse>>() {
                     @Override
-                    public Observable<AttendanceResponse> call(List<String> stafflist) {
+                    public Observable<AttendanceResponse> apply(List<String> stafflist) {
                         return apiInterface.postAttendanceForTeam(teamId, date, stafflist);
                     }
-                }).flatMap(new Func1<AttendanceResponse, Observable<?>>() {
+                }).flatMap(new Function<AttendanceResponse, Observable<?>>() {
                     @Override
-                    public Observable<?> call(AttendanceResponse attendanceResponse) {
+                    public Observable<?> apply(AttendanceResponse attendanceResponse) {
                         if (attendanceResponse != null) {
                             attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
                         }
@@ -129,14 +130,14 @@ public class MyTeamRepository {
         ArrayList<AttendanceResponse> attendanceSheet = attendanceDao.getFinalizedAttendanceSheet();
 
         return Observable.just(attendanceSheet)
-                .flatMapIterable((Func1<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>) attendanceRespons -> attendanceRespons)
-                .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
+                .flatMapIterable((Function<ArrayList<AttendanceResponse>, Iterable<AttendanceResponse>>) attendanceRespons -> attendanceRespons)
+                .flatMap((Function<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
 
                     return apiInterface.postAttendanceForTeam(teamId,
                             attendanceResponse.getAttendanceDate(false),
                             attendanceResponse.getPresentStaffIds());
                 })
-                .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
+                .flatMap((Function<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {
                     if (attendanceResponse != null) {
                         attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
                     }

@@ -1,16 +1,12 @@
 package np.com.naxa.staffattendance.attendence;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -24,23 +20,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.apache.http.conn.ConnectTimeoutException;
-import org.greenrobot.eventbus.EventBus;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.TeamRemoteSource;
-import np.com.naxa.staffattendance.common.GeoPointForegroundService;
 import np.com.naxa.staffattendance.common.GeoTagHelper;
-import np.com.naxa.staffattendance.common.MessageEvent;
 import np.com.naxa.staffattendance.common.network.ConnectionTest;
 import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.DatabaseHelper;
@@ -48,15 +42,10 @@ import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import np.com.naxa.staffattendance.utlils.NetworkUtils;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.ResponseBody;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.schedulers.Schedulers;
+import retrofit2.HttpException;
 import timber.log.Timber;
+
 
 public class AttendanceViewPagerActivity extends AppCompatActivity {
 
@@ -125,22 +114,18 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 .syncAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Action0() {
+                .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void call() {
+                    public void accept(Disposable disposable) throws Exception {
                         showPleaseWaitDialog();
                     }
                 })
                 .subscribe(new Observer<Object>() {
-                    @Override
-                    public void onCompleted() {
-                        closePleaseWaitDialog();
-                        DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
-                        Timber.i("onCompleted");
-                    }
+
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         closePleaseWaitDialog();
                         if (e instanceof HttpException) {
                             try {
@@ -156,6 +141,18 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                         } else {
                             showErrorDialog(e.getMessage());
                         }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closePleaseWaitDialog();
+                        DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
+                        Timber.i("onCompleted");
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override

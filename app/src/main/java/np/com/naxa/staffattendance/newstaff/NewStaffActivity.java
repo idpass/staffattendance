@@ -50,6 +50,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
@@ -79,8 +81,8 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 import pub.devrel.easypermissions.PermissionRequest;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observer;
+import retrofit2.HttpException;
+
 
 import static np.com.naxa.staffattendance.common.Constant.EXTRA_MESSAGE;
 
@@ -139,9 +141,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         FormCall formCall = new FormCall();
         formCall.getBankList()
+
                 .subscribe(new Observer<List<String>>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
 
                     }
 
@@ -165,6 +168,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                     }
 
                     @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
                     public void onNext(List<String> strings) {
                         loadBanks();
                     }
@@ -173,7 +181,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         formCall.getDesignation()
                 .subscribe(new Observer<ArrayList<ArrayList<String>>>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
 
                     }
 
@@ -194,6 +202,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                         } else {
                             showErrorDialog("Failed to download designation", e.getMessage());
                         }
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override
@@ -299,12 +312,17 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             formCall.getDesignation().subscribe(new Observer<ArrayList<ArrayList<String>>>() {
                 @Override
-                public void onCompleted() {
+                public void onComplete() {
 
                 }
 
                 @Override
                 public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onSubscribe(Disposable d) {
 
                 }
 
@@ -319,7 +337,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             bankList.add(getResources().getString(R.string.default_option));
             formCall.getBankList().subscribe(new Observer<List<String>>() {
                 @Override
-                public void onCompleted() {
+                public void onComplete() {
                     bankList.add(getString(R.string.bank_other));
 
                     SharedPreferenceUtils
@@ -329,6 +347,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
                 @Override
                 public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onSubscribe(Disposable d) {
 
                 }
 

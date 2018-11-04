@@ -4,6 +4,7 @@ package np.com.naxa.staffattendance.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
@@ -19,7 +20,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import rx.Observable;
+
 
 /**
  * Created by samir on 4/2/2018.

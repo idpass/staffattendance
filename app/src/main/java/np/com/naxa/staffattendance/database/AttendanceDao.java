@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
-import rx.Observable;
-import rx.Subscriber;
 import timber.log.Timber;
 
 public class AttendanceDao {
@@ -67,11 +68,10 @@ public class AttendanceDao {
     public Observable<AttendanceResponse> updateStaffIdObservable(List<Pair<String, String>> pairs) {
 
 
-        return Observable.create(new Observable.OnSubscribe<AttendanceResponse>() {
-            Cursor cursor = null;
-
+        return Observable.create(new ObservableOnSubscribe<AttendanceResponse>() {
             @Override
-            public void call(Subscriber<? super AttendanceResponse> subscriber) {
+            public void subscribe(ObservableEmitter<AttendanceResponse> subscriber) throws Exception {
+                Cursor cursor = null;
                 try {
                     cursor = DatabaseHelper
                             .getDatabaseHelper()
@@ -101,10 +101,8 @@ public class AttendanceDao {
                 } catch (Exception e) {
                     subscriber.onError(e);
                 } finally {
-                    subscriber.onCompleted();
+                    subscriber.onComplete();
                 }
-
-
             }
         });
 
@@ -209,23 +207,34 @@ public class AttendanceDao {
     }
 
     public Observable<?> saveAttendance(List<AttendanceResponse> attendanceRespons) {
-        SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
-        try {
-            db.beginTransaction();
-            for (AttendanceResponse staff : attendanceRespons) {
-                staff.setDataSyncStatus(SyncStatus.UPLOADED);
-                ContentValues values = getContentValuesForAttedance(staff);
-                long i = saveAttedance(db, values);
-            }
 
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            db.endTransaction();
-            db.close();
-        }
-        return null;
+        return Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                SQLiteDatabase db = DatabaseHelper.getDatabaseHelper().getWritableDatabase();
+                try {
+                    db.beginTransaction();
+                    for (AttendanceResponse staff : attendanceRespons) {
+                        staff.setDataSyncStatus(SyncStatus.UPLOADED);
+                        ContentValues values = getContentValuesForAttedance(staff);
+                        long i = saveAttedance(db, values);
+                    }
+
+
+                    db.setTransactionSuccessful();
+                    emitter.onNext("ok");
+                    emitter.onComplete();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    emitter.onComplete();
+                } finally {
+                    db.endTransaction();
+                    db.close();
+                }
+            }
+        });
+
+
     }
 
     private long saveAttedance(SQLiteDatabase database, ContentValues contentValues) {
@@ -306,7 +315,7 @@ public class AttendanceDao {
                 ArrayList<AttendanceResponse> list = getAttendanceFromCursor(cursor);
                 closeCursor(cursor);
                 subscriber.onNext(list);
-                subscriber.onCompleted();
+                subscriber.onComplete();
             } catch (Exception e) {
                 subscriber.onError(e);
             }

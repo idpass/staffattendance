@@ -33,7 +33,6 @@ import android.view.Window;
 
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -72,7 +71,7 @@ public class GeoPointActivity extends AppCompatActivity implements LocationListe
             locationCount = savedInstanceState.getInt(LOCATION_COUNT);
         }
 
-        if (!hasPermission()) {
+        if (hasPermission()) {
 
             finish();
             return;
@@ -140,7 +139,7 @@ public class GeoPointActivity extends AppCompatActivity implements LocationListe
         boolean hasPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
-        return hasPermission;
+        return !hasPermission;
     }
 
     @Override
@@ -170,7 +169,7 @@ public class GeoPointActivity extends AppCompatActivity implements LocationListe
     protected void onResume() {
         super.onResume();
 
-        if (!hasPermission()) {
+        if (hasPermission()) {
             finish();
             return;
         }

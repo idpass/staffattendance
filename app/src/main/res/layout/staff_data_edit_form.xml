@@ -350,6 +350,7 @@
 
 
     <Button
+
         android:drawablePadding="16dp"
         android:drawableStart="@drawable/ic_round_location_city_24px"
         android:drawableLeft="@drawable/ic_round_location_city_24px"

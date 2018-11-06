@@ -1,15 +1,9 @@
 package np.com.naxa.staffattendance;
 
 import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.LiveDataReactiveStreams;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
-
-import org.reactivestreams.Publisher;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,7 +73,7 @@ public class TeamRemoteSource {
                         String filePath = staff.getPhoto();
                         File file = null;
                         if (!TextUtils.isEmpty(filePath)) {
-//                                file = new File(filePath);
+                            file = new File(filePath);
                             if (!file.exists()) {
                                 file = null;
                             }
@@ -120,6 +114,9 @@ public class TeamRemoteSource {
                         File file = null;
                         if (!TextUtils.isEmpty(filePath)) {
                             file = new File(filePath);
+                            if (!file.exists()) {
+                                file = null;
+                            }
                         }
 
                         return newStaffCall.newStaffObservable(newStaffPojo, file)
@@ -268,7 +265,9 @@ public class TeamRemoteSource {
                 });
 
 
-        return Observable.concatArray( teamlist2, pastAttendance, attendanceSheet, pastAttendance);
+
+        return Observable.concatArray(uploadNewStaff, teamlist, pastAttendance, attendanceSheet, pastAttendance);
+
 //        return uploadNewStaff2;
 //
     }

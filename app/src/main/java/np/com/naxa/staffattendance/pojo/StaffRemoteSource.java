@@ -3,7 +3,6 @@ package np.com.naxa.staffattendance.pojo;
 import java.io.File;
 
 import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.common.BaseRemoteDataSource;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;

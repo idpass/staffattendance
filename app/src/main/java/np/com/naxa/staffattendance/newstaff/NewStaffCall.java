@@ -1,10 +1,5 @@
 package np.com.naxa.staffattendance.newstaff;
 
-
-import android.content.Context;
-
-import org.reactivestreams.Subscriber;
-
 import java.io.File;
 
 import io.reactivex.Observable;
@@ -12,7 +7,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.database.NewStaffDao;
@@ -21,6 +15,7 @@ import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+
 public class NewStaffCall {
 
     public void upload(final NewStaffPojo pojo, File photoFileToUpload, final NewStaffCallListener listener) {
@@ -53,10 +48,7 @@ public class NewStaffCall {
 
 
     public Observable<NewStaffPojo> newStaffObservable(NewStaffPojo pojo, File photoFileToUpload) {
-        Context context = StaffAttendance.getStaffAttendance();
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
-
-
 
         return apiInterface.uploadNewStaff(
                 new TeamDao().getOneTeamIdForDemo(),

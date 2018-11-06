@@ -46,6 +46,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import id.zelory.compressor.Compressor;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
@@ -795,7 +796,12 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onImagePicked(File photoFileToUpload, EasyImage.ImageSource source, int type) {
-                NewStaffActivity.this.photoFileToUpload = photoFileToUpload;
+                try {
+                    NewStaffActivity.this.photoFileToUpload = new Compressor(NewStaffActivity.this)
+                            .compressToFile(photoFileToUpload);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 photo.setText("Change Photo");
             }
         });

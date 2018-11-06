@@ -6,16 +6,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import np.com.naxa.staffattendance.common.BaseRepository;
 
 
 public class StaffRepository implements BaseRepository<Staff> {
 
     private static StaffRepository INSTANCE;
-    private static StaffLocalSource localSource;
-    private static StaffRemoteSource remoteSource;
+    private StaffLocalSource localSource;
+    private StaffRemoteSource remoteSource;
 
     public StaffRepository(StaffLocalSource localSource, StaffRemoteSource remoteSource) {
         this.localSource = localSource;
@@ -53,7 +53,7 @@ public class StaffRepository implements BaseRepository<Staff> {
         localSource.updateAll(items);
     }
 
-    public Flowable<List<Staff>> getStaffFromStatus(String status) {
+    public Single<List<Staff>> getStaffFromStatus(String status) {
         return localSource.getStaffFromStatus(status);
     }
 
@@ -72,4 +72,6 @@ public class StaffRepository implements BaseRepository<Staff> {
     public void deleteStaff(Staff staff) {
         localSource.deleteStaff(staff);
     }
+
+
 }

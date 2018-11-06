@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 @Dao
 public interface StaffDao {
@@ -41,6 +42,6 @@ public interface StaffDao {
     LiveData<Staff> getStaffFromId(String staffId);
 
     @Query("SELECT * from staff WHERE status = :status")
-    Flowable<List<Staff>> getStaffFromStatus(String status);
+    Single<List<Staff>> getStaffFromStatus(String status);
 
 }

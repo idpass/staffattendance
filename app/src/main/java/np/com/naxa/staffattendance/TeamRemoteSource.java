@@ -61,15 +61,18 @@ public class TeamRemoteSource {
                 .create(ApiInterface.class);
 
         StaffRepository staffRepository = StaffRepository.getInstance();
-        Flowable<List<Staff>> uploadNewStaffFlowable = staffRepository.getStaffFromStatus(Constant.StaffStatus.SAVED);
+
+
+
+
         Observable<Object> uploadNewStaff2 = staffRepository.getStaffFromStatus(Constant.StaffStatus.SAVED)
+                .toObservable()
                 .flatMapIterable(new Function<List<Staff>, Iterable<Staff>>() {
                     @Override
                     public Iterable<Staff> apply(List<Staff> staffList) throws Exception {
                         return staffList;
                     }
                 })
-                .toObservable()
                 .flatMap(new Function<Staff, ObservableSource<?>>() {
                     @Override
                     public ObservableSource<?> apply(Staff staff) throws Exception {
@@ -265,9 +268,9 @@ public class TeamRemoteSource {
                 });
 
 
-        return Observable.concatArray(uploadNewStaff, teamlist2, pastAttendance, attendanceSheet, pastAttendance);
+        return Observable.concatArray( teamlist2, pastAttendance, attendanceSheet, pastAttendance);
 //        return uploadNewStaff2;
-
+//
     }
 
 

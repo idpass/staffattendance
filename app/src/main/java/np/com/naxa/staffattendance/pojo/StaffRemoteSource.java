@@ -3,6 +3,7 @@ package np.com.naxa.staffattendance.pojo;
 import java.io.File;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.common.BaseRemoteDataSource;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
@@ -42,7 +43,7 @@ public class StaffRemoteSource implements BaseRemoteDataSource<Staff> {
                 RequestBody.create(MediaType.parse("text/plain"), staff.getBankName()),
                 RequestBody.create(MediaType.parse("text/plain"), staff.getAccountNumber()),
                 RequestBody.create(MediaType.parse("text/plain"), staff.getPhoneNumber()),
-                RequestBody.create(MediaType.parse("text/plain"), staff.getEmail()),
+                RequestBody.create(MediaType.parse("tex t/plain"), staff.getEmail()),
                 RequestBody.create(MediaType.parse("text/plain"), staff.getAddress()),
                 RequestBody.create(MediaType.parse("text/plain"), staff.getContractStart()),
                 RequestBody.create(MediaType.parse("text/plain"), staff.getContractEnd()),

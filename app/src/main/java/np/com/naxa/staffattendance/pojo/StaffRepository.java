@@ -6,8 +6,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import np.com.naxa.staffattendance.common.BaseRepository;
-import rx.Observable;
+
 
 public class StaffRepository implements BaseRepository<Staff> {
 
@@ -51,11 +53,23 @@ public class StaffRepository implements BaseRepository<Staff> {
         localSource.updateAll(items);
     }
 
-    public LiveData<List<Staff>> getStaffFromStatus(String status) {
+    public Flowable<List<Staff>> getStaffFromStatus(String status) {
         return localSource.getStaffFromStatus(status);
     }
 
     public Observable<Staff> upload(Staff staff, File filePhoto) {
         return remoteSource.newStaffObservable(staff, filePhoto);
+    }
+
+    public LiveData<List<Staff>> getStaffByTeamId(String teamId) {
+        return localSource.getStaffFromTeamId(teamId);
+    }
+
+    public void deleteAll() {
+        localSource.deleteAll();
+    }
+
+    public void deleteStaff(Staff staff) {
+        localSource.deleteStaff(staff);
     }
 }

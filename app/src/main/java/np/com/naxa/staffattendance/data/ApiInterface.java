@@ -10,6 +10,7 @@ import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
+import np.com.naxa.staffattendance.pojo.Staff;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -67,6 +68,28 @@ public interface ApiInterface {
             @Part MultipartBody.Part photo
     );
 
+    @Multipart
+    @POST("staff/api/staff/{team_id}/")
+    Observable<Staff> uploadNewStaff2(
+            @Path(value = "team_id", encoded = true) String teamID,
+            @Part("designation") Integer designation,
+            @Part("first_name") RequestBody firstName,
+            @Part("last_name") RequestBody lastName,
+            @Part("date_of_birth") RequestBody dob,
+            @Part("gender") Integer gender,
+            @Part("ethnicity") RequestBody ethnicity,
+            @Part("bank") Integer bankId,
+            @Part("bank_name") RequestBody bankName,
+            @Part("account_number") RequestBody accountNumber,
+            @Part("phone_number") RequestBody phoneNumber,
+            @Part("email") RequestBody email,
+            @Part("address") RequestBody address,
+            @Part("contract_start") RequestBody contractStartDate,
+            @Part("contract_end") RequestBody contractEndDate,
+
+            @Part MultipartBody.Part photo
+    );
+
     @GET("/staff/api/designations/")
     Observable<ArrayList<ArrayList<String>>> getDesignation();
 
@@ -76,9 +99,11 @@ public interface ApiInterface {
     @GET("/staff/api/myteam/")
     Observable<ArrayList<MyTeamResponse>> getMyTeam();
 
-
     @GET("/staff/api/staff/{team_id}")
     Observable<ArrayList<TeamMemberResposne>> getTeamMember(@Path(value = "team_id", encoded = true) String teamID);
+
+    @GET("/staff/api/staff/{team_id}")
+    Observable<ArrayList<Staff>> getTeamMember2(@Path(value = "team_id", encoded = true) String teamID);
 
     @FormUrlEncoded
     @POST("/staff/api/attendance/{team_id}/")

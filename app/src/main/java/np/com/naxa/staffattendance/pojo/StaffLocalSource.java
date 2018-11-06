@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
+import io.reactivex.Flowable;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.common.BaseLocalDataSource;
 
@@ -54,9 +55,16 @@ public class StaffLocalSource implements BaseLocalDataSource<Staff> {
         return dao.getStaffFromTeamId(teamId);
     }
 
-    public LiveData<List<Staff>> getStaffFromStatus(String status){
+    public Flowable<List<Staff>> getStaffFromStatus(String status){
         return dao.getStaffFromStatus(status);
     }
 
+    public void deleteAll(){
+        dao.deleteAll();
+    }
+
+    public void deleteStaff(Staff staff){
+        dao.delete(staff);
+    }
 
 }

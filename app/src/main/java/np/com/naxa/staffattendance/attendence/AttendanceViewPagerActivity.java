@@ -29,7 +29,6 @@ import java.util.Locale;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
@@ -111,17 +110,19 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     private void runSync() {
         TeamRemoteSource.getInstance()
-                .syncAll()
+                .syncAll(this)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .subscribe(new Observer<Object>() {
                     @Override
-                    public void accept(Disposable disposable) throws Exception {
+                    public void onSubscribe(Disposable d) {
                         showPleaseWaitDialog();
                     }
-                })
-                .subscribe(new Observer<Object>() {
 
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
 
                     @Override
                     public void onError(Throwable e) {
@@ -149,17 +150,50 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                         DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
                         Timber.i("onCompleted");
                     }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-
-                    }
                 });
+//                .doOnSubscribe(new Consumer<Disposable>() {
+//                    @Override
+//                    public void accept(Disposable disposable) throws Exception {
+//                        showPleaseWaitDialog();
+//                    }
+//                })
+//                .subscribe(new Observer<Object>() {
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        e.printStackTrace();
+//                        closePleaseWaitDialog();
+//                        if (e instanceof HttpException) {
+//                            try {
+//                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+//                                showErrorDialog(responseBody.string());
+//                            } catch (NullPointerException | IOException e1) {
+//                                showErrorDialog("");
+//                                e1.printStackTrace();
+//                            }
+//                        } else if (e instanceof SocketTimeoutException | e instanceof ConnectTimeoutException | e instanceof SocketException) {
+//                            showTimeoutDialog();
+////                            showErrorDialog("Server took too long to respond, perhaps internet is slower than usual");
+//                        } else {
+//                            showErrorDialog(e.getMessage());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        closePleaseWaitDialog();
+//                        DialogFactory.createSimpleOkErrorDialog(AttendanceViewPagerActivity.this, "Success", "Everything has been synced").show();
+//                        Timber.i("onCompleted");
+//                    }
+//
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(Object o) {
+//                    }
+//                });
     }
 
     private void setupToolbar() {
@@ -229,10 +263,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 break;
 
             case R.id.main_menu_refresh:
-
                 runSync();
-
-
                 break;
 
             case R.id.main_menu_setting:

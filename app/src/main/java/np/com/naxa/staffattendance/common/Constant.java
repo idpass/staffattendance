@@ -1,7 +1,6 @@
 package np.com.naxa.staffattendance.common;
 
 
-
 public class Constant {
 
 
@@ -34,7 +33,6 @@ public class Constant {
 
         public static int LOCATION_CAPTURE = 1995;
     }
-
 
 
     public static final class NotificationEvent {
@@ -129,5 +127,11 @@ public class Constant {
         public final static String Flagged = "Flagged";
         public final static String Rejected = "Rejected";
         public final static String Pending = "Pending";
+    }
+
+    public final static class StaffStatus {
+        public final static String SAVED = "saved";
+        public final static String SYNCED = "synced";
+        public final static String OFFLINE = "offline";
     }
 }

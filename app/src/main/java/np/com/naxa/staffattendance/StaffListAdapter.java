@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
+import np.com.naxa.staffattendance.pojo.Staff;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
 
 public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
-    private List<TeamMemberResposne> filetredsitelist;
-    private List<TeamMemberResposne> staffList;
+    private List<Staff> filetredsitelist;
+    private List<Staff> staffList;
     private List<String> attedanceIds;
     private OnStaffItemClickListener listener;
     private SparseBooleanArray selectedItems;
@@ -37,7 +38,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private HashMap<Integer, String> selectedStaffHashMap = new HashMap<>();
 
 
-    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
+    StaffListAdapter(Context mContext, List<Staff> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
@@ -61,7 +62,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        final TeamMemberResposne staff = staffList.get(position);
+        final Staff staff = staffList.get(position);
         final StaffVH staffVH = (StaffVH) holder;
         setupPreviousAttendance(attedanceIds, staff.getId(), staffVH);
 
@@ -198,8 +199,8 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
-    public ArrayList<TeamMemberResposne> getSelected() {
-        ArrayList<TeamMemberResposne> items = new ArrayList<>(selectedItems.size());
+    public ArrayList<Staff> getSelected() {
+        ArrayList<Staff> items = new ArrayList<>(selectedItems.size());
         for (int i = 0; i < selectedItems.size(); i++) {
             items.add(staffList.get(i));
         }
@@ -251,7 +252,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public interface OnStaffItemClickListener {
-        void onStaffClick(int pos, TeamMemberResposne staff);
+        void onStaffClick(int pos, Staff staff);
 
         void onStaffLongClick(int pos);
     }

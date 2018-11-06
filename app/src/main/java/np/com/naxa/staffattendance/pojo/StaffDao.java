@@ -28,6 +28,9 @@ public interface StaffDao {
     @Delete
     void delete(Staff staff);
 
+    @Query("DELETE from staff")
+    void deleteAll();
+
     @Query("SELECT * from staff")
     LiveData<List<Staff>> getAllStaffs();
 
@@ -38,6 +41,6 @@ public interface StaffDao {
     LiveData<Staff> getStaffFromId(String staffId);
 
     @Query("SELECT * from staff WHERE status = :status")
-    LiveData<List<Staff>> getStaffFromStatus(String status);
+    Flowable<List<Staff>> getStaffFromStatus(String status);
 
 }

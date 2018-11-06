@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,22 +40,18 @@ import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
-import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
@@ -66,7 +61,6 @@ import np.com.naxa.staffattendance.common.PairSpinnerAdapter;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
-import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.pojo.Staff;
@@ -82,7 +76,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 import pub.devrel.easypermissions.PermissionRequest;
 import retrofit2.HttpException;
-
 
 import static np.com.naxa.staffattendance.common.Constant.EXTRA_MESSAGE;
 
@@ -545,9 +538,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                     Staff newStaff = getNewStaff();
                     staffRepository.save(newStaff);
 
-                    NewStaffPojo staff = getNewStaffDetail();
-                    new NewStaffDao().saveNewStaff(staff);
-                    putDataInStafftable(staff);
+//                    NewStaffPojo staff = getNewStaffDetail();
+//                    new NewStaffDao().saveNewStaff(staff);
+//                    putDataInStafftable(staff);
                     AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                     finish();
 
@@ -602,7 +595,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setPhoto(getPhotoLocation())
                 .setTeamID(id)
                 .setTeamName(new TeamDao().getTeamNameById(id))
-                .setStatus(NewStaffDao.SAVED);
+                .setStatus(Constant.StaffStatus.SAVED);
 
 
         if (selectedBankId != 1) {

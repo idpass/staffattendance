@@ -145,7 +145,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                             attedanceDao.saveAttedance(contentValues);
 
 
-                            ((AttendanceViewPagerActivity) getActivity()).geoTagHelper.start(DateConvertor.getCurrentDate());
+//                            ((AttendanceViewPagerActivity) getActivity()).geoTagHelper.start(DateConvertor.getCurrentDate());
 
 
                             new Handler().postDelayed(new Runnable() {
@@ -161,12 +161,11 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
     }
 
-
     private void setupRecyclerView() {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         String teamId = teamDao.getOneTeamIdForDemo();
 
-        List<TeamMemberResposne> staffs = new StaffDao().getStaffByTeamId(teamId);
+        List<Staff> staffs = new StaffDao().getStaffByTeamId(teamId);
 
         StaffRepository staffRepository = StaffRepository.getInstance();
         Publisher<List<Staff>> publisher = LiveDataReactiveStreams.toPublisher(getViewLifecycleOwner(),

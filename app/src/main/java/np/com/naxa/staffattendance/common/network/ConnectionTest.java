@@ -74,13 +74,17 @@ public class ConnectionTest {
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         e.printStackTrace();
                         callback.networkQuality(NetworkSpeed.UNKNOWN);
+                        callback.onEnd();
                     }
 
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         if (!response.isSuccessful()){
-                            throw new IOException("Unexpected code " + response);
+                            callback.networkQuality(NetworkSpeed.UNKNOWN);
+                            callback.onEnd();
+                            return;
+//                            throw new IOException("Unexpected code " + response);
                         }
 
 
@@ -135,6 +139,7 @@ public class ConnectionTest {
                             Thread.sleep(2000);
                             callback.onEnd();
                         } catch (InterruptedException e) {
+                            callback.onEnd();
                             e.printStackTrace();
                         }
 

@@ -266,7 +266,7 @@ public class TeamRemoteSource {
 
 
 
-        return Observable.concatArray(uploadNewStaff, teamlist, pastAttendance, attendanceSheet, pastAttendance);
+        return Observable.concatArray(uploadNewStaff2, teamlist2, pastAttendance, attendanceSheet, pastAttendance);
 
 //        return uploadNewStaff2;
 //

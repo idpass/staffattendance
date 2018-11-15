@@ -16,6 +16,7 @@ import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
+import np.com.naxa.staffattendance.pojo.Staff;
 
 
 /**
@@ -79,12 +80,12 @@ public class StaffDao {
     }
 
 
-    public List<TeamMemberResposne> getStaffByTeamId(String staffID) {
+    public List<Staff> getStaffByTeamId(String staffID) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_STAFF_TEAM_ID + "=?", new String[]{staffID});
         return getStaffFromCursor(cursor);
     }
 
-    public List<TeamMemberResposne> getStaffByTeamAndStaffId(String teamId, String staffID) {
+    public List<Staff> getStaffByTeamAndStaffId(String teamId, String staffID) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=?", new String[]{staffID});
         return getStaffFromCursor(cursor);
     }
@@ -94,8 +95,8 @@ public class StaffDao {
         return db.query(TABLE_NAME, null, selection, selectionArgs, null, null, null, null);
     }
 
-    public ArrayList<TeamMemberResposne> getStaffFromCursor(Cursor cursor) {
-        ArrayList<TeamMemberResposne> staffs = new ArrayList<>();
+    public ArrayList<Staff> getStaffFromCursor(Cursor cursor) {
+        ArrayList<Staff> staffs = new ArrayList<>();
 
         if (cursor == null || cursor.getCount() <= 0) {
             return staffs;
@@ -108,12 +109,16 @@ public class StaffDao {
             String staffId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID);
             String staffName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FULL_NAME);
 
-            TeamMemberResposne staff = new TeamMemberResposneBuilder()
-                    .setTeamID(teamID)
-                    .setTeamName(teamName)
-                    .setId(staffId)
-                    .setFirstName(staffName)
-                    .createTeamMemberResposne();
+            Staff staff = new Staff();
+            staff.setTeamID(teamID);
+            staff.setTeamName(teamName);
+            staff.setFirstName(staffName);
+
+            //                    .setTeamID(teamID)
+//                    .setTeamName(teamName)
+//                    .setId(staffId)
+//                    .setFirstName(staffName)
+//                    .createTeamMemberResposne();
 
             staffs.add(staff);
         }

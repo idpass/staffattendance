@@ -279,7 +279,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
             case R.id.main_menu_refresh:
                 runSync();
-
+//                runSpeedTest();
                 break;
 
             case R.id.main_menu_setting:
@@ -292,8 +292,6 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                 onOptionsItemSelected(item);
 
     }
-
-
 
 
     private void runSpeedTest() {
@@ -319,7 +317,13 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
                         break;
                 }
                 String finalMessage = message;
-                runOnUiThread(() -> resultDialog.setMessage(finalMessage));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultDialog.setTitle(finalMessage);
+                    }
+                });
+//                runOnUiThread(() -> resultDialog.setMessage(finalMessage));
 
             }
 

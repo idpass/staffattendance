@@ -81,7 +81,8 @@ public class MyTeamRepository {
                         final String teamId = myTeamResponse.getId();//get team id
                         SharedPreferenceUtils.saveToPrefs(StaffAttendance.getStaffAttendance().getApplicationContext(), SharedPreferenceUtils.KEY.TeamID, teamId);
 
-                        return apiInterface.getTeamMember(teamId)//request team memeber for each id
+                        return apiInterface.getTeamMember(teamId)
+                                .subscribeOn(Schedulers.io())//request team memeber for each id
                                 .flatMapIterable(new Function<ArrayList<TeamMemberResposne>, Iterable<TeamMemberResposne>>() {
                                     @Override
                                     public Iterable<TeamMemberResposne> apply(ArrayList<TeamMemberResposne> teamMemberResposnes) {

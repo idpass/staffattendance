@@ -37,6 +37,7 @@ import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
+import timber.log.Timber;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -132,9 +133,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         login.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         dialog.dismiss();
                         if (e instanceof HttpException) {
                             try {
@@ -157,6 +160,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onComplete() {
                         APIClient.removeRetrofitClient();
+
+
                         getBanksAndDesignation();
                         fetchMyTeam();
                     }
@@ -179,82 +184,87 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final Gson gson = new Gson();
         FormCall formCall = new FormCall();
 
-        formCall.getDesignation().subscribe(new Observer<ArrayList<ArrayList<String>>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(ArrayList<ArrayList<String>> arrayLists) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
-        formCall.getBankList().subscribe(new Observer<List<String>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(List<String> strings) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
-
-    }
-
-    private void fetchMyTeam() {
-
-        myTeamRepository.fetchMyTeam()
+        formCall
+                .getDesignation()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Object>() {
+                .subscribe(new Observer<ArrayList<ArrayList<String>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(Object o) {
+                    public void onNext(ArrayList<ArrayList<String>> arrayLists) {
 
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        e.printStackTrace();
                     }
 
                     @Override
                     public void onComplete() {
-                        dialog.dismiss();
-
-                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
-                        finish();
+                        Timber.i("onComplete");
                     }
                 });
+
+        formCall.getBankList()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<List<String>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<String> strings) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Timber.i("onComplete");
+                    }
+                });
+
+
+    }
+
+    private void fetchMyTeam() {
+
+//        myTeamRepository.fetchMyTeam()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<Object>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(Object o) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        dialog.dismiss();
+//
+//                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
+//                        finish();
+//                    }
+//                });
 
         myTeamRepository.fetchMyTeam()
                 .subscribeOn(Schedulers.io())
@@ -303,7 +313,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     @Override
                     public void onComplete() {
+                        dialog.dismiss();
 
+                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
+                        finish();
                     }
                 });
     }

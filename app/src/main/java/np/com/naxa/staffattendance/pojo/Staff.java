@@ -85,6 +85,10 @@ public class Staff {
 
     private String staffType;
 
+    public Staff(){
+
+    }
+
     public Staff(@NonNull String id, String firstName, String lastName, String email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, String dateOfBirth, String contractStart, String contractEnd, Integer bank, String status, String teamID, String teamName, String staffType) {
         this.id = id;
         this.firstName = firstName;

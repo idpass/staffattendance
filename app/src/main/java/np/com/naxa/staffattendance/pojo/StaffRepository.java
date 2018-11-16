@@ -74,4 +74,7 @@ public class StaffRepository implements BaseRepository<Staff> {
     }
 
 
+    public LiveData<Staff> getStaffFromId(String staffId) {
+        return localSource.getStaffFromId(staffId);
+    }
 }

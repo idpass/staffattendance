@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.pojo.Staff;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
 
@@ -83,7 +82,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         staffVH.rootLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                listener.onStaffLongClick(position);
+                listener.onStaffLongClick(position, staff.getId());
                 return true;
             }
         });
@@ -254,7 +253,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public interface OnStaffItemClickListener {
         void onStaffClick(int pos, Staff staff);
 
-        void onStaffLongClick(int pos);
+        void onStaffLongClick(int pos, String id);
     }
 
     private boolean contains(List<String> list, String comparable) {

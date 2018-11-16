@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -33,31 +34,33 @@ import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
-import np.com.naxa.staffattendance.common.Constant;
 import np.com.naxa.staffattendance.common.MessageEvent;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
+import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.pojo.Staff;
 import np.com.naxa.staffattendance.pojo.StaffRepository;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import timber.log.Timber;
 
-public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
+public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener, View.OnClickListener {
 
     private RecyclerView recyclerView;
     private StaffListAdapter stafflistAdapter;
     private TeamDao teamDao;
     private StaffDao staffDao;
-    private FloatingActionButton fabUploadAttedance;
+    private FloatingActionButton fabUploadAttedance, fabEdit, fabDelete;
+    private LinearLayout llStaffOptions;
     private List<String> attedanceIds;
     private MyTeamRepository myTeamRepository;
     private boolean enablePersonSelection = false;
     private List<String> attedanceToUpload;
     private RelativeLayout layoutNoData;
 
+    private String currentStaffId;
+    private int currentId;
 
     public DailyAttendanceFragment() {
         myTeamRepository = new MyTeamRepository();
@@ -90,32 +93,17 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
         teamDao = new TeamDao();
         staffDao = new StaffDao();
-
+        currentId = -1;
 
         bindUI(rootView);
         setupRecyclerView();
 
+        fabEdit.setOnClickListener(this);
+        fabDelete.setOnClickListener(this);
+        fabUploadAttedance.setOnClickListener(this);
+
         setHasOptionsMenu(true);
         fabUploadAttedance.hide();
-        fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        String peoplelist = TeamDao.getInstance().getTeamMembers(attedanceToUpload);
-                        String title = "Mark selected as present?";
-                        String msg = "%s.\n\nYou won't be able to change this once confirmed.";
-                        msg = String.format(msg, peoplelist);
-
-
-                        showMarkPresentDialog(title, msg);
-                    }
-                });
-            }
-        });
 
 
         return rootView;
@@ -180,29 +168,46 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                             stafflistAdapter = new StaffListAdapter(getActivity(), staffs, enablePersonSelection, attedanceIds, new StaffListAdapter.OnStaffItemClickListener() {
                                 @Override
                                 public void onStaffClick(int pos, Staff staff) {
-                                    stafflistAdapter.toggleSelection(pos);
+                                    if (currentId == -1) {
+                                        stafflistAdapter.toggleSelection(pos);
+                                        currentId = -1;
 
-                                    if (attedanceToUpload.contains(staff.getId())) {
-                                        Timber.i("Removing %s / %s", staff.getId(), staff.getFirstName());
-                                        attedanceToUpload.remove(staff.getId());
-                                    } else {
-                                        Timber.i("Adding %s / %s", staff.getId(), staff.getFirstName());
-                                        attedanceToUpload.add(staff.getId());
-                                    }
+                                        if (attedanceToUpload.contains(staff.getId())) {
+                                            Timber.i("Removing %s / %s", staff.getId(), staff.getFirstName());
+                                            attedanceToUpload.remove(staff.getId());
+                                        } else {
+                                            Timber.i("Adding %s / %s", staff.getId(), staff.getFirstName());
+                                            attedanceToUpload.add(staff.getId());
+                                        }
 
 
-                                    Timber.i("Current array is %s", attedanceToUpload.toString());
-                                    if (stafflistAdapter.getSelected().size() > 0) {
-                                        fabUploadAttedance.show();
-                                    } else {
-                                        fabUploadAttedance.hide();
+                                        Timber.i("Current array is %s", attedanceToUpload.toString());
+                                        if (stafflistAdapter.getSelected().size() > 0) {
+                                            fabUploadAttedance.show();
+                                        } else {
+                                            fabUploadAttedance.hide();
+                                        }
                                     }
                                 }
 
                                 @Override
-                                public void onStaffLongClick(int pos) {
+                                public void onStaffLongClick(int pos, String value) {
+                                    if (stafflistAdapter.getSelected().size() > 0 && currentId == -1) {
+                                        llStaffOptions.setVisibility(View.GONE);
+                                    } else if (stafflistAdapter.getSelected().size() > 0) {
+                                        llStaffOptions.setVisibility(View.GONE);
+                                        stafflistAdapter.toggleSelection(currentId);
+                                        currentId = -1;
+                                    } else {
+                                        currentStaffId = value;
+                                        llStaffOptions.setVisibility(View.VISIBLE);
+                                        stafflistAdapter.toggleSelection(pos);
+                                        currentId = pos;
+                                    }
                                     Timber.i("Saving staffIds %s", attedanceToUpload.toString());
                                 }
+
+
                             });
                             recyclerView.setLayoutManager(mLayoutManager);
                             recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -234,6 +239,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         recyclerView = view.findViewById(R.id.recycler_view_staff_list);
         fabUploadAttedance = view.findViewById(R.id.fab_attedance);
         layoutNoData = view.findViewById(R.id.layout_no_data);
+        fabEdit = view.findViewById(R.id.fab_edit);
+        fabDelete = view.findViewById(R.id.fab_delete);
+        llStaffOptions = view.findViewById(R.id.ll_staff_options);
     }
 
     @Override
@@ -258,7 +266,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     }
 
     @Override
-    public void onStaffLongClick(int pos) {
+    public void onStaffLongClick(int pos, String id) {
         Timber.i("Saving staffIds %s", attedanceToUpload.toString());
     }
 
@@ -287,5 +295,31 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         super.onStop();
         EventBus.getDefault().unregister(this);
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_attedance:
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        String peoplelist = TeamDao.getInstance().getTeamMembers(attedanceToUpload);
+                        String title = "Mark selected as present?";
+                        String msg = "%s.\n\nYou won't be able to change this once confirmed.";
+                        msg = String.format(msg, peoplelist);
+
+
+                        showMarkPresentDialog(title, msg);
+                    }
+                });
+                break;
+            case R.id.fab_edit:
+                NewStaffActivity.start(getContext(), false, currentStaffId);
+                break;
+            case R.id.fab_delete:
+                break;
+        }
+    }
+
 
 }

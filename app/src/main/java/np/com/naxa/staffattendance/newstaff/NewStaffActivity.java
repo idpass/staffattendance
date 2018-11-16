@@ -103,6 +103,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Dialog msgDialog;
     DatePickerDialog datePickerDialog;
     private String latitude, longitude, accurary;
+    private String staffId;
+    private Staff currentStaff;
 
     private StaffRepository staffRepository;
 
@@ -111,6 +113,14 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         context.startActivity(intent);
         if (disableTrasition) ((Activity) context).overridePendingTransition(0, 0);
     }
+
+    public static void start(Context context, boolean disableTrasition, String id) {
+        Intent intent = new Intent(context, NewStaffActivity.class);
+        intent.putExtra(Constant.EXTRA_MESSAGE, id);
+        context.startActivity(intent);
+        if (disableTrasition) ((Activity) context).overridePendingTransition(0, 0);
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,16 +136,16 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         initListeners();
 
+        staffId = getIntent().getStringExtra(Constant.EXTRA_MESSAGE);
+
 
         if (!NetworkUtils.isInternetAvailable()) {
             loadBanks();
             loadStaffDesignation();
         }
 
-
         FormCall formCall = new FormCall();
         formCall.getBankList()
-
                 .subscribe(new Observer<List<String>>() {
                     @Override
                     public void onComplete() {
@@ -213,7 +223,51 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         bottomNavigationView.setSelectedItemId(R.id.action_add_staff);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
+        if (staffId != null) {
+            loadValue(staffId);
+        }
 
+
+    }
+
+    private void loadValue(String staffId) {
+        staffRepository.getStaffFromId(staffId)
+                .observe(this,
+                        new android.arch.lifecycle.Observer<Staff>() {
+                            @Override
+                            public void onChanged(@Nullable Staff staff) {
+
+                                currentStaff = staff;
+
+                                firstName.getEditText().setText(currentStaff.getFirstName());
+                                lastName.getEditText().setText(currentStaff.getLastName());
+                                findViewById(R.id.staff_dob_heading).setVisibility(View.VISIBLE);
+                                dob.setText(currentStaff.getDateOfBirth());
+                                switch (currentStaff.getGender()) {
+                                    case 1:
+                                        male.toggle();
+                                        break;
+                                    case 2:
+                                        female.toggle();
+                                        break;
+                                    case 3:
+                                        other.toggle();
+                                        break;
+                                }
+                                ethinicity.getEditText().setText(currentStaff.getEthnicity());
+                                contactNumber.getEditText().setText(currentStaff.getPhoneNumber());
+                                email.getEditText().setText(currentStaff.getEmail());
+                                address.getEditText().setText(currentStaff.getAddress());
+                                findViewById(R.id.staff_contract_start_date_heading).setVisibility(View.VISIBLE);
+                                contractStartDate.setText(currentStaff.getContractStart());
+                                findViewById(R.id.staff_contract_end_date_heading).setVisibility(View.VISIBLE);
+                                contractEndDate.setText(currentStaff.getContractEnd());
+                                if (currentStaff.getPhoto() != null) {
+                                    photoFileToUpload = new File(currentStaff.getPhoto());
+                                    photo.setText("Change Photo");
+                                }
+                            }
+                        });
     }
 
     private void showErrorDialog(String title, String message) {
@@ -265,7 +319,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
                     @Override
                     public void onComplete() {
-
                     }
                 });
     }
@@ -378,6 +431,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         pairSpinnerAdapter = new PairSpinnerAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, desgination);
         pairSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDesgination.setAdapter(pairSpinnerAdapter);
+
+        if (currentStaff != null) {
+            spinnerDesgination.setSelection(currentStaff.getDesignation());
+        }
     }
 
     private void setupSpinner(@NonNull List<Pair> banks) {
@@ -386,6 +443,12 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         pairSpinnerAdapter = new PairSpinnerAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, banks);
         pairSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBank.setAdapter(pairSpinnerAdapter);
+
+        if (currentStaff != null) {
+            spinnerBank.setSelection(currentStaff.getBank());
+            accountNumber.getEditText().setText(currentStaff.getAccountNumber());
+            bankNameOther.setText(currentStaff.getBankName());
+        }
 
         spinnerBank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -545,23 +608,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                     AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                     finish();
 
-//
-//                    new NewStaffCall().upload(getNewStaffDetail(), photoFileToUpload, new NewStaffCall.NewStaffCallListener() {
-//                        @Override
-//                        public void onError() {
-//                            progressDialog.dismiss();
-//                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
-//                            finish();
-//                        }
-//
-//                        @Override
-//                        public void onSuccess() {
-//
-//                            progressDialog.dismiss();
-//                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
-//                            finish();
-//                        }
-//                    });
+
                 }
                 break;
         }
@@ -578,8 +625,12 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         Integer selectedBankId = (Integer) selectedBank.first;
         String selectedBankLabel = (String) selectedBank.second;
 
+        String tempId;
+        if (staffId == null) tempId = String.valueOf(System.currentTimeMillis());
+        else tempId = staffId;
+
         StaffBuilder builder = new StaffBuilder()
-                .setId(String.valueOf(System.currentTimeMillis()))
+                .setId(tempId)
                 .setDesignation(selectedDesignationId)
                 .setFirstName(firstName.getEditText().getText().toString())
                 .setLastName(lastName.getEditText().getText().toString())

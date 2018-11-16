@@ -27,4 +27,37 @@
         app:layout_anchorGravity="right|bottom"
         app:srcCompat="@drawable/ic_save_save_24dp"
         tools:ignore="RtlHardcoded" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ll_staff_options"
+        app:layout_anchor="@+id/recycler_view_staff_list"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        app:layout_anchorGravity="right|bottom">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:tint="@color/white"
+            app:elevation="8dp"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_edit_white"
+            tools:ignore="RtlHardcoded" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:tint="@color/white"
+            app:elevation="8dp"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_delete_white"
+            tools:ignore="RtlHardcoded"
+            android:visibility="visible"/>
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

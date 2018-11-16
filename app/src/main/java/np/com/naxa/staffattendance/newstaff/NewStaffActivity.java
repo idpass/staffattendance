@@ -872,8 +872,28 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        AttendanceViewPagerActivity.start(this, false);
-        finish();
+        Staff tempStaff = getNewStaff();
+        if (tempStaff == currentStaff) {
+            AttendanceViewPagerActivity.start(this, false);
+            finish();
+        } else {
+            DialogFactory.createActionDialog(this, "", "You have unsaved changes.")
+                    .setPositiveButton("Exit Anyway", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            AttendanceViewPagerActivity.start(NewStaffActivity.this, false);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create()
+                    .show();
+        }
     }
 
     @Override

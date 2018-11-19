@@ -88,7 +88,6 @@ public class BankLocalSource implements BaseLocalDataSource<BankPojo> {
 
     }
 
-    @Override
     public void save(ArrayList<BankPojo> items) {
 
     }

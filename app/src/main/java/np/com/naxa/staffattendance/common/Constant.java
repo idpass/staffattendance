@@ -134,4 +134,9 @@ public class Constant {
         public final static String SYNCED = "synced";
         public final static String OFFLINE = "offline";
     }
+
+    public final static class AttendanceStatus {
+        public static String FINALIZED = "finalized";
+        public static String UPLOADED = "uploaded";
+    }
 }

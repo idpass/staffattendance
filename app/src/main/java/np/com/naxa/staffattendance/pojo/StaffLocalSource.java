@@ -37,7 +37,6 @@ public class StaffLocalSource implements BaseLocalDataSource<Staff> {
         AsyncTask.execute(() -> dao.insert(items));
     }
 
-    @Override
     public void save(ArrayList<Staff> items) {
         AsyncTask.execute(() -> dao.insert(items));
     }

@@ -11,8 +11,6 @@ public interface BaseLocalDataSource<T> {
 
     void save(T... items);
 
-    void save(ArrayList<T> items);
-
     void updateAll(ArrayList<T> items);
 
 }

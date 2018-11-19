@@ -2,7 +2,6 @@ package np.com.naxa.staffattendance;
 
 
 import android.arch.lifecycle.LiveDataReactiveStreams;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,11 +30,13 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import np.com.naxa.staffattendance.attendence.AttendanceResponse;
+import np.com.naxa.staffattendance.attendence.Attendance;
+import np.com.naxa.staffattendance.attendence.AttendanceBuilder;
+import np.com.naxa.staffattendance.attendence.AttendanceRepository;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
+import np.com.naxa.staffattendance.common.Constant;
 import np.com.naxa.staffattendance.common.MessageEvent;
-import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
@@ -119,18 +120,25 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
+                            AttendanceRepository attendanceRepository = AttendanceRepository.getInstance();
+                            Attendance attendance = new AttendanceBuilder()
+                                    .setAttendanceDate(DateConvertor.getCurrentDate())
+                                    .setStaffIds(attedanceToUpload.toString())
+                                    .setSyncStatus(Constant.AttendanceStatus.FINALIZED)
+                                    .createAttendance();
+                            attendanceRepository.save(attendance);
 
                             //saving it offline
-                            AttendanceDao attedanceDao = new AttendanceDao();
+//                            AttendanceDao attedanceDao = new AttendanceDao();
 
 
-                            AttendanceResponse attendanceResponse = new AttendanceResponse();
-                            attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
-                            attendanceResponse.setStaffs(attedanceToUpload);
-                            attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
-
-                            ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
-                            attedanceDao.saveAttedance(contentValues);
+//                            AttendanceResponse attendanceResponse = new AttendanceResponse();
+//                            attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
+//                            attendanceResponse.setStaffs(attedanceToUpload);
+//                            attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
+//
+//                            ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
+//                            attedanceDao.saveAttedance(contentValues);
 
 
 //                            ((AttendanceViewPagerActivity) getActivity()).geoTagHelper.start(DateConvertor.getCurrentDate());
@@ -307,7 +315,6 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         String title = "Mark selected as present?";
                         String msg = "%s.\n\nYou won't be able to change this once confirmed.";
                         msg = String.format(msg, peoplelist);
-
 
                         showMarkPresentDialog(title, msg);
                     }

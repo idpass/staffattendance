@@ -88,7 +88,6 @@ public class StaffDesignationLocalSource implements BaseLocalDataSource<BankPojo
 
     }
 
-    @Override
     public void save(ArrayList<BankPojo> items) {
 
     }

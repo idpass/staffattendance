@@ -125,7 +125,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
 
     private void runSync() {
         TeamRemoteSource.getInstance()
-                .syncAll(this)
+                .syncAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Object>() {

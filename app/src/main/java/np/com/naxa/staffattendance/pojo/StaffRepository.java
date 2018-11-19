@@ -43,7 +43,6 @@ public class StaffRepository implements BaseRepository<Staff> {
         localSource.save(items);
     }
 
-    @Override
     public void save(ArrayList<Staff> items) {
         localSource.save(items);
     }

@@ -4,8 +4,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import java.util.Arrays;
 import java.util.Date;
 
+import io.reactivex.subscribers.DisposableSubscriber;
 import np.com.naxa.staffattendance.DailyAttendanceFragment;
 import np.com.naxa.staffattendance.database.AttendanceDao;
 import np.com.naxa.staffattendance.database.TeamDao;
@@ -32,8 +34,38 @@ public class AttendanceViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         DailyAttendanceFragment fragment = new DailyAttendanceFragment();
         String todaysFormattedDate = DateConvertor.formatDate(getDateForPosition(position));
-        AttendanceResponse dailyAttendance = attendanceDao.getAttedanceByDate(teamId, todaysFormattedDate);
-        fragment.setAttendanceIds(dailyAttendance.getPresentStaffIds(), todaysFormattedDate);
+
+        AttendanceRepository attendanceRepository = AttendanceRepository.getInstance();
+
+        Attendance[] currentAttendence = new Attendance[1];
+        currentAttendence[0] = null;
+        attendanceRepository.getAttendanceByDate(todaysFormattedDate)
+                .subscribe(new DisposableSubscriber<Attendance>() {
+                    @Override
+                    public void onNext(Attendance attendance) {
+                        currentAttendence[0] = attendance;
+                        String staffIDs = attendance.getStaffIds();
+                        String[] staffIDlist = staffIDs.replace("[", "").replace("]", "").split(",");
+                        fragment.setAttendanceIds(Arrays.asList(staffIDlist), todaysFormattedDate);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        t.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        if (currentAttendence[0] == null) {
+            fragment.setAttendanceIds(null, todaysFormattedDate);
+        }
+
+//        AttendanceResponse dailyAttendance = attendanceDao.getAttedanceByDate(teamId, todaysFormattedDate);
+//        fragment.setAttendanceIds(dailyAttendance.getPresentStaffIds(), todaysFormattedDate);
 
         return fragment;
     }

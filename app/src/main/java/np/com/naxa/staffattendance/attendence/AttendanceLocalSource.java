@@ -15,7 +15,7 @@ import io.reactivex.Single;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.common.BaseLocalDataSource;
 import np.com.naxa.staffattendance.common.Constant;
-import np.com.naxa.staffattendance.pojo.StaffAttendenceDatabase;
+import np.com.naxa.staffattendance.StaffAttendenceDatabase;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class AttendanceLocalSource implements BaseLocalDataSource<Attendance> {

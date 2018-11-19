@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance.pojo;
+package np.com.naxa.staffattendance.staff;
 
 import android.arch.lifecycle.LiveData;
 
@@ -9,6 +9,7 @@ import io.fabric.sdk.android.services.concurrency.AsyncTask;
 import io.reactivex.Single;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.common.BaseLocalDataSource;
+import np.com.naxa.staffattendance.StaffAttendenceDatabase;
 
 public class StaffLocalSource implements BaseLocalDataSource<Staff> {
 

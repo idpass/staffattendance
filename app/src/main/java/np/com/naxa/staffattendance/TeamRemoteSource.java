@@ -33,8 +33,8 @@ import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.login.LoginActivity;
 import np.com.naxa.staffattendance.newstaff.NewStaffCall;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
-import np.com.naxa.staffattendance.pojo.Staff;
-import np.com.naxa.staffattendance.pojo.StaffRepository;
+import np.com.naxa.staffattendance.staff.Staff;
+import np.com.naxa.staffattendance.staff.StaffRepository;
 
 
 public class TeamRemoteSource {

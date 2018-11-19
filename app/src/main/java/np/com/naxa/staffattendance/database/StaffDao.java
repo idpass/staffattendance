@@ -15,8 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
-import np.com.naxa.staffattendance.pojo.Staff;
+import np.com.naxa.staffattendance.staff.Staff;
 
 
 /**

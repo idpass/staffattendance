@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance.pojo;
+package np.com.naxa.staffattendance.staff;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -11,7 +11,6 @@ import android.arch.persistence.room.Update;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 @Dao

@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance.pojo;
+package np.com.naxa.staffattendance.staff;
 
 import java.io.File;
 

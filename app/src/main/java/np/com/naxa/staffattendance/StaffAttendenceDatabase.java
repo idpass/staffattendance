@@ -1,4 +1,4 @@
-package np.com.naxa.staffattendance.pojo;
+package np.com.naxa.staffattendance;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -7,6 +7,8 @@ import android.content.Context;
 
 import np.com.naxa.staffattendance.attendence.Attendance;
 import np.com.naxa.staffattendance.attendence.AttendanceDao;
+import np.com.naxa.staffattendance.staff.Staff;
+import np.com.naxa.staffattendance.staff.StaffDao;
 
 @Database(entities = {Staff.class, Attendance.class}, version = 3, exportSchema = false)
 public abstract class StaffAttendenceDatabase extends RoomDatabase {

@@ -10,7 +10,7 @@ import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
 import np.com.naxa.staffattendance.pojo.BankPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
-import np.com.naxa.staffattendance.pojo.Staff;
+import np.com.naxa.staffattendance.staff.Staff;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;

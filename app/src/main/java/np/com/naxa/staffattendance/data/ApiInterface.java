@@ -9,7 +9,6 @@ import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.login.LoginResponse;
 import np.com.naxa.staffattendance.pojo.BankPojo;
-import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.staff.Staff;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -48,29 +47,7 @@ public interface ApiInterface {
 
     @Multipart
     @POST("staff/api/staff/{team_id}/")
-    Observable<NewStaffPojo> uploadNewStaff(
-            @Path(value = "team_id", encoded = true) String teamID,
-            @Part("designation") Integer designation,
-            @Part("first_name") RequestBody firstName,
-            @Part("last_name") RequestBody lastName,
-            @Part("date_of_birth") RequestBody dob,
-            @Part("gender") Integer gender,
-            @Part("ethnicity") RequestBody ethnicity,
-            @Part("bank") Integer bankId,
-            @Part("bank_name") RequestBody bankName,
-            @Part("account_number") RequestBody accountNumber,
-            @Part("phone_number") RequestBody phoneNumber,
-            @Part("email") RequestBody email,
-            @Part("address") RequestBody address,
-            @Part("contract_start") RequestBody contractStartDate,
-            @Part("contract_end") RequestBody contractEndDate,
-
-            @Part MultipartBody.Part photo
-    );
-
-    @Multipart
-    @POST("staff/api/staff/{team_id}/")
-    Observable<Staff> uploadNewStaff2(
+    Observable<Staff> uploadNewStaff(
             @Path(value = "team_id", encoded = true) String teamID,
             @Part("designation") Integer designation,
             @Part("first_name") RequestBody firstName,

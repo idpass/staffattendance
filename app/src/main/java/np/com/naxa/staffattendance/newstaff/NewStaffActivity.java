@@ -54,16 +54,10 @@ import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
-import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
 import np.com.naxa.staffattendance.common.Constant;
 import np.com.naxa.staffattendance.common.GeoPointActivity;
 import np.com.naxa.staffattendance.common.PairSpinnerAdapter;
-import np.com.naxa.staffattendance.database.NewStaffDao;
-import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
-import np.com.naxa.staffattendance.pojo.NewStaffPojo;
-import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.staff.Staff;
 import np.com.naxa.staffattendance.staff.StaffBuilder;
 import np.com.naxa.staffattendance.staff.StaffRepository;
@@ -585,10 +579,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.staff_save:
                 if (validate()) {
-                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
-                    finish();
-                    startActivity(getIntent());
-                    ToastUtils.showShort("New staff detail saved.");
+
                 }
                 break;
 
@@ -602,9 +593,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                     Staff newStaff = getNewStaff();
                     staffRepository.save(newStaff);
 
-//                    NewStaffPojo staff = getNewStaffDetail();
-//                    new NewStaffDao().saveNewStaff(staff);
-//                    putDataInStafftable(staff);
                     AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                     finish();
 
@@ -657,21 +645,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         return builder.createStaff();
 
     }
-
-    private void putDataInStafftable(NewStaffPojo newStaffDetail) {
-        String id = new TeamDao().getOneTeamIdForDemo();
-        TeamMemberResposne member = new TeamMemberResposneBuilder()
-                .setFirstName(newStaffDetail.getFirstName())
-                .setLastName(newStaffDetail.getLastName())
-                .setDesignation(newStaffDetail.getDesignation())
-                .setTeamID(id)
-                .setTeamName(new TeamDao().getTeamNameById(id))
-                .setId(newStaffDetail.getId())
-                .createTeamMemberResposne();
-
-        new StaffDao().saveStaff(member);
-    }
-
 
     private boolean validate() {
         boolean validation = false;
@@ -748,44 +721,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
             errorText.setTextColor(Color.RED);
             errorText.setText(message);
         }
-    }
-
-
-    public NewStaffPojo getNewStaffDetail() {
-
-        Pair selectedDesignation = ((Pair) spinnerDesgination.getSelectedItem());
-        Integer selectedDesignationId = (Integer) selectedDesignation.first;
-        String selectedDesignationLabel = (String) selectedDesignation.second;
-
-        Pair selectedBank = ((Pair) spinnerBank.getSelectedItem());
-        Integer selectedBankId = (Integer) selectedBank.first;
-        String selectedBankLabel = (String) selectedBank.second;
-
-        NewStaffPojoBuilder builder = new NewStaffPojoBuilder()
-                .setID(String.valueOf(System.currentTimeMillis()))
-                .setDesignation(selectedDesignationId)
-                .setFirstName(firstName.getEditText().getText().toString())
-                .setLastName(lastName.getEditText().getText().toString())
-                .setDateOfBirth(dob.getText().toString())
-                .setGender(getGender())
-                .setEthnicity(ethinicity.getEditText().getText().toString())
-                .setBankName(bankNameOther.getText().toString())
-                .setAccountNumber(accountNumber.getEditText().getText().toString())
-                .setPhoneNumber(contactNumber.getEditText().getText().toString())
-                .setEmail(email.getEditText().getText().toString())
-                .setAddress(address.getEditText().getText().toString())
-                .setContractStart(contractStartDate.getText().toString())
-                .setContractEnd(contractEndDate.getText().toString())
-                .setPhoto(getPhotoLocation())
-                .setStatus(NewStaffDao.SAVED);
-
-
-        if (selectedBankId != 1) {
-            builder.setBank(selectedBankId);
-        }
-
-        return builder.createNewStaffPojo();
-
     }
 
     private String getPhotoLocation() {

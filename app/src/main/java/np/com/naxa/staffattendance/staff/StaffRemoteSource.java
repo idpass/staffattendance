@@ -30,7 +30,7 @@ public class StaffRemoteSource implements BaseRemoteDataSource<Staff> {
 
     public Observable<Staff> newStaffObservable(Staff staff, File photoFileToUpload) {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
-        return apiInterface.uploadNewStaff2(
+        return apiInterface.uploadNewStaff(
                 new TeamDao().getOneTeamIdForDemo(),
                 staff.getDesignation(),
                 RequestBody.create(MediaType.parse("text/plain"), staff.getFirstName()),

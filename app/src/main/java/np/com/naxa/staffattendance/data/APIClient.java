@@ -25,7 +25,7 @@ import rx.schedulers.Schedulers;
 public class APIClient {
 
     private static final String TAG = "APIClient";
-    public static final String BASE_URL = "http://app.fieldsight.org/";
+    public static final String BASE_URL = "https://app.fieldsight.org/";
 
     private static Retrofit retrofit = null;
     private static OkHttpClient okHttpClient;

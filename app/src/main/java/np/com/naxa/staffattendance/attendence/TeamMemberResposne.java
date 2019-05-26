@@ -7,6 +7,7 @@ public class TeamMemberResposne {
 
     private String teamID;
     private String teamName;
+    private String IDPassDID;
 
     @SerializedName("id")
     @Expose
@@ -74,7 +75,7 @@ public class TeamMemberResposne {
 
     }
 
-    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName, Object email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth, Object contractStart, Object contractEnd, Object bank) {
+    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName, Object email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth, Object contractStart, Object contractEnd, Object bank, String IDPassDID) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.id = id;
@@ -93,6 +94,15 @@ public class TeamMemberResposne {
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;
         this.bank = bank;
+    }
+
+
+    public String getIDPassDID() {
+        return IDPassDID;
+    }
+
+    public void setIDPassDID(String IDPassDID) {
+        this.IDPassDID = IDPassDID;
     }
 
     public void setTeamID(String teamID) {

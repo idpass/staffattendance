@@ -19,6 +19,7 @@ public class TeamMemberResposneBuilder {
     private Object contractStart;
     private Object contractEnd;
     private Object bank;
+    private String IDPassDID;
 
     public TeamMemberResposneBuilder setTeamID(String teamID) {
         this.teamID = teamID;
@@ -110,7 +111,12 @@ public class TeamMemberResposneBuilder {
         return this;
     }
 
+    public TeamMemberResposneBuilder setIDPassDID(String IDPassDID) {
+        this.IDPassDID = IDPassDID;
+        return this;
+    }
+
     public TeamMemberResposne createTeamMemberResposne() {
-        return new TeamMemberResposne(teamID, teamName, id, firstName, lastName, email, gender, ethnicity, address, phoneNumber, bankName, accountNumber, photo, designation, dateOfBirth, contractStart, contractEnd, bank);
+        return new TeamMemberResposne(teamID, teamName, id, firstName, lastName, email, gender, ethnicity, address, phoneNumber, bankName, accountNumber, photo, designation, dateOfBirth, contractStart, contractEnd, bank,IDPassDID);
     }
 }

@@ -74,6 +74,7 @@ public class StaffDao {
         contentValues.put(DatabaseHelper.KEY_ID, staff.getId());
         contentValues.put(DatabaseHelper.KEY_STAFF_TEAM_ID, staff.getTeamID());
         contentValues.put(DatabaseHelper.KEY_STAFF_TEAM_NAME, staff.getTeamName());
+        contentValues.put(DatabaseHelper.KEY_ID_PASS, staff.getIDPassDID());
         return contentValues;
     }
 
@@ -106,11 +107,13 @@ public class StaffDao {
             String teamName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_TEAM_NAME);
             String staffId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID);
             String staffName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FULL_NAME);
+            String IDPassDID = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID_PASS);
 
             TeamMemberResposne staff = new TeamMemberResposneBuilder()
                     .setTeamID(teamID)
                     .setTeamName(teamName)
                     .setId(staffId)
+                    .setIDPassDID(IDPassDID)
                     .setFirstName(staffName)
                     .createTeamMemberResposne();
 

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -66,7 +67,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private Spinner bank, designation;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
     private EditText dob, contractStartDate, contractEndDate, bankNameOther;
-    private Button photo, idpassIdentify, save, create;
+    private Button photo, idpassIdentify, idpassEnroll, save, create;
     private List<String> designationList = new ArrayList<>();
     private List<String> bankList = new ArrayList<>();
     private RadioGroup gender;
@@ -78,6 +79,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private BottomNavigationView bottomNavigationView;
     private Gson gson;
     private Dialog msgDialog;
+    private TextView idpassValue;
     DatePickerDialog datePickerDialog;
 
     private String idPassDID;
@@ -283,6 +285,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         contractEndDate = findViewById(R.id.staff_contract_end_date_date);
         photo = findViewById(R.id.staff_photo);
         idpassIdentify = findViewById(R.id.idpass_identify);
+        idpassValue = findViewById(R.id.idpass_value);
+        idpassEnroll = findViewById(R.id.idpass_enroll);
         save = findViewById(R.id.staff_save);
         create = findViewById(R.id.staff_send);
         bottomNavigationView = (BottomNavigationView)
@@ -295,6 +299,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         contractEndDate.setOnClickListener(this);
         photo.setOnClickListener(this);
         idpassIdentify.setOnClickListener(this);
+        idpassEnroll.setOnClickListener(this);
         save.setOnClickListener(this);
         create.setOnClickListener(this);
     }
@@ -324,6 +329,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.idpass_identify:
                 idpassIdentify();
+                break;
+
+            case R.id.idpass_enroll:
+                idpassEnroll();
                 break;
 
             case R.id.staff_save:
@@ -486,6 +495,15 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
     }
 
+    private void idpassEnroll() {
+        String name = firstName.getEditText().getText().toString() + " " + lastName.getEditText().getText().toString();
+
+        Intent intent = IDPassIntent.intentEnroll("L1", name, true, true, true);
+        startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
+    }
+
+
+
     private void showImageOptionsDialog() {
 
         final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Dismiss"};
@@ -517,7 +535,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             idPassDID = signedAction.getAction().getPerson().getDid();
             String name = signedAction.getAction().getPerson().getName();
-            idpassIdentify.setText("Change: " + name);
+            idpassValue.setText(name + " - " + idPassDID);
         } else {
 
             EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {

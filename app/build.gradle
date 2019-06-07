@@ -76,6 +76,6 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
         transitive = true;
     }
-    compile 'org.idpass.mobile.api:idpass-mobile-api:0.0.1'
+    implementation 'org.idpass.mobile.api:idpass-mobile-api:0.0.1'
 
 }

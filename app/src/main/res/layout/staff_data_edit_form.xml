@@ -356,6 +356,15 @@
         android:drawablePadding="8dp"
         android:drawableStart="@android:drawable/ic_menu_camera"
         android:text="Take Photo" />
+    <Button
+        android:id="@+id/idpass_identify"
+        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_select_idpass"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_select_idpass"
+        android:text="Scan ID PASS" />
 
     <Button
         android:id="@+id/staff_save"

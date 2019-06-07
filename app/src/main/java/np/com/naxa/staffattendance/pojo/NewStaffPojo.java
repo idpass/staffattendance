@@ -54,11 +54,14 @@ public class NewStaffPojo {
     @SerializedName("bank")
     @Expose
     private Integer bank;
+    @SerializedName("idpass_did")
+    @Expose
+    private String idPassDID;
 
     private String status;
 
 
-    public NewStaffPojo(String id, Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender, String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email, String address, String contractStart, String contractEnd, String photo, String status) {
+    public NewStaffPojo(String id, Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender, String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email, String address, String contractStart, String contractEnd, String photo, String status, String idPassDID) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -76,6 +79,7 @@ public class NewStaffPojo {
         this.contractEnd = contractEnd;
         this.bank = bank;
         this.status = status;
+        this.idPassDID = idPassDID;
     }
 
     public String getId() {

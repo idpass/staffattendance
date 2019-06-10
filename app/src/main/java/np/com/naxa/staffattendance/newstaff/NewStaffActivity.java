@@ -385,6 +385,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setLastName(newStaffDetail.getLastName())
                 .setDesignation(newStaffDetail.getDesignation())
                 .setTeamID(id)
+                .setIDPassDID(idPassDID)
                 .setTeamName(new TeamDao().getTeamNameById(id))
                 .setId(newStaffDetail.getId())
                 .createTeamMemberResposne();

@@ -60,6 +60,7 @@ import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 import rx.Observer;
+import timber.log.Timber;
 
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private int IDENTIFY_RESULT_INTENT = 1;
@@ -442,7 +443,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
     public NewStaffPojo getNewStaffDetail() {
-
+        Timber.d("ID PASS: " + idPassDID);
 
         return new NewStaffPojoBuilder()
                 .setID(String.valueOf(System.currentTimeMillis()))

@@ -218,4 +218,7 @@ public class NewStaffPojo {
         this.status = status;
     }
 
+    public String getIdPassDID() { return idPassDID; }
+
+    public void setIdPassDID(String idPassDID) { this.idPassDID = idPassDID; }
 }

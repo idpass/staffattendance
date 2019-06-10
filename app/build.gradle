@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho-okhttp3:1.4.2'
     implementation 'com.jakewharton.timber:timber:4.7.0'
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 
     //helper libs`

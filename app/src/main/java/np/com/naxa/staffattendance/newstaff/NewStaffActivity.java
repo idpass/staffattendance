@@ -338,7 +338,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.staff_save:
                 if (validate()) {
-                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
+                    NewStaffPojo staff = getNewStaffDetail();
+                    NewStaffDao.getInstance().saveNewStaff(staff);
+                    putDataInStafftable(staff);
                     finish();
                     startActivity(getIntent());
                     ToastUtils.showShort("New staff detail saved.");

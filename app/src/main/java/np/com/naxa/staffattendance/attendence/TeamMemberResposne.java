@@ -94,6 +94,7 @@ public class TeamMemberResposne {
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;
         this.bank = bank;
+        this.IDPassDID = IDPassDID;
     }
 
 

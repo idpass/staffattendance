@@ -27,16 +27,4 @@
         app:layout_anchorGravity="right|bottom"
         app:srcCompat="@drawable/ic_save_save_24dp"
         tools:ignore="RtlHardcoded" />
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_idpass_identify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:tint="@color/white"
-        app:elevation="8dp"
-        app:fabSize="normal"
-        app:layout_anchor="@+id/recycler_view_staff_list"
-        app:layout_anchorGravity="right|bottom"
-        app:srcCompat="@drawable/ic_idpass_square"
-        tools:ignore="RtlHardcoded" />
 </android.support.design.widget.CoordinatorLayout>

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
+import timber.log.Timber;
 
 public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
@@ -103,6 +104,17 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemCount() {
         return staffList.size();
+    }
+
+    public void markPresent(String staffId) {
+        for (int i = 0; i < staffList.size(); i++) {
+            if(staffList.get(i).getId().equals(staffId)) {
+                Timber.i("Found staff %s / %s", staffId, i);
+                toggleSelection(i);
+                return;
+            }
+        }
+        Timber.i("Not Found staff: %s", staffId);
     }
 
     public void toggleSelection(int pos) {

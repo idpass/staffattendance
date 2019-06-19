@@ -7,6 +7,8 @@ public class TeamMemberResposne {
 
     private String teamID;
     private String teamName;
+
+    @SerializedName("IdPassDID")
     private String IDPassDID;
 
     @SerializedName("id")

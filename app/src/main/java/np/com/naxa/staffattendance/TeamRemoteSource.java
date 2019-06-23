@@ -157,8 +157,8 @@ public class TeamRemoteSource {
 
                             teamMemberResposne.setTeamID(myTeamResponse.getId());
                             teamMemberResposne.setTeamName(myTeamResponse.getName());
-                            StaffDao.getInstance().saveStaff(teamMemberResposne);
-
+                            long status = StaffDao.getInstance().saveStaff(teamMemberResposne);
+                            Timber.d("Staff insert status %s", status);
                         })
                         .toList());
 

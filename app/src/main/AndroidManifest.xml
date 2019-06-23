@@ -28,7 +28,9 @@
             android:name=".attendence.AttendanceViewPagerActivity"
           />
         <activity android:name=".jobs.SyncHistoryActivity" />
-        <activity android:name=".attedancedashboard.AttedanceDashboardAcitivty" />
+        <activity
+            android:exported="true"
+            android:name=".attedancedashboard.AttendancesDashboardActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

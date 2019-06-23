@@ -4,16 +4,15 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import np.com.naxa.staffattendance.attedancedashboard.base.AddItemVH
-import np.com.naxa.staffattendance.utlils.ToastUtils
 
 
 class ListAdapter(private val list: List<Any>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val TYPE_CONTENT = 0;
-    private val TYPE_ADD_CONTENT = 1;
-    private val TYPE_HEADER = 2;
-    private val TYPE_STATS = 3;
+    private val TYPE_CONTENT = 0
+    private val TYPE_ADD_CONTENT = 1
+    private val TYPE_HEADER = 2
+    private val TYPE_STATS = 3
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -51,9 +50,7 @@ class ListAdapter(private val list: List<Any>)
 
 
     private fun onBindAddItem(holder: AddItemVH, row: AddItemButton) {
-        holder.itemView.setOnClickListener {
-
-        }
+        holder.bind(row);
     }
 
     private fun onBindContent(holder: CalendarVH, row: AttendanceDay) {

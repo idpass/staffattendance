@@ -13,8 +13,9 @@ class AttendancesDashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var list = arrayListOf<AttendanceDay>()
+        var list = arrayListOf<Any>()
         setContentView(R.layout.activity_dashboard_attedance);
+        list.add(AddItemButton("add_attedance"))
         for (x in -6 until 0 step 1) {
             var date = DateConvertor.getPastDate(x)
             var yearMonthDay = DateConvertor.getYearMonthDay(date);
@@ -26,7 +27,7 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         setupListAdapter(list);
     }
 
-    private fun setupListAdapter(days: List<AttendanceDay>) {
+    private fun setupListAdapter(days: List<Any>) {
 
         val manager = LinearLayoutManager(this)
         recycler_view.setLayoutManager(manager)

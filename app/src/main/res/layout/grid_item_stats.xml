@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/tv_team_name"
-            style="@style/TextAppearance.AppCompat.Title"
+            style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Members"
+            android:text="@string/members"
             android:textColor="@color/colorPrimaryDark" />
 
         <View

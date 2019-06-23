@@ -13,6 +13,7 @@ class ListAdapter(private val list: List<Any>)
     private val TYPE_CONTENT = 0;
     private val TYPE_ADD_CONTENT = 1;
     private val TYPE_HEADER = 2;
+    private val TYPE_STATS = 3;
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -20,9 +21,14 @@ class ListAdapter(private val list: List<Any>)
             TYPE_ADD_CONTENT -> onBindAddItem(holder as AddItemVH, list[position] as AddItemButton)
             TYPE_CONTENT -> onBindContent(holder as CalendarVH, list[position] as AttendanceDay)
             TYPE_HEADER -> onBindHeader(holder as HeaderVH, list[position] as String)
+            TYPE_STATS -> onBindTeamStats(holder as TeamStatsVH, list[position] as TeamStats)
 
             else -> throw IllegalArgumentException()
         }
+    }
+
+    private fun onBindTeamStats(teamStatsVH: TeamStatsVH, teamStats: TeamStats) {
+        teamStatsVH.bind(teamStats)
     }
 
 
@@ -37,6 +43,7 @@ class ListAdapter(private val list: List<Any>)
             TYPE_ADD_CONTENT -> return AddItemVH(inflater, parent)
             TYPE_CONTENT -> return CalendarVH(inflater, parent)
             TYPE_HEADER -> return HeaderVH(inflater, parent)
+            TYPE_STATS -> return TeamStatsVH(inflater, parent)
             else -> throw IllegalArgumentException()
         }
 
@@ -58,6 +65,7 @@ class ListAdapter(private val list: List<Any>)
             is AttendanceDay -> TYPE_CONTENT
             is AddItemButton -> TYPE_ADD_CONTENT
             is String -> TYPE_HEADER
+            is TeamStats -> TYPE_STATS
 
             else -> throw IllegalArgumentException()
         }

@@ -28,6 +28,8 @@
             android:name=".attendence.AttendanceViewPagerActivity"
           />
         <activity android:name=".jobs.SyncHistoryActivity" />
+        <activity android:name=".attedancedashboard.AttedanceDashboardAcitivty" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="61f1ab9eb40ae0d7b3fdbc3417ad1ee196453e82" />

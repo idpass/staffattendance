@@ -2,25 +2,19 @@ package np.com.naxa.staffattendance.newstaff;
 
 
 import android.content.Context;
-import android.net.Uri;
-import android.support.v4.content.FileProvider;
 
 import java.io.File;
 
-import np.com.naxa.staffattendance.AttendanceFormEditActivity;
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.data.APIClient;
 import np.com.naxa.staffattendance.data.ApiInterface;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
-import np.com.naxa.staffattendance.utlils.ToastUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.Response;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

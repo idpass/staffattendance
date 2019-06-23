@@ -3,15 +3,24 @@ package np.com.naxa.staffattendance.attedancedashboard
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
 import np.com.naxa.staffattendance.utlils.DateConvertor
+import np.com.naxa.staffattendance.utlils.ToastUtils
+import java.util.concurrent.TimeUnit
 
 class AttendancesDashboardActivity : AppCompatActivity() {
+
+    private var exitOnBackPress: Boolean = false;
+    private val backPressHandler = Handler()
+    private val runnable = { exitOnBackPress = false }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +45,36 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         }
 
 
-
+        setSupportActionBar(toolbar);
+        supportActionBar?.setTitle("")
         setupListAdapter(list);
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_dashboard,menu);
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId){
+            R.id.main_dashboard_setting -> {
+
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    override fun onBackPressed() {
+        if (exitOnBackPress) {
+            finish()
+            return
+        }
+
+        exitOnBackPress = true
+        ToastUtils.showShort(getString(R.string.msg_backpress_to_exit))
+        backPressHandler.postDelayed(runnable, TimeUnit.SECONDS.toMillis(2))
+    }
     private fun setupListAdapter(days: List<Any>) {
 
         val manager = LinearLayoutManager(this)

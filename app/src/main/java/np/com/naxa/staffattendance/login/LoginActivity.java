@@ -21,6 +21,7 @@ import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.attedancedashboard.AttendancesDashboardActivity;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
@@ -52,7 +53,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
-        getWindow().setBackgroundDrawableResource(R.drawable.login_background);
         if (TokenMananger.doesTokenExist()) {
             AttendanceViewPagerActivity.start(this, false);
             finish();
@@ -218,11 +218,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onCompleted() {
                         dialog.dismiss();
-
-                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
-                        finish();
-
-
+                        Intent intent = AttendancesDashboardActivity.Companion.newIntent(LoginActivity.this);
+                        startActivity(intent);
                     }
 
                     @Override

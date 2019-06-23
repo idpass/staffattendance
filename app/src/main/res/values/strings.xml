@@ -91,6 +91,7 @@
     <string name="no_internet">Device is offline</string>
     <string name="dashboard">Dashboard</string>
     <string name="members">Members</string>
+    <string name="msg_backpress_to_exit">Press back button again to exit</string>
 
 
 </resources>

@@ -59,6 +59,7 @@ class SplashScreenActivity : AppCompatActivity() {
                             LoginActivity.start(this@SplashScreenActivity);
                         }
                         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                        finish()
 
                     }
                 })

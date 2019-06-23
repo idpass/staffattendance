@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,11 +14,11 @@
         android:paddingRight="@dimen/spacing_large">
 
         <android.support.design.widget.TextInputLayout
-
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="230dp">
+            android:layout_marginTop="230dp"
+            android:layout_marginBottom="8dp">
 
             <EditText
 
@@ -25,16 +26,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
-                 android:inputType="textEmailAddress"
+                android:importantForAutofill="no"
+                android:inputType="textEmailAddress"
                 android:textSize="@dimen/material_text_title" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
-            app:passwordToggleEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
+            app:passwordToggleEnabled="true">
 
             <EditText
 
@@ -46,13 +49,15 @@
                 android:textSize="@dimen/material_text_title" />
         </android.support.design.widget.TextInputLayout>
 
-        <android.support.v7.widget.AppCompatButton
+        <android.support.design.button.MaterialButton
+
             android:id="@+id/btn_login"
             style="@style/Base.Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_xxlarge"
+            android:layout_gravity="right"
             android:layout_marginTop="@dimen/spacing_large"
+            android:layout_marginBottom="@dimen/spacing_xxlarge"
             android:padding="12dp"
             android:text="Login"
             android:textSize="@dimen/material_text_button" />

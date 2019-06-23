@@ -15,6 +15,8 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         var list = arrayListOf<Any>()
         setContentView(R.layout.activity_dashboard_attedance);
+        list.add("Attendance")
+        list.add("")
         list.add(AddItemButton("add_attedance"))
         for (x in -6 until 0 step 1) {
             var date = DateConvertor.getPastDate(x)

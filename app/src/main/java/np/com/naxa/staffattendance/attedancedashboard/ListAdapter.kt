@@ -12,22 +12,31 @@ class ListAdapter(private val list: List<Any>)
 
     private val TYPE_CONTENT = 0;
     private val TYPE_ADD_CONTENT = 1;
+    private val TYPE_HEADER = 2;
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             TYPE_ADD_CONTENT -> onBindAddItem(holder as AddItemVH, list[position] as AddItemButton)
             TYPE_CONTENT -> onBindContent(holder as CalendarVH, list[position] as AttendanceDay)
-              else -> throw IllegalArgumentException()
+            TYPE_HEADER -> onBindHeader(holder as HeaderVH, list[position] as String)
+
+            else -> throw IllegalArgumentException()
         }
+    }
+
+
+    private fun onBindHeader(headerVH: HeaderVH, s: String) {
+        headerVH.bind(s);
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        when(viewType){
-            TYPE_ADD_CONTENT -> return AddItemVH(inflater,parent)
-            TYPE_CONTENT -> return CalendarVH(inflater,parent)
+        when (viewType) {
+            TYPE_ADD_CONTENT -> return AddItemVH(inflater, parent)
+            TYPE_CONTENT -> return CalendarVH(inflater, parent)
+            TYPE_HEADER -> return HeaderVH(inflater, parent)
             else -> throw IllegalArgumentException()
         }
 
@@ -48,6 +57,8 @@ class ListAdapter(private val list: List<Any>)
         return when (list[position]) {
             is AttendanceDay -> TYPE_CONTENT
             is AddItemButton -> TYPE_ADD_CONTENT
+            is String -> TYPE_HEADER
+
             else -> throw IllegalArgumentException()
         }
     }

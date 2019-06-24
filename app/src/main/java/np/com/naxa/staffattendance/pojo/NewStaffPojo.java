@@ -54,7 +54,7 @@ public class NewStaffPojo {
     @SerializedName("bank")
     @Expose
     private Integer bank;
-    @SerializedName("idpass_did")
+
     @Expose
     private String idPassDID;
 

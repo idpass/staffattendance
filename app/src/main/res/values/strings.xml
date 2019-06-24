@@ -92,6 +92,8 @@
     <string name="dashboard">Dashboard</string>
     <string name="members">Members</string>
     <string name="msg_backpress_to_exit">Press back button again to exit</string>
+    <string name="title_team">Team</string>
+    <string name="title_attedance">Attendance</string>
 
 
 </resources>

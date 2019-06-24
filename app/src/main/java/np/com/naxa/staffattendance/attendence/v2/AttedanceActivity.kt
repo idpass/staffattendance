@@ -33,6 +33,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
     private var enablePersonSelection = true;
     private var attedanceIds: List<String>? = emptyList()
     private lateinit var teamId: String
+    private lateinit var teamName: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,11 +41,12 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         setContentView(R.layout.activity_dashboard_attedance)
         loadedDate = intent.getStringExtra(IntentConstants.ATTENDANCE_DATE);
         teamId = intent.getStringExtra(IntentConstants.TEAM_ID);
+        teamName = intent.getStringExtra(IntentConstants.TEAM_NAME);
 
 //        val dailyAttendance = AttendanceDao().getAttedanceByDate(teamId, loadedDate)
 //        setAttendanceIds(dailyAttendance.presentStaffIds,dailyAttendance.getAttendanceDate(false))
 
-        setupToolbar(title = "Team Name")
+        setupToolbar(title = teamName)
         setupRecyclerView()
 
     }
@@ -91,10 +93,11 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
 
 
     companion object {
-        fun newIntent(context: Context, date: String,teamId: String): Intent {
+        fun newIntent(context: Context, date: String,teamId: String,teamName: String): Intent {
             val intent = Intent(context, AttedanceActivity::class.java)
             intent.putExtra(IntentConstants.ATTENDANCE_DATE, date);
             intent.putExtra(IntentConstants.TEAM_ID, teamId);
+            intent.putExtra(IntentConstants.TEAM_NAME, teamName);
             return intent
         }
     }

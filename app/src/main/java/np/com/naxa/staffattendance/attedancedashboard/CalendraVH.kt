@@ -34,7 +34,7 @@ class CalendarVH(inflater: LayoutInflater, parent: ViewGroup) :
         tvDate?.text = day.dayOfMonth
         tvMonthYear?.text = day.date
         rootLayout?.setOnClickListener {
-            var intent = AttedanceActivity.newIntent(itemView.context, date = day.fullDate, teamId = TeamDao.getInstance().oneTeamIdForDemo)
+            var intent = AttedanceActivity.newIntent(itemView.context, date = day.fullDate, teamId = day.teamId, teamName = day.teamName)
             itemView.context.startActivity(intent);
         }
 

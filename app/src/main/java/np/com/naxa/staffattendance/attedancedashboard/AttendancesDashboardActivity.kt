@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
+import np.com.naxa.staffattendance.common.UIConstants
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.utlils.DateConvertor
@@ -26,7 +27,7 @@ class AttendancesDashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       setContentView(R.layout.activity_dashboard_attedance);
+        setContentView(R.layout.activity_dashboard_attedance);
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
@@ -36,17 +37,17 @@ class AttendancesDashboardActivity : AppCompatActivity() {
     private fun generateGridItems(): ArrayList<Any> {
         val teamId = TeamDao().oneTeamIdForDemo
         val list = arrayListOf<Any>()
-
+        var teamName: String = ""
         val staffs = StaffDao().getStaffByTeamId(teamId)
-        list.add("Team")
+        list.add(getString(R.string.title_team))
         list.add("")
-        if(staffs.size > 0){
-            val teamName = staffs[0].teamName
+        if (staffs.size > 0) {
+            teamName = staffs[0].teamName
             val teamMembersCount = staffs.count().toString()
-            list.add(TeamStats(teamName,teamMembersCount))
+            list.add(TeamStats(teamName, teamMembersCount))
         }
-        list.add(AddItemButton("add_team_member"))
-        list.add("Attendance")
+        list.add(AddItemButton(UIConstants.UUID_GRID_ITEM_TEAM_MEMBER))
+        list.add(getString(R.string.title_attedance))
         list.add("")
         for (x in -6 until 1 step 1) {
             val date = DateConvertor.getPastDate(x)
@@ -56,6 +57,8 @@ class AttendancesDashboardActivity : AppCompatActivity() {
                     date = yearMonthDay[0],
                     absentNoOfStaff = "",
                     presentNoOfStaff = "",
+                    teamId = teamId,
+                    teamName = teamName,
                     fullDate = DateConvertor.formatDate(DateConvertor.getDateForPosition(x))));
         }
 

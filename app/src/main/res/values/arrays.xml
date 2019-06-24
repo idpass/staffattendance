@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="attedance_status" >
+    <string-array name="attedance_status">
 
         <item>Scan Card</item>
         <item>Scan Fingerprint</item>
         <item>Finish</item>
+    </string-array>
+
+    <string-array name="attedance_status_desc">
+        <item>We are ready to scan your card</item>
+        <item>Card verified! Let\'s scan your fingerprint</item>
+        <item>We have recorded your attendance</item>
     </string-array>
 </resources>

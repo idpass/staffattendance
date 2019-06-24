@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="@dimen/spacing_large">
 
@@ -22,11 +23,22 @@
         android:layout_margin="@dimen/spacing_large"
         app:cardCornerRadius="@dimen/card_recycler_corner_radius">
 
-        <TextView
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/spacing_large"
-            android:text="Scan card to continue to next step" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_take_attedance_frag_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/spacing_large"
+                tools:text="Scan Card" />
+
+        </RelativeLayout>
+
 
     </android.support.design.card.MaterialCardView>
 

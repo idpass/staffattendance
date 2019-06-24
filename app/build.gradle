@@ -59,6 +59,9 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
 
+    //UI
+    implementation 'com.params.stepview:stepview:1.0.2'
+
     //debug libs
     implementation 'com.facebook.stetho:stetho:1.4.2'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.4.2'

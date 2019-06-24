@@ -6,7 +6,7 @@
     android:clickable="true"
     android:focusable="true"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="@dimen/cardview_default_radius"
+    app:cardCornerRadius="@dimen/card_recycler_corner_radius"
     app:cardElevation="0dp">
 
     <LinearLayout

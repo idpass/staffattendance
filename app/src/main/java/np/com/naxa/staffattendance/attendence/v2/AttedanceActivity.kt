@@ -1,27 +1,36 @@
 package np.com.naxa.staffattendance.attendence.v2
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
 import np.com.naxa.staffattendance.StaffListAdapter
+import np.com.naxa.staffattendance.attedancedashboard.AttedanceBottomFragment
 import np.com.naxa.staffattendance.attedancedashboard.ItemOffsetDecoration
+
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne
 import np.com.naxa.staffattendance.common.BaseActivity
 import np.com.naxa.staffattendance.common.IntentConstants
-import np.com.naxa.staffattendance.database.AttendanceDao
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.utlils.DateConvertor
-import java.sql.Date
+
 
 class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListener {
     override fun onStaffClick(pos: Int, staff: TeamMemberResposne?) {
+        val attedanceBottomFragment = AttedanceBottomFragment.newInstance()
+        attedanceBottomFragment.arguments = Bundle().apply {
+            putSerializable(IntentConstants.EXTRA_OBJECT,staff);
+        }
+
+        attedanceBottomFragment.show(supportFragmentManager,
+                "add_photo_dialog_fragment")
+
     }
 
     override fun onStaffLongClick(pos: Int) {
@@ -62,7 +71,6 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
     }
 
 
-
     private fun setupRecyclerView() {
         val teamDao = TeamDao();
         val mLayoutManager = LinearLayoutManager(getApplicationContext())
@@ -93,7 +101,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
 
 
     companion object {
-        fun newIntent(context: Context, date: String,teamId: String,teamName: String): Intent {
+        fun newIntent(context: Context, date: String, teamId: String, teamName: String): Intent {
             val intent = Intent(context, AttedanceActivity::class.java)
             intent.putExtra(IntentConstants.ATTENDANCE_DATE, date);
             intent.putExtra(IntentConstants.TEAM_ID, teamId);

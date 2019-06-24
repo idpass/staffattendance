@@ -3,7 +3,9 @@ package np.com.naxa.staffattendance.attendence;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class TeamMemberResposne {
+import java.io.Serializable;
+
+public class TeamMemberResposne implements Serializable {
 
     private String teamID;
     private String teamName;

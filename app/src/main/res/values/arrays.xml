@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="attedance_status" >
+
+        <item>Scan Card</item>
+        <item>Scan Fingerprint</item>
+        <item>Finish</item>
+    </string-array>
+</resources>

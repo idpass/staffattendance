@@ -15,6 +15,7 @@ import np.com.naxa.staffattendance.R
 import np.com.naxa.staffattendance.common.UIConstants
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
+import np.com.naxa.staffattendance.settings.SettingsActivity
 import np.com.naxa.staffattendance.utlils.DateConvertor
 import np.com.naxa.staffattendance.utlils.ToastUtils
 import java.util.concurrent.TimeUnit
@@ -73,7 +74,8 @@ class AttendancesDashboardActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.main_dashboard_setting -> {
-
+                val toSettings = SettingsActivity.newIntent(this@AttendancesDashboardActivity)
+                startActivity(toSettings)
             }
         }
         return super.onOptionsItemSelected(item)

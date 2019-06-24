@@ -12,3 +12,7 @@ object IntentConstants {
     const val TEAM_ID = "team_id"
     const val TEAM_NAME = "team_name"
 }
+
+
+val KEY_LOGOUT = "logout"
+val KEY_APP_UPDATE = "app_update"

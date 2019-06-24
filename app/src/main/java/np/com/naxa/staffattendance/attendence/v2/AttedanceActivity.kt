@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
+import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
 import np.com.naxa.staffattendance.StaffListAdapter
@@ -25,7 +26,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
     override fun onStaffClick(pos: Int, staff: TeamMemberResposne?) {
         val attedanceBottomFragment = AttedanceBottomFragment.newInstance()
         attedanceBottomFragment.arguments = Bundle().apply {
-            putSerializable(IntentConstants.EXTRA_OBJECT,staff);
+            putSerializable(IntentConstants.EXTRA_OBJECT, staff);
         }
 
         attedanceBottomFragment.show(supportFragmentManager,
@@ -68,6 +69,13 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_toolbar_back)
         tv_screen_name.text = title
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> onBackPressed();
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

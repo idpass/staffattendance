@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FS Staff Attendance</string>
+    <string name="app_name">Attendance</string>
 
     <string name="default_option">Select an option</string>
 
@@ -96,6 +96,7 @@
     <string name="title_attedance">Attendance</string>
     <string name="cancel">Cancel</string>
     <string name="next">NEXT</string>
+    <string name="dialog_action_dismiss">Dismiss</string>
 
 
 </resources>

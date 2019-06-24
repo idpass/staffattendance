@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".settings.SettingsActivity"></activity>
         <activity android:name=".splash.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +22,7 @@
         </activity>
         <activity
             android:name=".login.LoginActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".newstaff.NewStaffActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -32,6 +32,7 @@
             android:name=".attedancedashboard.AttendancesDashboardActivity"
             android:exported="true" />
         <activity android:name=".attendence.v2.AttedanceActivity" />
+        <activity android:name=".PreferencesActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

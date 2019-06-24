@@ -117,4 +117,36 @@ public class DateConvertor {
         }
         return day;
     }
+
+
+    public static Date getDateForPosition(int pos) {
+        Date date;
+
+        switch (pos) {
+            case 0:
+                date = DateConvertor.getPastDate(-6);
+                break;
+            case 1:
+                date = DateConvertor.getPastDate(-5);
+                break;
+            case 2:
+                date = DateConvertor.getPastDate(-4);
+                break;
+            case 3:
+                date = DateConvertor.getPastDate(-3);
+                break;
+            case 4:
+                date = DateConvertor.getPastDate(-2);
+                break;
+            case 5:
+                date = DateConvertor.getPastDate(-1);
+                break;
+            default:
+                date = new Date();
+                break;
+        }
+
+
+        return date;
+    }
 }

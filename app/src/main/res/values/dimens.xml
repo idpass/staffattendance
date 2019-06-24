@@ -28,7 +28,7 @@
     <dimen name="spacing_xlarge">32dp</dimen>
     <dimen name="spacing_xxlarge">64dp</dimen>
     <dimen name="recycler_item_corner_radius">5dp</dimen>
-    <dimen name="card_recycler_corner_radius">5dp</dimen>
+    <dimen name="card_recycler_corner_radius">20dp</dimen>
     <dimen name="icon_width_height">40dp</dimen>
     <dimen name="icon_text">22sp</dimen>
     <dimen name="bar_height">48dp</dimen>

@@ -14,9 +14,10 @@
         android:padding="@dimen/spacing_medium">
 
         <TextView
+            android:textAlignment="center"
             android:id="@+id/tv_team_name"
             style="@style/TextAppearance.AppCompat.Large"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/colorPrimaryDark"

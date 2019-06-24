@@ -12,7 +12,6 @@ import android.view.Window
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_splash_screen2.*
 import np.com.naxa.staffattendance.attedancedashboard.AttendancesDashboardActivity
-import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity
 import np.com.naxa.staffattendance.data.TokenMananger
 import np.com.naxa.staffattendance.login.LoginActivity
 
@@ -48,17 +47,17 @@ class SplashScreenActivity : AppCompatActivity() {
         splash_logo.visibility = View.VISIBLE
         splash_logo.animate()
                 .alpha(0f)
-                .setStartDelay(2000L)
-                .setDuration(1000L)
+                .setStartDelay(1000L)
+                .setDuration(500L)
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator) {
 
                         if (TokenMananger.doesTokenExist()) {
                             startActivity(AttendancesDashboardActivity.newIntent(this@SplashScreenActivity))
                         }else{
-                            LoginActivity.start(this@SplashScreenActivity);
+                            LoginActivity.start(this@SplashScreenActivity)
                         }
-                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
                         finish()
 
                     }

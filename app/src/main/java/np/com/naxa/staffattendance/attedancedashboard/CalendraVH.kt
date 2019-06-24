@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import np.com.naxa.staffattendance.R
-
+import np.com.naxa.staffattendance.attendence.v2.AttedanceActivity
+import np.com.naxa.staffattendance.database.TeamDao
 
 
 class CalendarVH(inflater: LayoutInflater, parent: ViewGroup) :
@@ -16,6 +17,7 @@ class CalendarVH(inflater: LayoutInflater, parent: ViewGroup) :
     private var tvMonthYear: TextView? = null
     private var tvAbsentMessage: TextView? = null
     private var tvPresentMessage: TextView? = null
+    private var rootLayout: View? = null
 
 
     init {
@@ -24,19 +26,22 @@ class CalendarVH(inflater: LayoutInflater, parent: ViewGroup) :
         tvMonthYear = itemView.findViewById(R.id.tv_month_year)
         tvAbsentMessage = itemView.findViewById(R.id.tv_absent_message)
         tvPresentMessage = itemView.findViewById(R.id.tv_present_message)
+        rootLayout = itemView.findViewById(R.id.root_layout)
     }
 
     fun bind(day: AttendanceDay) {
         tvDay?.text = day.dayOfWeek
         tvDate?.text = day.dayOfMonth
         tvMonthYear?.text = day.date
-//
-
+        rootLayout?.setOnClickListener {
+            var intent = AttedanceActivity.newIntent(itemView.context, date = day.fullDate, teamId = TeamDao.getInstance().oneTeamIdForDemo)
+            itemView.context.startActivity(intent);
+        }
 
     }
 
-    fun setAbsentPresentMessage(day: AttendanceDay){
-        if(isNullOrEmpty(day.absentNoOfStaff)){
+    fun setAbsentPresentMessage(day: AttendanceDay) {
+        if (isNullOrEmpty(day.absentNoOfStaff)) {
 
         }
     }

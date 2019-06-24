@@ -12,6 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
+import np.com.naxa.staffattendance.database.StaffDao
+import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.utlils.DateConvertor
 import np.com.naxa.staffattendance.utlils.ToastUtils
 import java.util.concurrent.TimeUnit
@@ -24,39 +26,49 @@ class AttendancesDashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val list = arrayListOf<Any>()
-        setContentView(R.layout.activity_dashboard_attedance);
+       setContentView(R.layout.activity_dashboard_attedance);
 
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
+        setupListAdapter(generateGridItems());
+    }
+
+    private fun generateGridItems(): ArrayList<Any> {
+        val teamId = TeamDao().oneTeamIdForDemo
+        val list = arrayListOf<Any>()
+
+        val staffs = StaffDao().getStaffByTeamId(teamId)
         list.add("Team")
         list.add("")
-
-
-        list.add(TeamStats("FieldSight", "16"))
+        if(staffs.size > 0){
+            val teamName = staffs[0].teamName
+            val teamMembersCount = staffs.count().toString()
+            list.add(TeamStats(teamName,teamMembersCount))
+        }
         list.add(AddItemButton("add_team_member"))
-
-
         list.add("Attendance")
         list.add("")
-
         for (x in -6 until 1 step 1) {
             val date = DateConvertor.getPastDate(x)
             val yearMonthDay = DateConvertor.getYearMonthDay(date);
-            list.add(element = AttendanceDay(dayOfWeek = yearMonthDay[2], dayOfMonth = yearMonthDay[1], date = yearMonthDay[0], absentNoOfStaff = "", presentNoOfStaff = ""))
+            list.add(element = AttendanceDay(dayOfWeek = yearMonthDay[2],
+                    dayOfMonth = yearMonthDay[1],
+                    date = yearMonthDay[0],
+                    absentNoOfStaff = "",
+                    presentNoOfStaff = "",
+                    fullDate = DateConvertor.formatDate(DateConvertor.getDateForPosition(x))));
         }
 
-
-        setSupportActionBar(toolbar);
-        supportActionBar?.setTitle("")
-        setupListAdapter(list);
+        return list;
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_dashboard,menu);
+        menuInflater.inflate(R.menu.menu_dashboard, menu);
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId){
+        when (item?.itemId) {
             R.id.main_dashboard_setting -> {
 
             }
@@ -75,6 +87,7 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         ToastUtils.showShort(getString(R.string.msg_backpress_to_exit))
         backPressHandler.postDelayed(runnable, TimeUnit.SECONDS.toMillis(2))
     }
+
     private fun setupListAdapter(days: List<Any>) {
 
         val manager = LinearLayoutManager(this)
@@ -89,10 +102,8 @@ class AttendancesDashboardActivity : AppCompatActivity() {
     }
 
     companion object {
-
-         fun newIntent(context: Context): Intent {
+        fun newIntent(context: Context): Intent {
             val intent = Intent(context, AttendancesDashboardActivity::class.java)
-
             return intent
         }
     }

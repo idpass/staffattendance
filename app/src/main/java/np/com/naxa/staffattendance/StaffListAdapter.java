@@ -37,7 +37,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private HashMap<Integer, String> selectedStaffHashMap = new HashMap<>();
 
 
-    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
+    public StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
@@ -67,7 +67,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         staffVH.rootLayout.setEnabled(enablePersonSelection);
         staffVH.staffName.setText(staff.getFirstName());
-        staffVH.staffType.setText(staff.getTeamName());
+
         staffVH.iconText.setVisibility(View.VISIBLE);
         staffVH.imgProfile.setImageResource(R.drawable.circle_blue);
         staffVH.iconText.setText(staff.getFirstName().substring(0, 1));

@@ -20,6 +20,7 @@ import np.com.naxa.staffattendance.utlils.DateConvertor
 import np.com.naxa.staffattendance.utlils.ToastUtils
 import java.util.concurrent.TimeUnit
 
+
 class AttendancesDashboardActivity : AppCompatActivity() {
 
     private var exitOnBackPress: Boolean = false;
@@ -50,7 +51,9 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         list.add(AddItemButton(UIConstants.UUID_GRID_ITEM_TEAM_MEMBER))
         list.add(getString(R.string.title_attedance))
         list.add("")
-        for (x in -6 until 1 step 1) {
+
+
+        for (x in 1 downTo  -6 step 1) {
             val date = DateConvertor.getPastDate(x)
             val yearMonthDay = DateConvertor.getYearMonthDay(date);
             list.add(element = AttendanceDay(dayOfWeek = yearMonthDay[2],

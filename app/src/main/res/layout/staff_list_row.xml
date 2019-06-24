@@ -18,10 +18,25 @@
         android:padding="@dimen/spacing_large">
 
         <include layout="@layout/item_text_circle" />
+
         <TextView
-            android:id="@+id/staff_list_row_name"
+            android:id="@+id/staff_list_row_post"
             style="@style/TextAppearance.AppCompat.Subhead"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/icon_container"
+            android:layout_toRightOf="@id/icon_container"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="1"
+            android:text="Manager"
+            />
+
+        <TextView
+            android:layout_below="@id/staff_list_row_post"
+            android:id="@+id/staff_list_row_name"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/icon_container"
             android:layout_toRightOf="@id/icon_container"
@@ -31,7 +46,10 @@
             android:text="Nishon Tandukar"
            />
 
+
+
         <TextView
+            android:visibility="gone"
             android:layout_marginTop="@dimen/spacing_small"
             android:id="@+id/tv_check_in_time"
             style="@style/TextAppearance.AppCompat.Large"
@@ -44,6 +62,8 @@
 
 
         <android.support.v7.widget.AppCompatImageView
+            android:visibility="gone"
+
             android:layout_marginTop="@dimen/spacing_small"
             android:id="@+id/seperator"
             android:padding="3dp"
@@ -55,6 +75,8 @@
             android:layout_height="wrap_content" />
 
         <TextView
+            android:visibility="gone"
+
             android:layout_marginTop="@dimen/spacing_small"
             android:id="@+id/tv_check_out_time"
             style="@style/TextAppearance.AppCompat.Large"
@@ -68,13 +90,16 @@
 
 
         <TextView
+            android:layout_marginRight="@dimen/spacing_large"
             android:id="@+id/staff_list_row_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:textColor="@color/colorAccent"
-            android:textSize="@dimen/material_text_caption" />
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_marginEnd="@dimen/spacing_medium" />
 
 
     </RelativeLayout>

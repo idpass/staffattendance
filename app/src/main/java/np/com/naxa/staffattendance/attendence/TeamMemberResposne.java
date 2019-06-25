@@ -60,6 +60,10 @@ public class TeamMemberResposne implements Serializable {
     @Expose
     private Object bank;
 
+    @SerializedName("designation_label")
+    private String designationLabel;
+
+
     public String getId() {
         return id;
     }
@@ -77,7 +81,10 @@ public class TeamMemberResposne implements Serializable {
 
     }
 
-    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName, Object email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth, Object contractStart, Object contractEnd, Object bank, String IDPassDID) {
+    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName,
+                              Object email, Integer gender, String ethnicity, String address, String phoneNumber,
+                              String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth,
+                              Object contractStart, Object contractEnd, Object bank, String IDPassDID,String designationLabel) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.id = id;
@@ -96,7 +103,13 @@ public class TeamMemberResposne implements Serializable {
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;
         this.bank = bank;
+        this.designationLabel = designationLabel;
     }
+
+    public String getDesignationLabel() {
+        return designationLabel;
+    }
+
 
 
     public String getIDPassDID() {

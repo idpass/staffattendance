@@ -67,7 +67,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         staffVH.rootLayout.setEnabled(enablePersonSelection);
         staffVH.staffName.setText(staff.getFirstName());
-        staffVH.staffPost.setText(staff.getTeamName());
+        staffVH.staffPost.setText(staff.getDesignationLabel());
 
         staffVH.iconText.setVisibility(View.VISIBLE);
         staffVH.imgProfile.setImageResource(R.drawable.circle_blue);

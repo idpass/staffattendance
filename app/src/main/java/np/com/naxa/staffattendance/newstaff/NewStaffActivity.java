@@ -441,6 +441,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setContractEnd(contractEndDate.getText().toString())
                 .setPhoto(getPhotoLocation())
                 .setStatus(NewStaffDao.SAVED)
+                .setDesignationLabel(designation.getSelectedItem().toString())
                 .createNewStaffPojo();
     }
 

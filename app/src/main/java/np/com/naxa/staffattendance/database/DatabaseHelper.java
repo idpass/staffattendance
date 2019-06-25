@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LOG = "DatabaseHelper";
 
     // Database Version
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
 
     // Database Name
     public static final String DATABASE_NAME = "staffManager2";
@@ -43,6 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //New Staff Column names
     public static final String KEY_STAFF_DESIGNATION = "designation";
+    public static final String KEY_STAFF_DESIGNATION_LABEL = "designation_label";
     public static final String KEY_STAFF_FIRST_NAME = "first_name";
     public static final String KEY_STAFF_LAST_NAME = "last_name";
     public static final String KEY_STAFF_DOB = "dob";
@@ -77,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             KEY_STAFF_TEAM_NAME + " TEXT," +
             KEY_STAFF_FULL_NAME + " TEXT," +
             KEY_ID_PASS + " TEXT," +
+            KEY_STAFF_DESIGNATION_LABEL + " TEXT," +
             KEY_STAFF_TYPE + " INTEGER," +
             KEY_CREATED_BY + " INTEGER," +
             KEY_CREATED_AT + " DATETIME," +
@@ -105,6 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             KEY_ID + " INTEGER PRIMARY KEY," +
             KEY_ID_PASS + " TEXT," +
             KEY_STAFF_DESIGNATION + " INTEGER," +
+            KEY_STAFF_DESIGNATION_LABEL + " TEXT," +
             KEY_STAFF_FIRST_NAME + " TEXT," +
             KEY_STAFF_LAST_NAME + " TEXT," +
             KEY_STAFF_DOB + " TEXT," +

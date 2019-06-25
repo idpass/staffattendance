@@ -18,6 +18,7 @@ public class NewStaffPojoBuilder {
     private String photo;
     private String status;
     private String id;
+    private String designationLabel;
 
     public NewStaffPojoBuilder setDesignation(Integer designation) {
         this.designation = designation;
@@ -105,8 +106,13 @@ public class NewStaffPojoBuilder {
         return this;
     }
 
+    public NewStaffPojoBuilder setDesignationLabel(String designationLabel) {
+        this.designationLabel = designationLabel;
+        return this;
+    }
+
     public NewStaffPojo createNewStaffPojo() {
-        return new NewStaffPojo(id, designation, firstName, lastName, dateOfBirth, gender, ethnicity, bank, bankName, accountNumber, phoneNumber, email, address, contractStart, contractEnd, photo, status);
+        return new NewStaffPojo(id, designation, firstName, lastName, dateOfBirth, gender, ethnicity, bank, bankName, accountNumber, phoneNumber, email, address, contractStart, contractEnd, photo, status,designationLabel);
     }
 
 }

@@ -58,6 +58,7 @@ public class NewStaffDao {
 
         return new NewStaffPojoBuilder()
                 .setDesignation(Integer.valueOf(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DESIGNATION)))
+                .setDesignationLabel(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL))
                 .setFirstName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FIRST_NAME))
                 .setLastName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_LAST_NAME))
                 .setDateOfBirth(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DOB))

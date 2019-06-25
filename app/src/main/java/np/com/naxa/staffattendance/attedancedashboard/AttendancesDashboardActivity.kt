@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.attedancedashboard
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,12 +13,24 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
+import np.com.naxa.staffattendance.TeamRemoteSource
+import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity
 import np.com.naxa.staffattendance.common.UIConstants
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.settings.SettingsActivity
 import np.com.naxa.staffattendance.utlils.DateConvertor
+import np.com.naxa.staffattendance.utlils.DialogFactory
+import np.com.naxa.staffattendance.utlils.NetworkUtils
 import np.com.naxa.staffattendance.utlils.ToastUtils
+import retrofit2.adapter.rxjava.HttpException
+import rx.Observer
+import rx.android.schedulers.AndroidSchedulers
+import rx.functions.Action0
+import rx.schedulers.Schedulers
+import timber.log.Timber
+import java.io.IOException
+import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
 
@@ -27,13 +40,79 @@ class AttendancesDashboardActivity : AppCompatActivity() {
     private val backPressHandler = Handler()
     private val runnable = { exitOnBackPress = false }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard_attedance);
-
+        DialogFactory.createProgressDialogHorizontal(this@AttendancesDashboardActivity, "Please Wait")
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
         setupListAdapter(generateGridItems());
+        setupSwipeToRefresh();
+
+
+    }
+
+    private fun setupSwipeToRefresh() {
+        swiperefresh.setOnRefreshListener {
+            if (NetworkUtils.isInternetAvailable()) {
+                TeamRemoteSource.getInstance()
+                        .syncAll()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(Action0 { this.showPleaseWaitDialog() })
+                        .subscribe(object : Observer<Any> {
+                            override fun onCompleted() {
+                                closePleaseWaitDialog()
+                                showMessage("Everything is Up-to-date")
+                                Timber.i("onCompleted")
+                            }
+
+                            override fun onError(e: Throwable) {
+                                closePleaseWaitDialog()
+                                if (e is HttpException) {
+                                    try {
+                                        val responseBody = e.response().errorBody()
+                                        showMessage(responseBody!!.string())
+                                    } catch (e1: NullPointerException) {
+                                        showMessage("")
+                                        e1.printStackTrace()
+                                    } catch (e1: IOException) {
+                                        showMessage("")
+                                        e1.printStackTrace()
+                                    }
+
+                                } else if (e is SocketTimeoutException) {
+                                    showMessage("Server took too long to respond")
+                                } else if (e is IOException) {
+                                    showMessage(e.message.toString())
+                                } else {
+                                    showMessage(e.message.toString())
+                                }
+                            }
+
+                            override fun onNext(o: Any) {
+
+                            }
+                        })
+
+            } else {
+                ToastUtils.showLong(getString(R.string.no_internet))
+            }
+        }
+    }
+
+    private fun showPleaseWaitDialog() {
+        swiperefresh.isRefreshing = true;
+    }
+
+    private fun showMessage(message: String) {
+        ToastUtils.showLong(message)
+        swiperefresh.isRefreshing = false;
+    }
+
+    private fun closePleaseWaitDialog() {
+        swiperefresh.isRefreshing = false;
     }
 
     private fun generateGridItems(): ArrayList<Any> {
@@ -53,7 +132,7 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         list.add("")
 
 
-        for (x in 1 downTo  -6 step 1) {
+        for (x in 1 downTo -6 step 1) {
             val date = DateConvertor.getPastDate(x)
             val yearMonthDay = DateConvertor.getYearMonthDay(date);
             list.add(element = AttendanceDay(dayOfWeek = yearMonthDay[2],

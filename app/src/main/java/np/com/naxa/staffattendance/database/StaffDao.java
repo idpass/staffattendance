@@ -74,7 +74,7 @@ public class StaffDao {
         contentValues.put(DatabaseHelper.KEY_STAFF_TEAM_ID, staff.getTeamID());
         contentValues.put(DatabaseHelper.KEY_STAFF_TEAM_NAME, staff.getTeamName());
         contentValues.put(DatabaseHelper.KEY_ID_PASS, staff.getIDPassDID());
-        contentValues.put(DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL, staff.getDesignation());
+        contentValues.put(DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL, staff.getDesignationLabel());
         return contentValues;
     }
 

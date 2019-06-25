@@ -58,6 +58,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
 
         setupToolbar(title = teamName)
         setupRecyclerView()
+        swiperefresh.isEnabled = false
 
     }
 

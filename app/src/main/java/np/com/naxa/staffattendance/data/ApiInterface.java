@@ -62,6 +62,7 @@ public interface ApiInterface {
             @Part("address") RequestBody address,
             @Part("contract_start") RequestBody contractStartDate,
             @Part("contract_end") RequestBody contractEndDate,
+            @Part("IdPassDID") RequestBody idPassDID,
             @Part MultipartBody.Part photo
     );
 

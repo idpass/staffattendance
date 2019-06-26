@@ -6,13 +6,11 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -27,11 +25,9 @@ import org.idpass.mobile.api.IDPassConstants;
 import org.idpass.mobile.api.IDPassIntent;
 import org.idpass.mobile.proto.SignedAction;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
@@ -39,15 +35,10 @@ import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.database.AttendanceDao;
-import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
-import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import pl.aprilapps.easyphotopicker.DefaultCallback;
-import pl.aprilapps.easyphotopicker.EasyImage;
-import rx.Observable;
 import timber.log.Timber;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
@@ -65,6 +56,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     private MyTeamRepository myTeamRepository;
     private boolean enablePersonSelection = false;
     private List<String> attedanceToUpload;
+    private List<String> attendanceProofToUpload;
     private RelativeLayout layoutNoData;
     private boolean isAttedanceDateToday = false;
 
@@ -98,6 +90,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
         myTeamRepository = new MyTeamRepository();
         attedanceToUpload = new ArrayList<>();
+        attendanceProofToUpload = new ArrayList<>();
         teamDao = new TeamDao();
         staffDao = new StaffDao();
 
@@ -176,6 +169,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                 if (!attedanceToUpload.contains(staff.getId())) {
                     this.stafflistAdapter.markPresent(staff.getId());
                     this.attedanceToUpload.add(staff.getId());
+                    this.attendanceProofToUpload.add(signedActionBase64);
                     fabUploadAttedance.show();
                 }
             }
@@ -198,6 +192,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                             AttendanceResponse attendanceResponse = new AttendanceResponse();
                             attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
                             attendanceResponse.setStaffs(attedanceToUpload);
+                            attendanceResponse.setStaffProofs(attendanceProofToUpload);
                             attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
                             ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
@@ -247,6 +242,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
     @Override
     public void onStaffClick(int pos, TeamMemberResposne staff) {
+        if (!((StaffAttendance) Objects.requireNonNull(this.getContext()).getApplicationContext()).allowManualPresence) {
+            return;
+        }
 
         if (attedanceToUpload.contains(staff.getId())) {
             stafflistAdapter.toggleSelection(pos);
@@ -254,10 +252,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
             attedanceToUpload.remove(staff.getId());
         } else {
             Timber.i("Adding %s / %s", staff.getIDPassDID(), staff.getFirstName());
-            if (((StaffAttendance) Objects.requireNonNull(this.getContext()).getApplicationContext()).allowManualPresence) {
-                stafflistAdapter.toggleSelection(pos);
-                attedanceToUpload.add(staff.getId());
-            }
+            stafflistAdapter.toggleSelection(pos);
+            attedanceToUpload.add(staff.getId());
         }
 
         if (stafflistAdapter.getSelected().size() > 0) {

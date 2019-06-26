@@ -1,6 +1,5 @@
 package np.com.naxa.staffattendance.attendence;
 
-import java.util.Date;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -24,6 +23,9 @@ public class AttendanceResponse {
     @SerializedName("staffs")
     @Expose
     private List<String> staffs = null;
+    @SerializedName("staff_proofs")
+    @Expose
+    private List<String> staffProofs = null;
 
 
     private String teamId;
@@ -94,6 +96,10 @@ public class AttendanceResponse {
 
     public void setStaffs(List<String> staffs) {
         this.staffs = staffs;
+    }
+
+    public void setStaffProofs(List<String> staffs) {
+        this.staffProofs = staffs;
     }
 
     public List<TeamMemberResposne> getTeamMemberResposnes() {

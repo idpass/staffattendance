@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="32dp"
         android:elevation="8dp"
-        app:srcCompat="@drawable/ic_check_blue_24dp"
+        app:srcCompat="@drawable/ic_idpass_square"
         app:layout_anchor="@id/card_staff_edit_form"
         app:layout_anchorGravity="top|right|end"
         tools:ignore="RtlHardcoded" />

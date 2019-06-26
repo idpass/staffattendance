@@ -1,9 +1,13 @@
 package np.com.naxa.staffattendance;
 
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -17,39 +21,47 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import org.idpass.mobile.api.IDPassConstants;
+import org.idpass.mobile.api.IDPassIntent;
+import org.idpass.mobile.proto.SignedAction;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceResponse;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.database.AttendanceDao;
-import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import rx.Observable;
 import timber.log.Timber;
 
 public class DailyAttendanceFragment extends Fragment implements StaffListAdapter.OnStaffItemClickListener {
+    private int IDENTIFY_RESULT_INTENT = 1;
+    private NfcAdapter nfcAdapter;
+
 
     private RecyclerView recyclerView;
     private StaffListAdapter stafflistAdapter;
     private TeamDao teamDao;
     private StaffDao staffDao;
     private FloatingActionButton fabUploadAttedance;
+
     private List<String> attedanceIds;
     private MyTeamRepository myTeamRepository;
     private boolean enablePersonSelection = false;
     private List<String> attedanceToUpload;
+    private List<String> attendanceProofToUpload;
     private RelativeLayout layoutNoData;
+    private boolean isAttedanceDateToday = false;
 
 
     public DailyAttendanceFragment() {
-        myTeamRepository = new MyTeamRepository();
-        attedanceToUpload = new ArrayList<>();
     }
 
     public void setAttendanceIds(List<String> attendanceIds, String attendanceDate) {
@@ -57,7 +69,8 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
 
         boolean isAttedanceEmpty = (attendanceIds == null) || attendanceIds.isEmpty();
-        boolean isAttedanceDateToday = DateConvertor.getCurrentDate().equalsIgnoreCase(attendanceDate);
+        isAttedanceDateToday = DateConvertor.getCurrentDate().equalsIgnoreCase(attendanceDate);
+
         if (isAttedanceEmpty && isAttedanceDateToday) {
             enablePersonSelection = true;
         }
@@ -75,7 +88,9 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_daily_attendence, container, false);
 
-
+        myTeamRepository = new MyTeamRepository();
+        attedanceToUpload = new ArrayList<>();
+        attendanceProofToUpload = new ArrayList<>();
         teamDao = new TeamDao();
         staffDao = new StaffDao();
 
@@ -84,6 +99,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         setupRecyclerView();
 
         setHasOptionsMenu(true);
+
         fabUploadAttedance.hide();
         fabUploadAttedance.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,14 +114,66 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                         msg = String.format(msg, peoplelist);
 
 
-                        showMarkPresentDialog(title,msg);
+                        showMarkPresentDialog(title, msg);
                     }
                 });
             }
         });
 
+        if (enablePersonSelection && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            nfcAdapter = NfcAdapter.getDefaultAdapter(getContext());
+        }
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (enablePersonSelection && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            nfcAdapter.enableReaderMode(this.getActivity(), tag -> {
+                    Intent intent = IDPassIntent.intentIdentify(
+                            IDPassConstants.IDPASS_TYPE_MIFARE,
+                            true,
+                            true,
+                            tag);
+                    startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
+                }
+                , NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,null);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (enablePersonSelection && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            nfcAdapter.disableReaderMode(this.getActivity());
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == IDENTIFY_RESULT_INTENT && resultCode == Activity.RESULT_OK) {
+            String signedActionBase64 = data.getStringExtra(IDPassConstants.IDPASS_SIGNED_ACTION_RESULT_EXTRA);
+
+            SignedAction signedAction = IDPassIntent.signedActionBuilder(signedActionBase64);
+
+            String idPassDID = signedAction.getAction().getPerson().getDid();
+
+            List<TeamMemberResposne> staffs = new StaffDao().getStaffByIdPassDID(idPassDID);
+            if (staffs.size() > 0) {
+                TeamMemberResposne staff = staffs.get(0);
+                if (!attedanceToUpload.contains(staff.getId())) {
+                    this.stafflistAdapter.markPresent(staff.getId());
+                    this.attedanceToUpload.add(staff.getId());
+                    this.attendanceProofToUpload.add(signedActionBase64);
+                    fabUploadAttedance.show();
+                }
+            }
+        }
     }
 
 
@@ -124,6 +192,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                             AttendanceResponse attendanceResponse = new AttendanceResponse();
                             attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
                             attendanceResponse.setStaffs(attedanceToUpload);
+                            attendanceResponse.setStaffProofs(attendanceProofToUpload);
                             attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
                             ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);
@@ -173,18 +242,20 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
 
     @Override
     public void onStaffClick(int pos, TeamMemberResposne staff) {
-        stafflistAdapter.toggleSelection(pos);
+        if (!((StaffAttendance) Objects.requireNonNull(this.getContext()).getApplicationContext()).allowManualPresence) {
+            return;
+        }
 
         if (attedanceToUpload.contains(staff.getId())) {
-            Timber.i("Removing %s / %s", staff.getId(), staff.getFirstName());
+            stafflistAdapter.toggleSelection(pos);
+            Timber.i("Removing %s / %s", staff.getIDPassDID(), staff.getFirstName());
             attedanceToUpload.remove(staff.getId());
         } else {
-            Timber.i("Adding %s / %s", staff.getId(), staff.getFirstName());
+            Timber.i("Adding %s / %s", staff.getIDPassDID(), staff.getFirstName());
+            stafflistAdapter.toggleSelection(pos);
             attedanceToUpload.add(staff.getId());
         }
 
-
-        Timber.i("Current array is %s", attedanceToUpload.toString());
         if (stafflistAdapter.getSelected().size() > 0) {
             fabUploadAttedance.show();
         } else {

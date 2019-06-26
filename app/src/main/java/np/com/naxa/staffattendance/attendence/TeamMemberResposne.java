@@ -9,6 +9,8 @@ public class TeamMemberResposne implements Serializable {
 
     private String teamID;
     private String teamName;
+
+    @SerializedName("IdPassDID")
     private String IDPassDID;
 
     @SerializedName("id")
@@ -84,7 +86,7 @@ public class TeamMemberResposne implements Serializable {
     public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName,
                               Object email, Integer gender, String ethnicity, String address, String phoneNumber,
                               String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth,
-                              Object contractStart, Object contractEnd, Object bank, String IDPassDID,String designationLabel) {
+                              Object contractStart, Object contractEnd, Object bank, String IDPassDID, String designationLabel) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.id = id;
@@ -104,12 +106,12 @@ public class TeamMemberResposne implements Serializable {
         this.contractEnd = contractEnd;
         this.bank = bank;
         this.designationLabel = designationLabel;
+        this.IDPassDID = IDPassDID;
     }
 
     public String getDesignationLabel() {
         return designationLabel;
     }
-
 
 
     public String getIDPassDID() {

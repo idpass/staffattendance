@@ -84,6 +84,11 @@ public class StaffDao {
         return getStaffFromCursor(cursor);
     }
 
+    public List<TeamMemberResposne> getStaffByIdPassDID(String did) {
+        Cursor cursor = getCursor(DatabaseHelper.KEY_ID_PASS + "=?", new String[]{did});
+        return getStaffFromCursor(cursor);
+    }
+
     public List<TeamMemberResposne> getStaffByTeamAndStaffId(String teamId, String staffID) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_ID + "=?", new String[]{staffID});
         return getStaffFromCursor(cursor);

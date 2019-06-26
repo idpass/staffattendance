@@ -25,16 +25,20 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.idpass.mobile.api.IDPassConstants;
+import org.idpass.mobile.api.IDPassIntent;
+import org.idpass.mobile.proto.SignedAction;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -56,14 +60,15 @@ import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 import rx.Observer;
+import timber.log.Timber;
 
 public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
-
+    private int IDENTIFY_RESULT_INTENT = 1;
 
     private Spinner bank, designation;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
     private EditText dob, contractStartDate, contractEndDate, bankNameOther;
-    private Button photo, save, create;
+    private Button photo, idpassIdentify, idpassEnroll, save, create;
     private List<String> designationList = new ArrayList<>();
     private List<String> bankList = new ArrayList<>();
     private RadioGroup gender;
@@ -75,7 +80,10 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private BottomNavigationView bottomNavigationView;
     private Gson gson;
     private Dialog msgDialog;
+    private TextView idpassValue;
     DatePickerDialog datePickerDialog;
+
+    private String idPassDID;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -277,6 +285,9 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         contractStartDate = findViewById(R.id.staff_contract_start_date_date);
         contractEndDate = findViewById(R.id.staff_contract_end_date_date);
         photo = findViewById(R.id.staff_photo);
+        idpassIdentify = findViewById(R.id.idpass_identify);
+        idpassValue = findViewById(R.id.idpass_value);
+        idpassEnroll = findViewById(R.id.idpass_enroll);
         save = findViewById(R.id.staff_save);
         create = findViewById(R.id.staff_send);
         bottomNavigationView = (BottomNavigationView)
@@ -288,6 +299,8 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         contractStartDate.setOnClickListener(this);
         contractEndDate.setOnClickListener(this);
         photo.setOnClickListener(this);
+        idpassIdentify.setOnClickListener(this);
+        idpassEnroll.setOnClickListener(this);
         save.setOnClickListener(this);
         create.setOnClickListener(this);
     }
@@ -315,9 +328,19 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 showImageOptionsDialog();
                 break;
 
+            case R.id.idpass_identify:
+                idpassIdentify();
+                break;
+
+            case R.id.idpass_enroll:
+                idpassEnroll();
+                break;
+
             case R.id.staff_save:
                 if (validate()) {
-                    new NewStaffDao().saveNewStaff(getNewStaffDetail());
+                    NewStaffPojo staff = getNewStaffDetail();
+                    NewStaffDao.getInstance().saveNewStaff(staff);
+                    putDataInStafftable(staff);
                     finish();
                     startActivity(getIntent());
                     ToastUtils.showShort("New staff detail saved.");
@@ -365,6 +388,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setLastName(newStaffDetail.getLastName())
                 .setDesignation(newStaffDetail.getDesignation())
                 .setTeamID(id)
+                .setIDPassDID(idPassDID)
                 .setTeamName(new TeamDao().getTeamNameById(id))
                 .setId(newStaffDetail.getId())
                 .createTeamMemberResposne();
@@ -421,7 +445,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
     public NewStaffPojo getNewStaffDetail() {
-
+        Timber.d("ID PASS: " + idPassDID);
 
         return new NewStaffPojoBuilder()
                 .setID(String.valueOf(System.currentTimeMillis()))
@@ -440,6 +464,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
                 .setContractStart(contractStartDate.getText().toString())
                 .setContractEnd(contractEndDate.getText().toString())
                 .setPhoto(getPhotoLocation())
+                .setIDPass(idPassDID)
                 .setStatus(NewStaffDao.SAVED)
                 .setDesignationLabel(designation.getSelectedItem().toString())
                 .createNewStaffPojo();
@@ -470,6 +495,24 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
+    private void idpassIdentify() {
+        Intent intent = IDPassIntent.intentIdentify(
+                IDPassConstants.IDPASS_TYPE_MIFARE,
+                true,
+                true,
+                null);
+        startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
+    }
+
+    private void idpassEnroll() {
+        String name = firstName.getEditText().getText().toString() + " " + lastName.getEditText().getText().toString();
+
+        Intent intent = IDPassIntent.intentEnroll("L1", name, true, true, true);
+        startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
+    }
+
+
+
     private void showImageOptionsDialog() {
 
         final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Dismiss"};
@@ -494,18 +537,29 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
-            @Override
-            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-                photo.setError("");
-            }
+        if (requestCode == IDENTIFY_RESULT_INTENT && resultCode == Activity.RESULT_OK) {
+            String signedActionBase64 = data.getStringExtra(IDPassConstants.IDPASS_SIGNED_ACTION_RESULT_EXTRA);
 
-            @Override
-            public void onImagePicked(File photoFileToUpload, EasyImage.ImageSource source, int type) {
-                NewStaffActivity.this.photoFileToUpload = photoFileToUpload;
-                photo.setText("Change Photo");
-            }
-        });
+            SignedAction signedAction = IDPassIntent.signedActionBuilder(signedActionBase64);
+
+            idPassDID = signedAction.getAction().getPerson().getDid();
+            String name = signedAction.getAction().getPerson().getName();
+            idpassValue.setText(name + " - " + idPassDID);
+        } else {
+
+            EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+                @Override
+                public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                    photo.setError("");
+                }
+
+                @Override
+                public void onImagePicked(File photoFileToUpload, EasyImage.ImageSource source, int type) {
+                    NewStaffActivity.this.photoFileToUpload = photoFileToUpload;
+                    photo.setText("Change Photo");
+                }
+            });
+        }
     }
 
 

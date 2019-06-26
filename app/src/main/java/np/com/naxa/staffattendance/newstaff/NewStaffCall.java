@@ -64,6 +64,7 @@ public class NewStaffCall {
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getAddress()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractStart()),
                 RequestBody.create(MediaType.parse("text/plain"), pojo.getContractEnd()),
+                RequestBody.create(MediaType.parse("text/plain"), pojo.getIdPassDID()),
                 getImageFile(photoFileToUpload)
         );
     }

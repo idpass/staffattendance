@@ -495,7 +495,11 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
 
     private void idpassIdentify() {
-        Intent intent = IDPassIntent.intentIdentify(IDPassConstants.IDPASS_TYPE_MIFARE, true, true);
+        Intent intent = IDPassIntent.intentIdentify(
+                IDPassConstants.IDPASS_TYPE_MIFARE,
+                true,
+                true,
+                null);
         startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
     }
 

@@ -139,8 +139,11 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
         super.onResume();
         if (enablePersonSelection && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             nfcAdapter.enableReaderMode(this.getActivity(), tag -> {
-                    Intent intent = IDPassIntent.intentIdentify(IDPassConstants.IDPASS_TYPE_MIFARE, true, true);
-                    intent.putExtra(NfcAdapter.EXTRA_TAG, tag);
+                    Intent intent = IDPassIntent.intentIdentify(
+                            IDPassConstants.IDPASS_TYPE_MIFARE,
+                            true,
+                            true,
+                            tag);
                     startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
                 }
                 , NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,null);

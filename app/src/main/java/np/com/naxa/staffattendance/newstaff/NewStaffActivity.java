@@ -77,7 +77,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     private DatePickerDialog.OnDateSetListener date;
     private ArrayAdapter<String> spinnerAdapter;
     private File photoFileToUpload;
-    private BottomNavigationView bottomNavigationView;
+
     private Gson gson;
     private Dialog msgDialog;
     private TextView idpassValue;
@@ -107,8 +107,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         initSpinners();
 
-        bottomNavigationView.setSelectedItemId(R.id.action_add_staff);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
 
     }
@@ -290,8 +288,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         idpassEnroll = findViewById(R.id.idpass_enroll);
         save = findViewById(R.id.staff_save);
         create = findViewById(R.id.staff_send);
-        bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
+
     }
 
     private void initListeners() {
@@ -565,7 +562,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        AttendanceViewPagerActivity.start(this, false);
         finish();
     }
 

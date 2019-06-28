@@ -62,15 +62,6 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
 
     }
 
-    private fun setupToolbar(title: String) {
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        supportActionBar?.title = ""
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_toolbar_back)
-        tv_screen_name.text = title
-
-    }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {

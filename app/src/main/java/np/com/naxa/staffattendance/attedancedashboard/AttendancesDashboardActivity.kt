@@ -47,8 +47,8 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         DialogFactory.createProgressDialogHorizontal(this@AttendancesDashboardActivity, "Please Wait")
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
-        setupListAdapter(generateGridItems());
-        setupSwipeToRefresh();
+        setupListAdapter(generateGridItems())
+        setupSwipeToRefresh()
 
 
     }

@@ -8,13 +8,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +27,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -41,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 
 import np.com.naxa.staffattendance.FormCall;
@@ -49,6 +54,7 @@ import np.com.naxa.staffattendance.SharedPreferenceUtils;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
+import np.com.naxa.staffattendance.common.BaseActivity;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
@@ -62,7 +68,7 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import rx.Observer;
 import timber.log.Timber;
 
-public class NewStaffActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
+public class NewStaffActivity extends BaseActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private int IDENTIFY_RESULT_INTENT = 1;
 
     private Spinner bank, designation;
@@ -84,6 +90,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
     DatePickerDialog datePickerDialog;
 
     private String idPassDID;
+    private ScrollView scrollView;
 
     public static void start(Context context, boolean disableTrasition) {
         Intent intent = new Intent(context, NewStaffActivity.class);
@@ -107,8 +114,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
 
         initSpinners();
 
-
-
+        setupToolbar("Add Staff");
     }
 
     private void setFakeData() {
@@ -288,6 +294,7 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         idpassEnroll = findViewById(R.id.idpass_enroll);
         save = findViewById(R.id.staff_save);
         create = findViewById(R.id.staff_send);
+        scrollView = findViewById(R.id.scrollView);
 
     }
 
@@ -397,35 +404,98 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         boolean validation = false;
 
         if (designation.getSelectedItem().equals(getResources().getString(R.string.default_option))) {
-            ToastUtils.showShort("Select a designation");
+            showErrorMessage(designation, "Select a designation");
         } else if (firstName.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter first name");
+            showErrorMessage(firstName, "Enter first name");
         } else if (lastName.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter last name");
+            showErrorMessage(lastName, "Enter last name");
         } else if (dob.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose date of birth");
+            showErrorMessage(dob, "Choose date of birth");
         } else if (gender.getCheckedRadioButtonId() == -1) {
-            ToastUtils.showShort("Select gender");
+            showErrorMessage(gender, "Select Gender");
         } else if (ethinicity.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter ethnicity");
+            showErrorMessage(ethinicity, "Enter ethnicity");
         } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
-            ToastUtils.showShort("Choose a option");
+            showErrorMessage(bank, "Choose a bank");
         } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter bank name");
+            showErrorMessage(bankNameOther, "Enter Bank name");
         } else if (!bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter account number");
+            showErrorMessage(accountNumber, "Enter Account number");
         } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter contact number");
+            showErrorMessage(contactNumber, "Enter contact number");
         } else if (address.getEditText().getText().toString().isEmpty()) {
-            ToastUtils.showShort("Enter address");
+            showErrorMessage(address, "Enter address");
+
         } else if (contractStartDate.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose contract start date");
+
+            showErrorMessage(contractEndDate, "Choose contract start date");
         } else if (contractEndDate.getText().toString().isEmpty()) {
-            ToastUtils.showShort("Choose contract end date");
+
+            showErrorMessage(contractEndDate, "Choose contract end date");
+
         } else {
             validation = true;
         }
         return validation;
+    }
+
+    private void focusOnView(final ScrollView scroll, final View view) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                int vLeft = view.getLeft();
+                int vRight = view.getRight();
+                int sWidth = scroll.getWidth();
+                scroll.smoothScrollTo(((vLeft + vRight - sWidth) / 2), 0);
+            }
+        });
+    }
+
+    private void showErrorMessage(View view, String errorMessage) {
+
+        if (view instanceof EditText) {
+            ((EditText) view).setError(errorMessage);
+            Objects.requireNonNull(((EditText) view)).addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    ((TextInputLayout) view).setError(null);
+                }
+            });
+
+        } else if (view instanceof TextInputLayout) {
+            ((TextInputLayout) view).setError(errorMessage);
+            Objects.requireNonNull(((TextInputLayout) view).getEditText()).addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    ((TextInputLayout) view).setError(null);
+                }
+            });
+        } else {
+            ToastUtils.showShort(errorMessage);
+        }
+
+        focusOnView(scrollView, view);
+
     }
 
     private void getDatePicker(final EditText view) {
@@ -507,7 +577,6 @@ public class NewStaffActivity extends AppCompatActivity implements View.OnClickL
         Intent intent = IDPassIntent.intentEnroll("L1", name, true, true, true);
         startActivityForResult(intent, IDENTIFY_RESULT_INTENT);
     }
-
 
 
     private void showImageOptionsDialog() {

@@ -17,9 +17,11 @@ import np.com.naxa.staffattendance.attedancedashboard.ItemOffsetDecoration
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne
 import np.com.naxa.staffattendance.common.BaseActivity
 import np.com.naxa.staffattendance.common.IntentConstants
+import np.com.naxa.staffattendance.database.AttendanceDao
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.utlils.DateConvertor
+import np.com.naxa.staffattendance.utlils.ToastUtils
 
 
 class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListener {
@@ -28,8 +30,14 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         attedanceBottomFragment.arguments = Bundle().apply {
             putSerializable(IntentConstants.EXTRA_OBJECT, staff)
             putString(IntentConstants.ATTENDANCE_DATE, loadedDate)
+
         }
 
+        attedanceBottomFragment.onClickListener(object : AttedanceBottomFragment.OnAttedanceTakenListener {
+            override fun onAttedanceTaken(position: Int) {
+                setupRecyclerView()//todo: use diff utils or something better
+            }
+        })
         attedanceBottomFragment.show(supportFragmentManager,
                 "add_photo_dialog_fragment")
 
@@ -73,16 +81,20 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
 
 
     private fun setupRecyclerView() {
-        val teamDao = TeamDao();
-        val mLayoutManager = LinearLayoutManager(getApplicationContext())
+        val teamDao = TeamDao()
+        val mLayoutManager = LinearLayoutManager(applicationContext)
         val teamId = teamDao.oneTeamIdForDemo
+        attedanceIds = AttendanceDao().getAttedanceByDate(teamId, loadedDate).presentStaffIds
 
         val staffs = StaffDao().getStaffByTeamId(teamId)
         stafflistAdapter = StaffListAdapter(this, staffs, enablePersonSelection, attedanceIds, this)
         recycler_view.layoutManager = mLayoutManager
         recycler_view.itemAnimator = DefaultItemAnimator()
         recycler_view.adapter = stafflistAdapter
-        recycler_view.addItemDecoration(ItemOffsetDecoration(this, R.dimen.spacing_small))
+        var count = recycler_view.itemDecorationCount
+        if (count == 0) {
+            recycler_view.addItemDecoration(ItemOffsetDecoration(this, R.dimen.spacing_small))
+        }
     }
 
     fun setAttendanceIds(attendanceIds: List<String>?, attendanceDate: String) {

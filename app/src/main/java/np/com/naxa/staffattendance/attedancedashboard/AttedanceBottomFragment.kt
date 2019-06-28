@@ -23,7 +23,16 @@ class AttedanceBottomFragment : BottomSheetDialogFragment() {
     var staff: TeamMemberResposne? = null
     var statusDesc: Array<String>? = null
     var loadedDate: String? = null
+    lateinit var listener: OnAttedanceTakenListener
 
+    interface OnAttedanceTakenListener {
+        fun onAttedanceTaken(position: Int)
+    }
+
+
+    fun onClickListener(listener: OnAttedanceTakenListener){
+        this.listener = listener
+    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -70,6 +79,7 @@ class AttedanceBottomFragment : BottomSheetDialogFragment() {
         } else {
             saveAttedance()
             dismiss()
+            listener.onAttedanceTaken(1)
         }
 
     }

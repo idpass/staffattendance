@@ -26,7 +26,8 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
     override fun onStaffClick(pos: Int, staff: TeamMemberResposne?) {
         val attedanceBottomFragment = AttedanceBottomFragment.newInstance()
         attedanceBottomFragment.arguments = Bundle().apply {
-            putSerializable(IntentConstants.EXTRA_OBJECT, staff);
+            putSerializable(IntentConstants.EXTRA_OBJECT, staff)
+            putString(IntentConstants.ATTENDANCE_DATE, loadedDate)
         }
 
         attedanceBottomFragment.show(supportFragmentManager,

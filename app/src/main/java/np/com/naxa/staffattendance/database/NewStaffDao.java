@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
+import timber.log.Timber;
 
 
 public class NewStaffDao {
@@ -27,6 +28,7 @@ public class NewStaffDao {
     }
 
     public void saveNewStaff(NewStaffPojo newStaffPojo) {
+        Timber.d("saveNewStaff: did: " + newStaffPojo.getIdPassDID());
         DatabaseHelper.getDatabaseHelper()
                 .getWritableDatabase()
                 .insert(DatabaseHelper.TABLE_NEW_STAFF,
@@ -54,10 +56,12 @@ public class NewStaffDao {
     }
 
     private NewStaffPojo mapCursorToPojo(Cursor cursor) {
+        Timber.i("mapCursorToPojo" + cursor);
 
 
         return new NewStaffPojoBuilder()
                 .setDesignation(Integer.valueOf(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DESIGNATION)))
+                .setDesignationLabel(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL))
                 .setFirstName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FIRST_NAME))
                 .setLastName(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_LAST_NAME))
                 .setDateOfBirth(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DOB))
@@ -74,6 +78,7 @@ public class NewStaffDao {
                 .setPhoto(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_PHOTO))
                 .setStatus(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DETAIL_STATUS))
                 .setID(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID))
+                .setIDPass(DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID_PASS))
                 .createNewStaffPojo();
     }
 
@@ -96,6 +101,7 @@ public class NewStaffDao {
         values.put(DatabaseHelper.KEY_STAFF_CONTRACT_END_DATE, pojo.getContractEnd());
         values.put(DatabaseHelper.KEY_STAFF_PHOTO, pojo.getPhoto());
         values.put(DatabaseHelper.KEY_STAFF_DETAIL_STATUS, pojo.getStatus());
+        values.put(DatabaseHelper.KEY_ID_PASS, pojo.getIdPassDID());
         return values;
     }
 

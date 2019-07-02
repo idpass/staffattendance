@@ -3,10 +3,14 @@ package np.com.naxa.staffattendance.attendence;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class TeamMemberResposne {
+import java.io.Serializable;
+
+public class TeamMemberResposne implements Serializable {
 
     private String teamID;
     private String teamName;
+
+    @SerializedName("IdPassDID")
     private String IDPassDID;
 
     @SerializedName("id")
@@ -58,6 +62,10 @@ public class TeamMemberResposne {
     @Expose
     private Object bank;
 
+    @SerializedName("designation_label")
+    private String designationLabel;
+
+
     public String getId() {
         return id;
     }
@@ -75,7 +83,10 @@ public class TeamMemberResposne {
 
     }
 
-    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName, Object email, Integer gender, String ethnicity, String address, String phoneNumber, String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth, Object contractStart, Object contractEnd, Object bank, String IDPassDID) {
+    public TeamMemberResposne(String teamID, String teamName, String id, String firstName, String lastName,
+                              Object email, Integer gender, String ethnicity, String address, String phoneNumber,
+                              String bankName, String accountNumber, String photo, Integer designation, Object dateOfBirth,
+                              Object contractStart, Object contractEnd, Object bank, String IDPassDID, String designationLabel) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.id = id;
@@ -94,6 +105,12 @@ public class TeamMemberResposne {
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;
         this.bank = bank;
+        this.designationLabel = designationLabel;
+        this.IDPassDID = IDPassDID;
+    }
+
+    public String getDesignationLabel() {
+        return designationLabel;
     }
 
 

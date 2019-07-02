@@ -70,17 +70,22 @@ public class StaffDao {
     private ContentValues getContentValuesFronSaff(TeamMemberResposne staff) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.KEY_STAFF_FULL_NAME, staff.getFirstName().concat(" ").concat(staff.getLastName()));
-        contentValues.put(DatabaseHelper.KEY_STAFF_TYPE, StaffAttendance.getStaffAttendance().getString(R.string.not_avaliable, "Staff type"));
         contentValues.put(DatabaseHelper.KEY_ID, staff.getId());
         contentValues.put(DatabaseHelper.KEY_STAFF_TEAM_ID, staff.getTeamID());
         contentValues.put(DatabaseHelper.KEY_STAFF_TEAM_NAME, staff.getTeamName());
         contentValues.put(DatabaseHelper.KEY_ID_PASS, staff.getIDPassDID());
+        contentValues.put(DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL, staff.getDesignationLabel());
         return contentValues;
     }
 
 
     public List<TeamMemberResposne> getStaffByTeamId(String staffID) {
         Cursor cursor = getCursor(DatabaseHelper.KEY_STAFF_TEAM_ID + "=?", new String[]{staffID});
+        return getStaffFromCursor(cursor);
+    }
+
+    public List<TeamMemberResposne> getStaffByIdPassDID(String did) {
+        Cursor cursor = getCursor(DatabaseHelper.KEY_ID_PASS + "=?", new String[]{did});
         return getStaffFromCursor(cursor);
     }
 
@@ -108,6 +113,7 @@ public class StaffDao {
             String staffId = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID);
             String staffName = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_FULL_NAME);
             String IDPassDID = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ID_PASS);
+            String designationLabel = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL);
 
             TeamMemberResposne staff = new TeamMemberResposneBuilder()
                     .setTeamID(teamID)
@@ -115,6 +121,7 @@ public class StaffDao {
                     .setId(staffId)
                     .setIDPassDID(IDPassDID)
                     .setFirstName(staffName)
+                    .setDesignationLabel(designationLabel)
                     .createTeamMemberResposne();
 
             staffs.add(staff);

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,6 +22,7 @@ import np.com.naxa.staffattendance.BuildConfig;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.attedancedashboard.AttendancesDashboardActivity;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.MyTeamRepository;
 import np.com.naxa.staffattendance.data.APIClient;
@@ -41,7 +43,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private static final String TAG = "LoginActivity";
 
-    private EditText tvUserName, tvPassword;
+    private TextInputLayout tvUserName, tvPassword;
     private Button btnLogin;
     private TokenMananger tokenMananger;
     private MyTeamRepository myTeamRepository;
@@ -52,7 +54,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
-        getWindow().setBackgroundDrawableResource(R.drawable.login_background);
         if (TokenMananger.doesTokenExist()) {
             AttendanceViewPagerActivity.start(this, false);
             finish();
@@ -82,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.btn_login:
                 dialog = DialogFactory.createProgressDialogHorizontal(this, getString(R.string.msg_please_wait));
                 if (validate()) {
-                    loginToServer(tvUserName.getText().toString(), tvPassword.getText().toString());
+                    loginToServer(tvUserName.getEditText().getText().toString(), tvPassword.getEditText().getText().toString());
                 } else {
                     ToastUtils.showShort("Enter valid credentials..");
                 }
@@ -218,11 +219,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onCompleted() {
                         dialog.dismiss();
-
-                        AttendanceViewPagerActivity.start(LoginActivity.this, false);
-                        finish();
-
-
+                        Intent intent = AttendancesDashboardActivity.Companion.newIntent(LoginActivity.this);
+                        startActivity(intent);
                     }
 
                     @Override
@@ -275,8 +273,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         boolean valid = true;
         boolean ck = false;
 
-        String email = tvUserName.getText().toString();
-        String password = tvPassword.getText().toString();
+        String email = tvUserName.getEditText().getText().toString();
+        String password = tvPassword.getEditText().getText().toString();
 
         if (email.isEmpty()) {
             tvUserName.requestFocus();
@@ -286,7 +284,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             ck = true;
         }
 
-        if (password.isEmpty() || password.length() < 4) {
+        if (password.isEmpty() ) {
             if (ck) {
                 tvPassword.requestFocus();
             }

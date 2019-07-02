@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="attedance_status">
+        <item>Scan Card</item>
+        <item>Fingerprint</item>
+        <item>Success</item>
+    </string-array>
+
+    <string-array name="attedance_status_desc">
+        <item>We are ready to scan your card.</item>
+        <item>Card verified! Verify your fingerprint.</item>
+        <item>Attendance recorded successfully!</item>
+    </string-array>
+</resources>

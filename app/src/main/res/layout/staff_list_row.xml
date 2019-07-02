@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_site_lst_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="@dimen/card_recycler_corner_radius"
-    app:cardUseCompatPadding="true">
+    app:cardElevation="1dp"
+>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,8 +20,23 @@
         <include layout="@layout/item_text_circle" />
 
         <TextView
+            android:id="@+id/staff_list_row_post"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/icon_container"
+            android:layout_toRightOf="@id/icon_container"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="1"
+            android:text="Manager"
+            />
+
+        <TextView
+            android:layout_below="@id/staff_list_row_post"
             android:id="@+id/staff_list_row_name"
-            android:layout_width="match_parent"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/icon_container"
             android:layout_toRightOf="@id/icon_container"
@@ -28,57 +44,65 @@
             android:maxLines="2"
             android:minLines="1"
             android:text="Nishon Tandukar"
-            android:textColor="@color/text_black"
-            android:textSize="@dimen/material_text_body1" />
+           />
+
 
 
         <TextView
-
-            android:id="@+id/staff_list_row_type"
-            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:id="@+id/tv_check_in_time"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/staff_list_row_name"
             android:layout_toEndOf="@id/icon_container"
             android:layout_toRightOf="@id/icon_container"
-            android:text="Staff Mananger"
-            android:textSize="@dimen/material_text_subhead" />
+            android:text="9:00" />
+
+
+        <android.support.v7.widget.AppCompatImageView
+            android:visibility="gone"
+
+            android:layout_marginTop="@dimen/spacing_small"
+            android:id="@+id/seperator"
+            android:padding="3dp"
+            android:layout_below="@id/staff_list_row_name"
+            android:layout_toEndOf="@id/tv_check_in_time"
+            android:layout_toRightOf="@id/tv_check_in_time"
+            app:srcCompat="@drawable/ic_arrow_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/staff_list_row_email"
-            android:layout_width="match_parent"
+            android:visibility="gone"
+
+            android:layout_marginTop="@dimen/spacing_small"
+            android:id="@+id/tv_check_out_time"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/staff_list_row_type"
-            android:layout_toEndOf="@id/icon_container"
-            android:layout_toRightOf="@id/icon_container"
-            android:ellipsize="end"
-            android:lines="1"
-            android:textSize="@dimen/material_text_button"
-            android:visibility="gone" />
+            android:layout_below="@id/staff_list_row_name"
+            android:layout_toEndOf="@id/seperator"
+            android:layout_toRightOf="@id/seperator"
+            android:text="16:00" />
+
+
 
         <TextView
-            android:id="@+id/staff_list_row_phone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/staff_list_row_email"
-            android:layout_toEndOf="@id/icon_container"
-            android:layout_toRightOf="@id/icon_container"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:lines="1"
-            android:textSize="@dimen/material_text_button"
-            android:visibility="gone" />
-
-        <TextView
+            android:layout_marginRight="@dimen/spacing_large"
             android:id="@+id/staff_list_row_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:textColor="@color/colorAccent"
-            android:textSize="@dimen/material_text_caption" />
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_marginEnd="@dimen/spacing_medium" />
 
 
     </RelativeLayout>
 
-</android.support.v7.widget.CardView>
+</android.support.design.card.MaterialCardView>
 

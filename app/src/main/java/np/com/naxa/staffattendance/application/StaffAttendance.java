@@ -16,6 +16,7 @@ import timber.log.Timber;
 
 public class StaffAttendance extends Application {
     public static StaffAttendance staffAttendance;
+    public Boolean allowManualPresence = false;
 
     @Override
     public void onCreate() {

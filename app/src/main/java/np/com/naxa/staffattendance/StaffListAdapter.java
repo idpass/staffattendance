@@ -19,6 +19,7 @@ import java.util.Map;
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.utlils.FlipAnimator;
+import timber.log.Timber;
 
 public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
@@ -37,7 +38,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private HashMap<Integer, String> selectedStaffHashMap = new HashMap<>();
 
 
-    StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
+    public StaffListAdapter(Context mContext, List<TeamMemberResposne> staffList, boolean enablePersonSelection, List<String> attedanceIds, OnStaffItemClickListener listener) {
         this.mContext = mContext;
         this.staffList = staffList;
         this.filetredsitelist = staffList;
@@ -67,7 +68,8 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         staffVH.rootLayout.setEnabled(enablePersonSelection);
         staffVH.staffName.setText(staff.getFirstName());
-        staffVH.staffType.setText(staff.getTeamName());
+        staffVH.staffPost.setText(staff.getDesignationLabel());
+
         staffVH.iconText.setVisibility(View.VISIBLE);
         staffVH.imgProfile.setImageResource(R.drawable.circle_blue);
         staffVH.iconText.setText(staff.getFirstName().substring(0, 1));
@@ -103,6 +105,17 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemCount() {
         return staffList.size();
+    }
+
+    public void markPresent(String staffId) {
+        for (int i = 0; i < staffList.size(); i++) {
+            if(staffList.get(i).getId().equals(staffId)) {
+                Timber.i("Found staff %s / %s", staffId, i);
+                toggleSelection(i);
+                return;
+            }
+        }
+        Timber.i("Not Found staff: %s", staffId);
     }
 
     public void toggleSelection(int pos) {
@@ -168,6 +181,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             holder.staffStatus.setText(holder.rootLayout.getContext().getString(R.string.attedance_absent));
 
+
             holder.rootLayout.setActivated(!shouldHightlight);
             holder.iconBack.setVisibility(View.GONE);
             resetIconYAxis(holder.iconFront);
@@ -226,11 +240,12 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     public class StaffVH extends RecyclerView.ViewHolder {
-        private TextView staffName, staffStatus, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite;
+        private TextView staffName, staffStatus, siteAddress, sitePhone, staffType, sitePendingFormsNumber, site, iconText, timestamp, tvTagOfflineSite,staffPost;
         private ImageView iconImp, imgProfile;
         private RelativeLayout iconContainer, iconBack, iconFront;
         private RelativeLayout rootLayout;
         private CardView card;
+
 
         public StaffVH(View view) {
             super(view);
@@ -242,6 +257,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             staffStatus = view.findViewById(R.id.staff_list_row_status);
 
             staffName = view.findViewById(R.id.staff_list_row_name);
+            staffPost = view.findViewById(R.id.staff_list_row_post);
             siteAddress = view.findViewById(R.id.staff_list_row_email);
             sitePhone = view.findViewById(R.id.staff_list_row_phone);
             staffType = view.findViewById(R.id.staff_list_row_type);

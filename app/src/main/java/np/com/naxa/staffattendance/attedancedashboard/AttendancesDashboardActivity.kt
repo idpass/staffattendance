@@ -55,64 +55,66 @@ class AttendancesDashboardActivity : AppCompatActivity() {
 
     private fun setupSwipeToRefresh() {
         swiperefresh.setOnRefreshListener {
-            if (NetworkUtils.isInternetAvailable()) {
-                TeamRemoteSource.getInstance()
-                        .syncAll()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe(Action0 { this.showPleaseWaitDialog() })
-                        .subscribe(object : Observer<Any> {
-                            override fun onCompleted() {
-                                closePleaseWaitDialog()
-                                showMessage("Everything is Up-to-date")
-                                Timber.i("onCompleted")
-                            }
-
-                            override fun onError(e: Throwable) {
-                                closePleaseWaitDialog()
-                                if (e is HttpException) {
-                                    try {
-                                        val responseBody = e.response().errorBody()
-                                        showMessage(responseBody!!.string())
-                                    } catch (e1: NullPointerException) {
-                                        showMessage("")
-                                        e1.printStackTrace()
-                                    } catch (e1: IOException) {
-                                        showMessage("")
-                                        e1.printStackTrace()
-                                    }
-
-                                } else if (e is SocketTimeoutException) {
-                                    showMessage("Server took too long to respond")
-                                } else if (e is IOException) {
-                                    showMessage(e.message.toString())
-                                } else {
-                                    showMessage(e.message.toString())
-                                }
-                            }
-
-                            override fun onNext(o: Any) {
-
-                            }
-                        })
-
-            } else {
-                ToastUtils.showLong(getString(R.string.no_internet))
+            if (!NetworkUtils.isInternetAvailable()) {
+                showMessage(getString(R.string.no_internet))
+                return@setOnRefreshListener
             }
+
+            TeamRemoteSource.getInstance()
+                    .syncAll()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(Action0 { this.showPleaseWaitDialog() })
+                    .subscribe(object : Observer<Any> {
+                        override fun onCompleted() {
+                            closePleaseWaitDialog()
+                            showMessage("Everything is Up-to-date")
+                            Timber.i("onCompleted")
+                        }
+
+                        override fun onError(e: Throwable) {
+                            closePleaseWaitDialog()
+                            if (e is HttpException) {
+                                try {
+                                    val responseBody = e.response().errorBody()
+                                    showMessage(responseBody!!.string())
+                                } catch (e1: NullPointerException) {
+                                    showMessage("")
+                                    e1.printStackTrace()
+                                } catch (e1: IOException) {
+                                    showMessage("")
+                                    e1.printStackTrace()
+                                }
+
+                            } else if (e is SocketTimeoutException) {
+                                showMessage("Server took too long to respond")
+                            } else if (e is IOException) {
+                                showMessage(e.message.toString())
+                            } else {
+                                showMessage(e.message.toString())
+                            }
+                        }
+
+                        override fun onNext(o: Any) {
+
+                        }
+                    })
+
+
         }
     }
 
     private fun showPleaseWaitDialog() {
-        swiperefresh.isRefreshing = true;
+        swiperefresh.isRefreshing = true
     }
 
     private fun showMessage(message: String) {
         ToastUtils.showLong(message)
-        swiperefresh.isRefreshing = false;
+        swiperefresh.isRefreshing = false
     }
 
     private fun closePleaseWaitDialog() {
-        swiperefresh.isRefreshing = false;
+        swiperefresh.isRefreshing = false
     }
 
     private fun generateGridItems(): ArrayList<Any> {

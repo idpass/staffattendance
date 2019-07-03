@@ -134,7 +134,7 @@ class AttendancesDashboardActivity : AppCompatActivity() {
         list.add("")
 
 
-        for (x in 1 downTo -6 step 1) {
+        for (x in 0 downTo -6 step 1) {
             val date = DateConvertor.getPastDate(x)
             val yearMonthDay = DateConvertor.getYearMonthDay(date);
             list.add(element = AttendanceDay(dayOfWeek = yearMonthDay[2],

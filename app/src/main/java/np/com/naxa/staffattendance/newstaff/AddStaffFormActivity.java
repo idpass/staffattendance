@@ -118,15 +118,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         setupToolbar("Add Staff");
     }
 
-    private void setFakeData() {
-        firstName.getEditText().setText(randomName());
-        try {
-//            bank.setSelection(1);
-//            designation.setSelection(1);
-        } catch (Exception e) {
 
-        }
-    }
 
     private void spinnerValues() {
         FormCall formCall = new FormCall();
@@ -660,18 +652,4 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         }
         return true;
     }
-
-
-    public static String randomName() {
-        final String ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
-
-
-        final Random random = new Random();
-        int sizeOfRandomString = 10;
-        final StringBuilder sb = new StringBuilder(sizeOfRandomString);
-        for (int i = 0; i < sizeOfRandomString; ++i)
-            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
-        return sb.toString();
-    }
-
 }

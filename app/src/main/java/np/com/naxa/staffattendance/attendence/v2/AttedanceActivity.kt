@@ -23,6 +23,7 @@ import np.com.naxa.staffattendance.attendence.AttendanceResponse
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne
 import np.com.naxa.staffattendance.common.BaseActivity
 import np.com.naxa.staffattendance.common.IntentConstants
+import np.com.naxa.staffattendance.common.SoundUtils
 import np.com.naxa.staffattendance.database.AttendanceDao
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
@@ -111,6 +112,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
                 val staff = staffs[0]
                 saveAttendance(staff, signedActionBase64)
                 ToastUtils.showLong("Attendance for ${staff.firstName} has been recorded")
+                SoundUtils.playNotificationSound()
             } else {
                 DialogFactory.createMessageDialog(this,"Non registered person", "This person haven't been registered into $teamName").show()
             }

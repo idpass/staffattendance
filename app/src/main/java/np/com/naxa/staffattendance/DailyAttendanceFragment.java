@@ -192,7 +192,7 @@ public class DailyAttendanceFragment extends Fragment implements StaffListAdapte
                             AttendanceResponse attendanceResponse = new AttendanceResponse();
                             attendanceResponse.setAttendanceDate(DateConvertor.getCurrentDate());
                             attendanceResponse.setStaffs(attedanceToUpload);
-                            attendanceResponse.setStaffProofs(attendanceProofToUpload);
+//                            attendanceResponse.setStaffProofs(attendanceProofToUpload);
                             attendanceResponse.setDataSyncStatus(AttendanceDao.SyncStatus.FINALIZED);
 
                             ContentValues contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse);

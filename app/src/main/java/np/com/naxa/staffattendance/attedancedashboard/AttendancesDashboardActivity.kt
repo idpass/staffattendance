@@ -64,7 +64,7 @@ class AttendancesDashboardActivity : AppCompatActivity() {
                     .syncAll()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(Action0 { this.showPleaseWaitDialog() })
+                    .doOnSubscribe({ this.showPleaseWaitDialog() })
                     .subscribe(object : Observer<Any> {
                         override fun onCompleted() {
                             closePleaseWaitDialog()

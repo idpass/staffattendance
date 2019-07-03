@@ -50,10 +50,12 @@ import java.util.Random;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
 import np.com.naxa.staffattendance.common.BaseActivity;
+import np.com.naxa.staffattendance.common.SoftKeyboardUtils;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
@@ -332,10 +334,14 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                 break;
 
             case R.id.idpass_identify:
+                idpassIdentify.setError(null);
+                idpassEnroll.setError(null);
                 idpassIdentify();
                 break;
 
             case R.id.idpass_enroll:
+                idpassIdentify.setError(null);
+                idpassEnroll.setError(null);
                 idpassEnroll();
                 break;
 
@@ -423,19 +429,20 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
             showErrorMessage(contactNumber, "Enter contact number");
         } else if (address.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(address, "Enter address");
-
         } else if (contractStartDate.getText().toString().isEmpty()) {
-
             showErrorMessage(contractEndDate, "Choose contract start date");
         } else if (contractEndDate.getText().toString().isEmpty()) {
-
             showErrorMessage(contractEndDate, "Choose contract end date");
-
+        } else if (TextUtils.isEmpty(idPassDID)) {
+            showErrorMessage(idpassEnroll, "Please register with IDPASS");
+            showErrorMessage(idpassIdentify, "Please register with IDPASS");
         } else {
             validation = true;
         }
         return validation;
     }
+
+
 
     private void focusOnView(final ScrollView scroll, final View view) {
         new Handler().post(new Runnable() {
@@ -466,7 +473,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    ((TextInputLayout) view).setError(null);
+                    ((EditText) view).setError(null);
                 }
             });
 
@@ -488,11 +495,16 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                     ((TextInputLayout) view).setError(null);
                 }
             });
+        } else if (view instanceof Button) {
+            ((Button) view).setError(errorMessage);
+        } else if (view instanceof Spinner) {
+            ((TextView) ((Spinner) view).getSelectedView()).setError(errorMessage);
         } else {
             ToastUtils.showShort(errorMessage);
         }
 
         focusOnView(scrollView, view);
+        SoftKeyboardUtils.hideSoftKeyboard(scrollView);
 
     }
 

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
@@ -26,16 +27,18 @@ import np.com.naxa.staffattendance.database.AttendanceDao
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.utlils.DateConvertor
+import np.com.naxa.staffattendance.utlils.DialogFactory
 import np.com.naxa.staffattendance.utlils.ToastUtils
 import org.idpass.mobile.api.IDPassConstants
 import org.idpass.mobile.api.IDPassIntent
+import timber.log.Timber
 
 
 class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListener {
     private val IDENTIFY_RESULT_INTENT = 1
 
     override fun onStaffClick(pos: Int, staff: TeamMemberResposne?) {
-0
+        0
     }
 
     override fun onStaffLongClick(pos: Int) {
@@ -95,7 +98,6 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == IDENTIFY_RESULT_INTENT && resultCode == Activity.RESULT_OK) {
             val signedActionBase64 = data!!.getStringExtra(IDPassConstants.IDPASS_SIGNED_ACTION_RESULT_EXTRA)
 
@@ -104,10 +106,16 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
             val idPassDID = signedAction.action.person.did
 
             val staffs = StaffDao().getStaffByIdPassDID(idPassDID)
+
             if (staffs.size > 0) {
                 val staff = staffs[0]
                 saveAttendance(staff, signedActionBase64)
+                ToastUtils.showLong("Attendance for ${staff.firstName} has been recorded")
+            } else {
+                DialogFactory.createMessageDialog(this,"Non registered person", "This person haven't been registered into $teamName").show()
             }
+        }else{
+            DialogFactory.createMessageDialog(this,"Record canceled or failed", "The attendance recoding process was either canceled or failed").show()
         }
     }
 

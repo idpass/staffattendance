@@ -28,7 +28,7 @@ import np.com.naxa.staffattendance.data.TokenMananger;
 import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.jobs.SyncHistoryActivity;
 import np.com.naxa.staffattendance.login.LoginActivity;
-import np.com.naxa.staffattendance.newstaff.NewStaffActivity;
+import np.com.naxa.staffattendance.newstaff.AddStaffFormActivity;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
 import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
@@ -80,7 +80,7 @@ public class AttendanceViewPagerActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_add_staff:
-                        NewStaffActivity.start(AttendanceViewPagerActivity.this, false);
+                        AddStaffFormActivity.start(AttendanceViewPagerActivity.this, false);
                         finish();
                         break;
                     case R.id.action_attedance:

@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -51,10 +50,12 @@ import java.util.Random;
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
+import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
 import np.com.naxa.staffattendance.common.BaseActivity;
+import np.com.naxa.staffattendance.common.SoftKeyboardUtils;
 import np.com.naxa.staffattendance.database.NewStaffDao;
 import np.com.naxa.staffattendance.database.StaffDao;
 import np.com.naxa.staffattendance.database.TeamDao;
@@ -68,7 +69,7 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import rx.Observer;
 import timber.log.Timber;
 
-public class NewStaffActivity extends BaseActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
+public class AddStaffFormActivity extends BaseActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private int IDENTIFY_RESULT_INTENT = 1;
 
     private Spinner bank, designation;
@@ -93,7 +94,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
     private ScrollView scrollView;
 
     public static void start(Context context, boolean disableTrasition) {
-        Intent intent = new Intent(context, NewStaffActivity.class);
+        Intent intent = new Intent(context, AddStaffFormActivity.class);
         context.startActivity(intent);
         if (disableTrasition) ((Activity) context).overridePendingTransition(0, 0);
     }
@@ -132,14 +133,14 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
 
         if (!NetworkUtils.isInternetAvailable()) {
             String designations = SharedPreferenceUtils
-                    .getFromPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Designation, "");
+                    .getFromPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Designation, "");
 
             String banks = SharedPreferenceUtils
-                    .getFromPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Bank, "");
+                    .getFromPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Bank, "");
 
             if (TextUtils.isEmpty(designations) || TextUtils.isEmpty(banks)) {
                 msgDialog = DialogFactory
-                        .createMessageDialog(NewStaffActivity.this, "Message", "Connect to then internet and reopen form to get banks and designations");
+                        .createMessageDialog(AddStaffFormActivity.this, "Message", "Connect to then internet and reopen form to get banks and designations");
                 msgDialog.show();
             } else {
                 Type typeToken = new TypeToken<ArrayList<String>>() {
@@ -175,7 +176,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
                             designationList.addAll(strings);
 
                             SharedPreferenceUtils
-                                    .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Designation,
+                                    .saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Designation,
                                             gson.toJson(designationList));
 
 
@@ -191,7 +192,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
                     bankList.add(getString(R.string.bank_other));
 
                     SharedPreferenceUtils
-                            .saveToPrefs(NewStaffActivity.this, SharedPreferenceUtils.KEY.Bank,
+                            .saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Bank,
                                     gson.toJson(bankList));
                 }
 
@@ -333,10 +334,14 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
                 break;
 
             case R.id.idpass_identify:
+                idpassIdentify.setError(null);
+                idpassEnroll.setError(null);
                 idpassIdentify();
                 break;
 
             case R.id.idpass_enroll:
+                idpassIdentify.setError(null);
+                idpassEnroll.setError(null);
                 idpassEnroll();
                 break;
 
@@ -360,7 +365,6 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
                     NewStaffPojo staff = getNewStaffDetail();
                     new NewStaffDao().saveNewStaff(staff);
                     putDataInStafftable(staff);
-                    AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
                     finish();
 
 //
@@ -368,7 +372,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
 //                        @Override
 //                        public void onError() {
 //                            progressDialog.dismiss();
-//                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
+//                            AttendanceViewPagerActivity.start(AddStaffFormActivity.this, true);
 //                            finish();
 //                        }
 //
@@ -376,7 +380,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
 //                        public void onSuccess() {
 //
 //                            progressDialog.dismiss();
-//                            AttendanceViewPagerActivity.start(NewStaffActivity.this, true);
+//                            AttendanceViewPagerActivity.start(AddStaffFormActivity.this, true);
 //                            finish();
 //                        }
 //                    });
@@ -425,19 +429,20 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
             showErrorMessage(contactNumber, "Enter contact number");
         } else if (address.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(address, "Enter address");
-
         } else if (contractStartDate.getText().toString().isEmpty()) {
-
             showErrorMessage(contractEndDate, "Choose contract start date");
         } else if (contractEndDate.getText().toString().isEmpty()) {
-
             showErrorMessage(contractEndDate, "Choose contract end date");
-
+        } else if (TextUtils.isEmpty(idPassDID)) {
+            showErrorMessage(idpassEnroll, "Please register with IDPASS");
+            showErrorMessage(idpassIdentify, "Please register with IDPASS");
         } else {
             validation = true;
         }
         return validation;
     }
+
+
 
     private void focusOnView(final ScrollView scroll, final View view) {
         new Handler().post(new Runnable() {
@@ -468,7 +473,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    ((TextInputLayout) view).setError(null);
+                    ((EditText) view).setError(null);
                 }
             });
 
@@ -490,11 +495,16 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
                     ((TextInputLayout) view).setError(null);
                 }
             });
+        } else if (view instanceof Button) {
+            ((Button) view).setError(errorMessage);
+        } else if (view instanceof Spinner) {
+            ((TextView) ((Spinner) view).getSelectedView()).setError(errorMessage);
         } else {
             ToastUtils.showShort(errorMessage);
         }
 
         focusOnView(scrollView, view);
+        SoftKeyboardUtils.hideSoftKeyboard(scrollView);
 
     }
 
@@ -589,9 +599,9 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
             public void onClick(DialogInterface dialog, int itemId) {
                 dialog.dismiss();
                 if (options[itemId].equals("Take Photo")) {
-                    EasyImage.openCamera(NewStaffActivity.this, 0);
+                    EasyImage.openCamera(AddStaffFormActivity.this, 0);
                 } else if (options[itemId].equals("Choose from Gallery")) {
-                    EasyImage.openChooserWithGallery(NewStaffActivity.this, "Select Staff Photo", 0);
+                    EasyImage.openChooserWithGallery(AddStaffFormActivity.this, "Select Staff Photo", 0);
                 }
             }
         });
@@ -621,7 +631,7 @@ public class NewStaffActivity extends BaseActivity implements View.OnClickListen
 
                 @Override
                 public void onImagePicked(File photoFileToUpload, EasyImage.ImageSource source, int type) {
-                    NewStaffActivity.this.photoFileToUpload = photoFileToUpload;
+                    AddStaffFormActivity.this.photoFileToUpload = photoFileToUpload;
                     photo.setText("Change Photo");
                 }
             });

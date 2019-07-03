@@ -85,12 +85,6 @@ class AttedanceBottomFragment : BottomSheetDialogFragment() {
     }
 
     fun saveAttedance() {
-        val attendanceResponse = AttendanceResponse()
-        attendanceResponse.setAttendanceDate(loadedDate)
-        attendanceResponse.setStaffs(listOf(staff?.id))
-        attendanceResponse.setStaffProofs(listOf("demo-attedance-proof"))//todo: add attendanceProofToUpload
-        attendanceResponse.dataSyncStatus = AttendanceDao.SyncStatus.FINALIZED
-        AttedanceLocalSource.instance.updateAttendance(loadedDate, attendanceResponse, staff?.teamID)
 
     }
 

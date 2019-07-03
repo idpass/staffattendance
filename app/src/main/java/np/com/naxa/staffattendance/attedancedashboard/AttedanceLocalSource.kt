@@ -14,11 +14,13 @@ class AttedanceLocalSource {
 
     fun getAttendanceForDate(date: String?, new_attendance: AttendanceResponse, team_id: String?): AttendanceResponse? {
         val oldAttendance = attedanceDao.getAttedanceByDate(team_id, date)
-        val hasAttedanceStarted = oldAttendance.presentStaffIds != null && oldAttendance.presentStaffIds.size > 0
-        val attendanceNotTaken = !oldAttendance.presentStaffIds.contains(new_attendance.presentStaffIds[0].toString())//we always add one staff at a time so [0] should be safe
+//        val hasAttedanceStarted = oldAttendance.presentStaffIds != null && oldAttendance.presentStaffIds.size > 0
+        val hasAttedanceStarted = oldAttendance.idPassProofs != null && oldAttendance.idPassProofs.size > 0
+//        val attendanceNotTaken = !oldAttendance.presentStaffIds.contains(new_attendance.presentStaffIds[0].toString())//we always add one staff at a time so [0] should be safe
+        val attendanceNotTaken = oldAttendance.idPassProofs != null && !oldAttendance.idPassProofs.containsKey(new_attendance.presentStaffIds[0]);
 
         if (hasAttedanceStarted && attendanceNotTaken) {
-            oldAttendance.setStaffs(oldAttendance.presentStaffIds + new_attendance.presentStaffIds)
+            oldAttendance.idPassProofs.putAll(new_attendance.idPassProofs);
             return oldAttendance
         }
 

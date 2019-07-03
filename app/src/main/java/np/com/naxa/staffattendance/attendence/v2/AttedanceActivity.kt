@@ -1,9 +1,12 @@
 package np.com.naxa.staffattendance.attendence.v2
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.nfc.NfcAdapter
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -12,7 +15,9 @@ import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
 import np.com.naxa.staffattendance.StaffListAdapter
 import np.com.naxa.staffattendance.attedancedashboard.AttedanceBottomFragment
+import np.com.naxa.staffattendance.attedancedashboard.AttedanceLocalSource
 import np.com.naxa.staffattendance.attedancedashboard.ItemOffsetDecoration
+import np.com.naxa.staffattendance.attendence.AttendanceResponse
 
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne
 import np.com.naxa.staffattendance.common.BaseActivity
@@ -22,25 +27,15 @@ import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.utlils.DateConvertor
 import np.com.naxa.staffattendance.utlils.ToastUtils
+import org.idpass.mobile.api.IDPassConstants
+import org.idpass.mobile.api.IDPassIntent
 
 
 class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListener {
+    private val IDENTIFY_RESULT_INTENT = 1
+
     override fun onStaffClick(pos: Int, staff: TeamMemberResposne?) {
-        val attedanceBottomFragment = AttedanceBottomFragment.newInstance()
-        attedanceBottomFragment.arguments = Bundle().apply {
-            putSerializable(IntentConstants.EXTRA_OBJECT, staff)
-            putString(IntentConstants.ATTENDANCE_DATE, loadedDate)
-
-        }
-
-        attedanceBottomFragment.onClickListener(object : AttedanceBottomFragment.OnAttedanceTakenListener {
-            override fun onAttedanceTaken(position: Int) {
-                setupRecyclerView()//todo: use diff utils or something better
-            }
-        })
-        attedanceBottomFragment.show(supportFragmentManager,
-                "add_photo_dialog_fragment")
-
+0
     }
 
     override fun onStaffLongClick(pos: Int) {
@@ -53,6 +48,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
     private var attedanceIds: List<String>? = emptyList()
     private lateinit var teamId: String
     private lateinit var teamName: String
+    private lateinit var nfcAdapter: NfcAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,8 +65,61 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         setupRecyclerView()
         swiperefresh.isEnabled = false
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            nfcAdapter = NfcAdapter.getDefaultAdapter(applicationContext)
+        }
     }
 
+    public override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            nfcAdapter.enableReaderMode(this, { tag ->
+                val intent = IDPassIntent.intentIdentify(
+                        IDPassConstants.IDPASS_TYPE_MIFARE,
+                        true,
+                        true,
+                        tag)
+                startActivityForResult(intent, IDENTIFY_RESULT_INTENT)
+            }, NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null)
+        }
+    }
+
+
+    public override fun onPause() {
+        super.onPause()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            nfcAdapter.disableReaderMode(this)
+        }
+    }
+
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == IDENTIFY_RESULT_INTENT && resultCode == Activity.RESULT_OK) {
+            val signedActionBase64 = data!!.getStringExtra(IDPassConstants.IDPASS_SIGNED_ACTION_RESULT_EXTRA)
+
+            val signedAction = IDPassIntent.signedActionBuilder(signedActionBase64)
+
+            val idPassDID = signedAction.action.person.did
+
+            val staffs = StaffDao().getStaffByIdPassDID(idPassDID)
+            if (staffs.size > 0) {
+                val staff = staffs[0]
+                saveAttendance(staff, signedActionBase64)
+            }
+        }
+    }
+
+    fun saveAttendance(staff: TeamMemberResposne, signedAction: String) {
+        val attendanceResponse = AttendanceResponse()
+        attendanceResponse.setAttendanceDate(loadedDate)
+        attendanceResponse.setStaffs(listOf(staff.id))
+        attendanceResponse.setStaffProofs(listOf(signedAction))//todo: add attendanceProofToUpload
+        attendanceResponse.dataSyncStatus = AttendanceDao.SyncStatus.FINALIZED
+        AttedanceLocalSource.instance.updateAttendance(loadedDate, attendanceResponse, staff.teamID)
+
+    }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {

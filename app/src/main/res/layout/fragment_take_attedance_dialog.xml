@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_large">
+
+    <TextView
+        android:id="@+id/tv_take_attedance_frag_staff_name"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_large"
+        android:layout_marginLeft="@dimen/spacing_large"
+        android:layout_marginBottom="@dimen/spacing_large"
+        android:text="@string/next" />
+
+    <android.support.design.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_large"
+        app:cardCornerRadius="@dimen/card_recycler_corner_radius">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_take_attedance_frag_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/spacing_large"
+                tools:text="Scan Card" />
+
+        </RelativeLayout>
+
+
+    </android.support.design.card.MaterialCardView>
+
+    <params.com.stepview.StatusViewScroller
+        android:id="@+id/statusViewScroller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/spacing_large"
+        android:layout_marginEnd="@dimen/spacing_large"
+        android:entries="@array/attedance_status"
+        app:circleColor="@color/colorPrimaryDark"
+        app:circleColorCurrent="@color/colorPrimary"
+        app:circleColorIncomplete="#BCBCBE"
+        app:circleColorType="fill"
+        app:circleStrokeColorCurrent="#91A8D0"
+        app:completeDrawable="@drawable/ic_check_blue_24dp"
+        app:currentCount="1"
+        app:drawLabels="true"
+        app:lineColor="@android:color/black"
+        app:lineColorCurrent="#91A8D0"
+        app:lineColorIncomplete="#B4B7BA"
+        app:lineGap="6dp"
+        app:lineLength="40dp"
+        app:lineWidth="4dp"
+        app:stepCount="3"
+        app:textColorLabels="@android:color/white"
+        app:textColorLabelsCurrent="@android:color/white"
+        app:textColorLabelsIncomplete="@android:color/black"
+        app:textSizeLabels="@dimen/material_text_body1" />
+
+
+</LinearLayout>

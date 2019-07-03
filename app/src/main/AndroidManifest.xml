@@ -14,9 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".login.LoginActivity"
-            android:exported="true">
+        <activity android:name=".settings.SettingsActivity"></activity>
+        <activity android:name=".splash.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,12 +23,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:windowSoftInputMode="adjustResize"
-            android:name=".newstaff.NewStaffActivity" />
+            android:name=".login.LoginActivity"
+            android:exported="true" />
         <activity
-            android:name=".attendence.AttendanceViewPagerActivity"
-          />
+            android:name=".newstaff.NewStaffActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".attendence.AttendanceViewPagerActivity" />
         <activity android:name=".jobs.SyncHistoryActivity" />
+        <activity
+            android:name=".attedancedashboard.AttendancesDashboardActivity"
+            android:exported="true" />
+        <activity android:name=".attendence.v2.AttedanceActivity" />
+        <activity android:name=".PreferencesActivity" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="61f1ab9eb40ae0d7b3fdbc3417ad1ee196453e82" />

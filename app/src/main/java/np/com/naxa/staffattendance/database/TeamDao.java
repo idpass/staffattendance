@@ -33,6 +33,7 @@ public class TeamDao {
         return getCursor(false, selection, selectionArgs);
     }
 
+
     public String getTeamNameById(String id) {
         String teamName = "";
         Cursor cursor = null;

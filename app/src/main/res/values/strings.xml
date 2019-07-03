@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FS Staff Attendance</string>
+    <string name="app_name">Attendance</string>
 
     <string name="default_option">Select an option</string>
 
@@ -89,6 +89,14 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="no_internet">Device is offline</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="members">Members</string>
+    <string name="msg_backpress_to_exit">Press back button again to exit</string>
+    <string name="title_team">Team</string>
+    <string name="title_attedance">Attendance</string>
+    <string name="cancel">Cancel</string>
+    <string name="next">NEXT</string>
+    <string name="dialog_action_dismiss">Dismiss</string>
 
 
 </resources>

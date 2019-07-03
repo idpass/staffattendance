@@ -60,8 +60,15 @@ public class NewStaffPojo {
 
     private String status;
 
+    @SerializedName("designation_label")
+    private String designationLabel;
 
-    public NewStaffPojo(String id, Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender, String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email, String address, String contractStart, String contractEnd, String photo, String status, String idPassDID) {
+
+    public NewStaffPojo(String id, Integer designation, String firstName, String lastName, String dateOfBirth, Integer gender,
+                        String ethnicity, Integer bank, String bankName, String accountNumber, String phoneNumber, String email,
+                        String address, String contractStart, String contractEnd, String photo, String status, String designationLabel,
+                        String idPassDID) {
+
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -79,8 +86,11 @@ public class NewStaffPojo {
         this.contractEnd = contractEnd;
         this.bank = bank;
         this.status = status;
+        this.designationLabel = designationLabel;
         this.idPassDID = idPassDID;
+
     }
+
 
     public String getId() {
         return id;
@@ -218,7 +228,11 @@ public class NewStaffPojo {
         this.status = status;
     }
 
-    public String getIdPassDID() { return idPassDID; }
+    public String getIdPassDID() {
+        return idPassDID;
+    }
 
-    public void setIdPassDID(String idPassDID) { this.idPassDID = idPassDID; }
+    public void setIdPassDID(String idPassDID) {
+        this.idPassDID = idPassDID;
+    }
 }

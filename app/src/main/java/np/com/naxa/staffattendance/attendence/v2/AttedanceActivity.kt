@@ -114,10 +114,10 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
                 ToastUtils.showLong("Attendance for ${staff.firstName} has been recorded")
                 SoundUtils.playNotificationSound()
             } else {
-                DialogFactory.createMessageDialog(this,"Non registered person", "This person haven't been registered into $teamName").show()
+                DialogFactory.createMessageDialog(this, "Non registered person", "This person haven't been registered into $teamName").show()
             }
-        }else{
-            DialogFactory.createMessageDialog(this,"Record canceled or failed", "The attendance recoding process was either canceled or failed").show()
+        } else {
+            DialogFactory.createMessageDialog(this, "Record canceled or failed", "The attendance recoding process was either canceled or failed").show()
         }
     }
 
@@ -125,7 +125,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         val attendanceResponse = AttendanceResponse()
         attendanceResponse.setAttendanceDate(loadedDate)
         attendanceResponse.setStaffs(listOf(staff.id))
-        attendanceResponse.setStaffProofs(listOf(signedAction))//todo: add attendanceProofToUpload
+        attendanceResponse.idPassProofs = hashMapOf(staff.id to signedAction)
         attendanceResponse.dataSyncStatus = AttendanceDao.SyncStatus.FINALIZED
         AttedanceLocalSource.instance.updateAttendance(loadedDate, attendanceResponse, staff.teamID)
 
@@ -150,7 +150,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         recycler_view.layoutManager = mLayoutManager
         recycler_view.itemAnimator = DefaultItemAnimator()
         recycler_view.adapter = stafflistAdapter
-        var count = recycler_view.itemDecorationCount
+        val count = recycler_view.itemDecorationCount
         if (count == 0) {
             recycler_view.addItemDecoration(ItemOffsetDecoration(this, R.dimen.spacing_small))
         }

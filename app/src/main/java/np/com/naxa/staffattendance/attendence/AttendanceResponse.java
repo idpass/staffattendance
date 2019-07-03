@@ -1,5 +1,6 @@
 package np.com.naxa.staffattendance.attendence;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -23,9 +24,10 @@ public class AttendanceResponse {
     @SerializedName("staffs")
     @Expose
     private List<String> staffs = null;
-    @SerializedName("staff_proofs")
+
+    @SerializedName("id_pass_proof")
     @Expose
-    private List<String> staffProofs = null;
+    private HashMap<String,String> IDPassProofs = null;
 
 
     private String teamId;
@@ -98,8 +100,12 @@ public class AttendanceResponse {
         this.staffs = staffs;
     }
 
-    public void setStaffProofs(List<String> staffs) {
-        this.staffProofs = staffs;
+    public void setIDPassProofs(HashMap<String,String> IDPassProofs) {
+        this.IDPassProofs = IDPassProofs;
+    }
+
+    public HashMap<String, String> getIDPassProofs() {
+        return IDPassProofs;
     }
 
     public List<TeamMemberResposne> getTeamMemberResposnes() {

@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Version
 
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
 
 
     // Database Name
@@ -62,6 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STAFF_BANK_ID = "bank_id";
     public static final String KEY_STAFF_DETAIL_STATUS = "status";
     public static final String KEY_ID_PASS = "idpass_card_did";
+    public static final String KEY_ID_PASS_PROOFS = "idpass_proofs";
 
     // Attendance column names
     public static final String KEY_ATTENDACE_DATE = "date";
@@ -92,7 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             TABLE_ATTENDANCE +
             "(" +
             KEY_ID + " INTEGER ," +
-            KEY_ID_PASS + " TEXT ," +
+            KEY_ID_PASS_PROOFS + " TEXT ," +
             KEY_STAFFS_IDS + " TEXT," +
             KEY_ATTENDACE_DATE + " DATETIME PRIMARY KEY, " +
             KEY_STAFF_TEAM_ID + " TEXT," +

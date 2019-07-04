@@ -187,25 +187,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
 
 
-        formCall.getBankList().subscribe(new Observer<List<String>>() {
-            @Override
-            public void onCompleted() {
+        formCall.getBankList()
+                .subscribe(new Observer<List<List<String>>>() {
+                    @Override
+                    public void onCompleted() {
 
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onNext(List<String> bankList) {
-                SharedPreferenceUtils
-                        .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Bank,
-                                gson.toJson(bankList));
-
-            }
-        });
+                    @Override
+                    public void onNext(List<List<String>> bankList) {
+                        SharedPreferenceUtils
+                                .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Bank,
+                                        gson.toJson(bankList));
+                    }
+                });
     }
 
     private void fetchMyTeam() {

@@ -20,7 +20,6 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -46,12 +45,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 
 import np.com.naxa.staffattendance.FormCall;
 import np.com.naxa.staffattendance.R;
 import np.com.naxa.staffattendance.SharedPreferenceUtils;
-import np.com.naxa.staffattendance.application.StaffAttendance;
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposne;
 import np.com.naxa.staffattendance.attendence.TeamMemberResposneBuilder;
@@ -63,7 +60,6 @@ import np.com.naxa.staffattendance.database.TeamDao;
 import np.com.naxa.staffattendance.pojo.NewStaffPojo;
 import np.com.naxa.staffattendance.pojo.NewStaffPojoBuilder;
 import np.com.naxa.staffattendance.utlils.DialogFactory;
-import np.com.naxa.staffattendance.utlils.NetworkUtils;
 import np.com.naxa.staffattendance.utlils.ToastUtils;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -73,17 +69,18 @@ import timber.log.Timber;
 public class AddStaffFormActivity extends BaseActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private int IDENTIFY_RESULT_INTENT = 1;
 
-    private Spinner bank, designation;
+    private Spinner bankSpinner, designationSpinner;
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
     private EditText dob, contractStartDate, contractEndDate, bankNameOther;
     private Button photo, idpassIdentify, idpassEnroll, save, create;
     private List<List<String>> designationList = new ArrayList<>();
-    private List<String> bankList = new ArrayList<>();
+    private List<List<String>> bankList = new ArrayList<>();
     private RadioGroup gender;
     private RadioButton male, female, other;
     private Calendar calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener date;
-    private GenericSpinnerAdapter spinnerAdapter;
+    private GenericSpinnerAdapter designationAdapter;
+    private GenericSpinnerAdapter banksAdapter;
     private File photoFileToUpload;
 
     private Gson gson;
@@ -112,18 +109,34 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
         initListeners();
 
-        spinnerValues();
+        try {
+            spinnerValues();
+        } catch (Exception e) {
+            Timber.e(e);
+            DialogFactory.createActionDialog(this, "Cache corrupted", "App cache has been corrupted")
+                    .setPositiveButton("Repair Cache", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SharedPreferenceUtils.purge(getApplicationContext());
+                        }
+                    })
+                    .setNegativeButton(R.string.dialog_action_dismiss, null)
+                    .show();
+        }
 
-        initSpinners();
+
+        setupDesignationSpinner();
+        setupBanksSpinner();
+
 
         setupToolbar("Add Staff");
     }
 
 
-    private void spinnerValues() {
+    private void spinnerValues() throws Exception {
         FormCall formCall = new FormCall();
 
-        if (true) {
+        if (false) {
 
 
             String designations = SharedPreferenceUtils
@@ -142,13 +155,13 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
                 designationList.clear();
                 bankList.clear();
-                bankList.add(getResources().getString(R.string.default_option));
+
+                bankList.add(Arrays.asList("-1", getString(R.string.default_option)));
+                bankList.addAll(gson.fromJson(banks, typeToken));
 
                 designationList.add(Arrays.asList("-1", getString(R.string.default_option)));
-
                 designationList.addAll(gson.fromJson(designations, typeToken));
-                bankList.add(getResources().getString(R.string.default_option));
-//                bankList.addAll((ArrayList<String>) gson.fromJson(banks, typeToken));
+
             }
 
         }
@@ -169,37 +182,36 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
                         @Override
                         public void onNext(ArrayList<ArrayList<String>> designations) {
-//                            designationList.addAll(designations);
+                            designationList.addAll(designations);
                             SharedPreferenceUtils.saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Designation, gson.toJson(designations));
                         }
                     });
         }
 
         if (bankList.isEmpty()) {
-            bankList.add(getResources().getString(R.string.default_option));
-            formCall.getBankList().subscribe(new Observer<List<String>>() {
-                @Override
-                public void onCompleted() {
-                    bankList.add(getString(R.string.bank_other));
-                    SharedPreferenceUtils
-                            .saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Bank,
-                                    gson.toJson(bankList));
-                }
+            bankList.add(Arrays.asList("-1", getString(R.string.default_option)));
 
-                @Override
-                public void onError(Throwable e) {
+            formCall.getBankList()
+                    .subscribe(new Observer<List<List<String>>>() {
+                        @Override
+                        public void onCompleted() {
+                            bankList.add(Arrays.asList("-2", getString(R.string.bank_other)));
+                            SharedPreferenceUtils
+                                    .saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Bank,
+                                            gson.toJson(bankList));
+                        }
 
-                }
+                        @Override
+                        public void onError(Throwable e) {
 
-                @Override
-                public void onNext(List<String> strings) {
-                    bankList.addAll(strings);
-                }
-            });
+                        }
 
-
+                        @Override
+                        public void onNext(List<List<String>> lists) {
+                            bankList.addAll(lists);
+                        }
+                    });
         }
-
 
     }
 
@@ -211,18 +223,24 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
+    private void setupDesignationSpinner() {
+        designationAdapter = new GenericSpinnerAdapter<ArrayList<String>>(this, android.R.layout.simple_spinner_item, designationList);
+        designationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        designationSpinner.setAdapter(designationAdapter);
 
-    private void initSpinners() {
-        spinnerAdapter = new GenericSpinnerAdapter<ArrayList<String>>(this, android.R.layout.simple_spinner_item, designationList);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        designation.setAdapter(spinnerAdapter);
+    }
 
-//        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, bankList);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        bank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    private void setupBanksSpinner() {
+
+        banksAdapter = new GenericSpinnerAdapter<ArrayList<String>>(this, android.R.layout.simple_spinner_item, bankList);
+        banksAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bankSpinner.setAdapter(banksAdapter);
+
+        bankSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String choice = adapterView.getItemAtPosition(i).toString();
+                List<String> item = (List<String>) adapterView.getItemAtPosition(i);
+                String choice = item.get(1);
                 if (choice.equals(getResources().getString(R.string.default_option))) {
                     accountNumber.setVisibility(View.GONE);
                     bankNameOther.setVisibility(View.GONE);
@@ -240,7 +258,8 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
             }
         });
-        bank.setAdapter(this.spinnerAdapter);
+
+        bankSpinner.setAdapter(banksAdapter);
     }
 
     private void initCalender() {
@@ -262,7 +281,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void initUI() {
-        designation = findViewById(R.id.staff_designation);
+        designationSpinner = findViewById(R.id.staff_designation);
         firstName = findViewById(R.id.staff_first_name);
         lastName = findViewById(R.id.staff_last_name);
         dob = findViewById(R.id.staff_dob_date);
@@ -271,7 +290,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         female = findViewById(R.id.gender_female);
         other = findViewById(R.id.gender_other);
         ethinicity = findViewById(R.id.staff_ethinicity);
-        bank = findViewById(R.id.staff_bank);
+        bankSpinner = findViewById(R.id.staff_bank);
         accountNumber = findViewById(R.id.staff_bank_account);
         bankNameOther = findViewById(R.id.staff_bank_other);
         contactNumber = findViewById(R.id.staff_contact_number);
@@ -398,15 +417,27 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
     private boolean validate() {
         boolean validation = false;
 
-        Object selectedDesignation = designation.getSelectedItem();
-        List<String> selected = (List<String>)(selectedDesignation);
+        Object selectedDesignation = designationSpinner.getSelectedItem();
+        List<String> selected = (List<String>) (selectedDesignation);
 
         boolean hasNotSelectedDesignation = (selected)
                 .get(1)
                 .equalsIgnoreCase(getString(R.string.default_option));
 
+
+        List<String> selectedBank = (List<String>) (bankSpinner.getSelectedItem());
+
+        boolean hasNotSelectedBank = (selectedBank)
+                .get(1)
+                .equalsIgnoreCase(getString(R.string.default_option));
+
+        boolean hasSelectedOtherBank = (selectedBank)
+                .get(1)
+                .equalsIgnoreCase(getString(R.string.bank_other));
+
+
         if (hasNotSelectedDesignation) {
-            showErrorMessage(designation, "Select a designation");
+            showErrorMessage(designationSpinner, "Select a designation");
         } else if (firstName.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(firstName, "Enter first name");
         } else if (lastName.getEditText().getText().toString().isEmpty()) {
@@ -417,11 +448,11 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
             showErrorMessage(gender, "Select Gender");
         } else if (ethinicity.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(ethinicity, "Enter ethnicity");
-        } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option))) {
-            showErrorMessage(bank, "Choose a bank");
-        } else if (bank.getSelectedItem().toString().equals(getResources().getString(R.string.bank_other)) && bankNameOther.getText().toString().isEmpty()) {
+        } else if (hasNotSelectedBank) {
+            showErrorMessage(bankSpinner, "Choose a bankSpinner");
+        } else if (hasSelectedOtherBank && bankNameOther.getText().toString().isEmpty()) {
             showErrorMessage(bankNameOther, "Enter Bank name");
-        } else if (!bank.getSelectedItem().toString().equals(getResources().getString(R.string.default_option)) && accountNumber.getEditText().getText().toString().isEmpty()) {
+        } else if (hasNotSelectedBank && accountNumber.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(accountNumber, "Enter Account number");
         } else if (contactNumber.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(contactNumber, "Enter contact number");
@@ -522,7 +553,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         Timber.d("ID PASS: " + idPassDID);
 
 
-        List<String> selectedDesignation = (List<String>)(designation.getSelectedItem());
+        List<String> selectedDesignation = (List<String>) (designationSpinner.getSelectedItem());
 
 
         return new NewStaffPojoBuilder()
@@ -566,7 +597,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
     private Integer getBankId() {
         int bankId = 2;
-        if (bank.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
+        if (bankSpinner.getSelectedItem().equals(getResources().getString(R.string.bank_other))) {
             bankId = 1;
         }
         return bankId;

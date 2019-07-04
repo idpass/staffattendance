@@ -1,6 +1,7 @@
 package np.com.naxa.staffattendance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import np.com.naxa.staffattendance.data.APIClient;
@@ -38,7 +39,7 @@ public class FormCall {
 //                .toList();
     }
 
-    public Observable<List<String>> getBankList(  ) {
+    public Observable<List<List<String>>> getBankList() {
         ApiInterface apiService = APIClient.getUploadClient().create(ApiInterface.class);
         return apiService.getBankist()
                 .subscribeOn(Schedulers.io())
@@ -49,10 +50,10 @@ public class FormCall {
                         return bankPojos;
                     }
                 })
-                .flatMap(new Func1<BankPojo, Observable<String>>() {
+                .map(new Func1<BankPojo, List<String>>() {
                     @Override
-                    public Observable<String> call(BankPojo bankPojo) {
-                        return Observable.just(bankPojo.getName());
+                    public List<String> call(BankPojo bankPojo) {
+                        return Arrays.asList(bankPojo.getId().toString(), bankPojo.getName());
                     }
                 }).toList();
 

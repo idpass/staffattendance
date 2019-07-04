@@ -86,6 +86,7 @@ public class NewStaffDao {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.KEY_ID,pojo.getId());
         values.put(DatabaseHelper.KEY_STAFF_DESIGNATION, pojo.getDesignation());
+        values.put(DatabaseHelper.KEY_STAFF_DESIGNATION_LABEL, pojo.getDesignationLabel());
         values.put(DatabaseHelper.KEY_STAFF_FIRST_NAME, pojo.getFirstName());
         values.put(DatabaseHelper.KEY_STAFF_LAST_NAME, pojo.getLastName());
         values.put(DatabaseHelper.KEY_STAFF_DOB, pojo.getDateOfBirth());

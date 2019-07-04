@@ -83,6 +83,7 @@ public interface ApiInterface {
     @POST("/staff/api/attendance/{team_id}/")
     Observable<AttendanceResponse> postAttendanceForTeam(@Path(value = "team_id", encoded = true) String teamID,
                                                          @Field("attendance_date") String date,
+                                                         @Field("id_pass_proof") String idPassProof,
                                                          @Field("staffs") List<String> staff_ids
     );
 

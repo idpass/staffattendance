@@ -1,11 +1,19 @@
 package np.com.naxa.staffattendance.attendence;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import np.com.naxa.staffattendance.database.DatabaseHelper;
 import np.com.naxa.staffattendance.utlils.DateConvertor;
 
 public class AttendanceResponse {
@@ -93,7 +101,15 @@ public class AttendanceResponse {
     }
 
     public List<String> getPresentStaffIds() {
-        return staffs;
+
+        try {
+            String arrayString = new JSONObject(IDPassProofs).names().toString();
+            return convertStaffIdsToList(arrayString);
+
+        } catch (NullPointerException | JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     public void setStaffs(List<String> staffs) {
@@ -115,4 +131,11 @@ public class AttendanceResponse {
     public void setTeamMemberResposnes(List<TeamMemberResposne> teamMemberResposnes) {
         this.teamMemberResposnes = teamMemberResposnes;
     }
+
+    private List<String> convertStaffIdsToList(String staffIds) {
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        return new Gson().fromJson(staffIds, type);
+    }
+
 }

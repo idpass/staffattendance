@@ -194,6 +194,7 @@ public class TeamRemoteSource {
 
                     return api.postAttendanceForTeam(teamId,
                             attendanceResponse.getAttendanceDate(false),
+                            attendanceResponse.getIDPassProofs(),
                             attendanceResponse.getPresentStaffIds());
                 });
 

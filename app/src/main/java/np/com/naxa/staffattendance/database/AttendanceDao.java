@@ -210,7 +210,7 @@ public class AttendanceDao {
         contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, attedance.getDataSyncStatus());
 
         try {
-            JSONArray jsonArray = new JSONObject(attedance.getIDPassProofs()).getJSONObject("nameValuePairs").names();
+            JSONArray jsonArray = new JSONObject(attedance.getIDPassProofs()).names();
             ArrayList<Integer> ids = new ArrayList<>();
             for (int n = 0; n < jsonArray.length(); n++) {
                 String id = jsonArray.getString(n);
@@ -276,10 +276,16 @@ public class AttendanceDao {
             String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
             attendanceResponse.setAttendanceDate(attendanceDate);
 
-            String staffIDs = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
-            String[] staffIDlist = staffIDs.replace("[", "").replace("]", "").split(",");
-            attendanceResponse.setStaffs(Arrays.asList(staffIDlist));
-            attendanceResponse.setIDPassProofs(DatabaseHelper.getStringFromCursor(cursor,DatabaseHelper.KEY_ID_PASS_PROOFS));
+
+            String idpassproofs = DatabaseHelper.getStringFromCursor(cursor,DatabaseHelper.KEY_ID_PASS_PROOFS);
+            try {
+                String arrayString = new JSONObject(idpassproofs).names().toString();
+                attendanceResponse.setStaffs(convertStaffIdsToList(arrayString));
+                attendanceResponse.setIDPassProofs(idpassproofs);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             attendanceRespons.add(attendanceResponse);
 

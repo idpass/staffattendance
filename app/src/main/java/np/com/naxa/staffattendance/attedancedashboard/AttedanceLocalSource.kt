@@ -29,7 +29,7 @@ class AttedanceLocalSource {
 
         if (hasAttedanceStarted && attendanceNotTaken) {
             val mergedJSON = mergeJSONObjects(oldAttendanceJSON, newAttendanceJSON)
-            oldAttendance.idPassProofs = Gson().toJson(mergedJSON)
+            oldAttendance.idPassProofs = mergedJSON.toString()
             return oldAttendance
         }
 
@@ -49,12 +49,14 @@ class AttedanceLocalSource {
             }
 
         }
-        return jsonObject
+        return jsonObject;
     }
 
     fun updateAttendance(date: String?, new_attendance: AttendanceResponse, team_id: String?) {
         val attendanceResponse = getAttendanceForDate(date, new_attendance, team_id)
+        attendanceResponse?.dataSyncStatus = AttendanceDao.SyncStatus.FINALIZED
         val contentValues = attedanceDao.getContentValuesForAttedance(attendanceResponse)
+
         attedanceDao.saveAttedance(contentValues)
     }
 

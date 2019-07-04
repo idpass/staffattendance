@@ -235,4 +235,8 @@ public class NewStaffPojo {
     public void setIdPassDID(String idPassDID) {
         this.idPassDID = idPassDID;
     }
+
+    public String getDesignationLabel() {
+        return designationLabel;
+    }
 }

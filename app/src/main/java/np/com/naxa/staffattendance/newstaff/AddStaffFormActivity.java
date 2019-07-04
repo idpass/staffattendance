@@ -405,6 +405,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                 .setLastName(newStaffDetail.getLastName())
                 .setDesignation(newStaffDetail.getDesignation())
                 .setTeamID(id)
+                .setDesignationLabel(newStaffDetail.getDesignationLabel())
                 .setIDPassDID(idPassDID)
                 .setTeamName(new TeamDao().getTeamNameById(id))
                 .setId(newStaffDetail.getId())

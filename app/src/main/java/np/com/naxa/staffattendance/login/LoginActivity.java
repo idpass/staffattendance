@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         FormCall formCall = new FormCall();
 
         formCall.getDesignation()
-                .subscribe(new Observer<List<String>>() {
+                .subscribe(new Observer<ArrayList<ArrayList<String>>>() {
                     @Override
                     public void onCompleted() {
 
@@ -179,35 +179,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
 
                     @Override
-                    public void onNext(List<String> designationList) {
+                    public void onNext(ArrayList<ArrayList<String>> designationList) {
                         SharedPreferenceUtils
                                 .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Designation,
                                         gson.toJson(designationList));
-
-
                     }
                 });
 
 
-        formCall.getBankList().subscribe(new Observer<List<String>>() {
-            @Override
-            public void onCompleted() {
+        formCall.getBankList()
+                .subscribe(new Observer<List<List<String>>>() {
+                    @Override
+                    public void onCompleted() {
 
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onNext(List<String> bankList) {
-                SharedPreferenceUtils
-                        .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Bank,
-                                gson.toJson(bankList));
-
-            }
-        });
+                    @Override
+                    public void onNext(List<List<String>> bankList) {
+                        SharedPreferenceUtils
+                                .saveToPrefs(LoginActivity.this, SharedPreferenceUtils.KEY.Bank,
+                                        gson.toJson(bankList));
+                    }
+                });
     }
 
     private void fetchMyTeam() {
@@ -284,7 +282,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             ck = true;
         }
 
-        if (password.isEmpty() ) {
+        if (password.isEmpty()) {
             if (ck) {
                 tvPassword.requestFocus();
             }

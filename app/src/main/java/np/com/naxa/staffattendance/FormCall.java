@@ -1,7 +1,5 @@
 package np.com.naxa.staffattendance;
 
-import android.text.TextUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,29 +13,29 @@ import rx.schedulers.Schedulers;
 
 public class FormCall {
 
-    public Observable<List<String>> getDesignation() {
+    public Observable<ArrayList<ArrayList<String>>> getDesignation() {
         ApiInterface apiService = APIClient.getUploadClient().create(ApiInterface.class);
         return apiService.getDesignation()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMapIterable(new Func1<ArrayList<ArrayList<String>>, Iterable<ArrayList<String>>>() {
-                    @Override
-                    public Iterable<ArrayList<String>> call(ArrayList<ArrayList<String>> arrayLists) {
-                        return arrayLists;
-                    }
-                })
-                .flatMapIterable(new Func1<ArrayList<String>, Iterable<String>>() {
-                    @Override
-                    public Iterable<String> call(ArrayList<String> strings) {
-                        return strings;
-                    }
-                }).filter(new Func1<String, Boolean>() {
-                    @Override
-                    public Boolean call(String s) {
-                        return !TextUtils.isDigitsOnly(s);
-                    }
-                })
-                .toList();
+                .observeOn(AndroidSchedulers.mainThread());
+//                .flatMapIterable(new Func1<ArrayList<ArrayList<String>>, Iterable<ArrayList<String>>>() {
+//                    @Override
+//                    public Iterable<ArrayList<String>> call(ArrayList<ArrayList<String>> arrayLists) {
+//                        return arrayLists;
+//                    }
+//                })
+//                .flatMapIterable(new Func1<ArrayList<String>, Iterable<String>>() {
+//                    @Override
+//                    public Iterable<String> call(ArrayList<String> strings) {
+//                        return strings;
+//                    }
+//                }).filter(new Func1<String, Boolean>() {
+//                    @Override
+//                    public Boolean call(String s) {
+//                        return !TextUtils.isDigitsOnly(s);
+//                    }
+//                })
+//                .toList();
     }
 
     public Observable<List<String>> getBankList(  ) {

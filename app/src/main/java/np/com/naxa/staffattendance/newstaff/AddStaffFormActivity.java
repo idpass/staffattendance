@@ -41,6 +41,7 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -76,13 +77,13 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
     private TextInputLayout firstName, lastName, ethinicity, contactNumber, email, address, accountNumber;
     private EditText dob, contractStartDate, contractEndDate, bankNameOther;
     private Button photo, idpassIdentify, idpassEnroll, save, create;
-    private List<String> designationList = new ArrayList<>();
+    private List<List<String>> designationList = new ArrayList<>();
     private List<String> bankList = new ArrayList<>();
     private RadioGroup gender;
     private RadioButton male, female, other;
     private Calendar calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener date;
-    private ArrayAdapter<String> spinnerAdapter;
+    private GenericSpinnerAdapter spinnerAdapter;
     private File photoFileToUpload;
 
     private Gson gson;
@@ -119,11 +120,12 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
     }
 
 
-
     private void spinnerValues() {
         FormCall formCall = new FormCall();
 
-        if (!NetworkUtils.isInternetAvailable()) {
+        if (true) {
+
+
             String designations = SharedPreferenceUtils
                     .getFromPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Designation, "");
 
@@ -135,24 +137,26 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                         .createMessageDialog(AddStaffFormActivity.this, "Message", "Connect to then internet and reopen form to get banks and designations");
                 msgDialog.show();
             } else {
-                Type typeToken = new TypeToken<ArrayList<String>>() {
+                Type typeToken = new TypeToken<ArrayList<ArrayList<String>>>() {
                 }.getType();
 
                 designationList.clear();
                 bankList.clear();
                 bankList.add(getResources().getString(R.string.default_option));
-                designationList.add(getResources().getString(R.string.default_option));
-                designationList.addAll((ArrayList<String>) gson.fromJson(designations, typeToken));
+
+                designationList.add(Arrays.asList("-1", getString(R.string.default_option)));
+
+                designationList.addAll(gson.fromJson(designations, typeToken));
                 bankList.add(getResources().getString(R.string.default_option));
-                bankList.addAll((ArrayList<String>) gson.fromJson(banks, typeToken));
+//                bankList.addAll((ArrayList<String>) gson.fromJson(banks, typeToken));
             }
 
         }
 
         if (designationList.isEmpty()) {
-            designationList.add(getResources().getString(R.string.default_option));
+            designationList.add(Arrays.asList("-1", getString(R.string.default_option)));
             formCall.getDesignation()
-                    .subscribe(new Observer<List<String>>() {
+                    .subscribe(new Observer<ArrayList<ArrayList<String>>>() {
                         @Override
                         public void onCompleted() {
 
@@ -164,14 +168,9 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                         }
 
                         @Override
-                        public void onNext(List<String> strings) {
-                            designationList.addAll(strings);
-
-                            SharedPreferenceUtils
-                                    .saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Designation,
-                                            gson.toJson(designationList));
-
-
+                        public void onNext(ArrayList<ArrayList<String>> designations) {
+//                            designationList.addAll(designations);
+                            SharedPreferenceUtils.saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Designation, gson.toJson(designations));
                         }
                     });
         }
@@ -182,7 +181,6 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                 @Override
                 public void onCompleted() {
                     bankList.add(getString(R.string.bank_other));
-
                     SharedPreferenceUtils
                             .saveToPrefs(AddStaffFormActivity.this, SharedPreferenceUtils.KEY.Bank,
                                     gson.toJson(bankList));
@@ -215,11 +213,11 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
 
 
     private void initSpinners() {
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, designationList);
+        spinnerAdapter = new GenericSpinnerAdapter<ArrayList<String>>(this, android.R.layout.simple_spinner_item, designationList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         designation.setAdapter(spinnerAdapter);
 
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, bankList);
+//        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, bankList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         bank.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -396,10 +394,18 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         new StaffDao().saveStaff(member);
     }
 
+
     private boolean validate() {
         boolean validation = false;
 
-        if (designation.getSelectedItem().equals(getResources().getString(R.string.default_option))) {
+        Object selectedDesignation = designation.getSelectedItem();
+        List<String> selected = (List<String>)(selectedDesignation);
+
+        boolean hasNotSelectedDesignation = (selected)
+                .get(1)
+                .equalsIgnoreCase(getString(R.string.default_option));
+
+        if (hasNotSelectedDesignation) {
             showErrorMessage(designation, "Select a designation");
         } else if (firstName.getEditText().getText().toString().isEmpty()) {
             showErrorMessage(firstName, "Enter first name");
@@ -433,7 +439,6 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
         }
         return validation;
     }
-
 
 
     private void focusOnView(final ScrollView scroll, final View view) {
@@ -516,9 +521,13 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
     public NewStaffPojo getNewStaffDetail() {
         Timber.d("ID PASS: " + idPassDID);
 
+
+        List<String> selectedDesignation = (List<String>)(designation.getSelectedItem());
+
+
         return new NewStaffPojoBuilder()
                 .setID(String.valueOf(System.currentTimeMillis()))
-                .setDesignation(designation.getSelectedItemPosition())
+                .setDesignation(Integer.valueOf(selectedDesignation.get(0)))
                 .setFirstName(firstName.getEditText().getText().toString())
                 .setLastName(lastName.getEditText().getText().toString())
                 .setDateOfBirth(dob.getText().toString())
@@ -535,7 +544,7 @@ public class AddStaffFormActivity extends BaseActivity implements View.OnClickLi
                 .setPhoto(getPhotoLocation())
                 .setIDPass(idPassDID)
                 .setStatus(NewStaffDao.SAVED)
-                .setDesignationLabel(designation.getSelectedItem().toString())
+                .setDesignationLabel(selectedDesignation.get(1))
                 .createNewStaffPojo();
     }
 

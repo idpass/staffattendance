@@ -26,9 +26,8 @@ public class AttendanceResponse {
     private List<String> staffs = null;
 
 
-
     @Expose
-    private HashMap<String,String> IDPassProofs = null;
+    private String IDPassProofs = null;
 
 
     private String teamId;
@@ -101,11 +100,11 @@ public class AttendanceResponse {
         this.staffs = staffs;
     }
 
-    public void setIDPassProofs(HashMap<String,String> IDPassProofs) {
+    public void setIDPassProofs(String IDPassProofs) {
         this.IDPassProofs = IDPassProofs;
     }
 
-    public HashMap<String, String> getIDPassProofs() {
+    public String getIDPassProofs() {
         return IDPassProofs;
     }
 

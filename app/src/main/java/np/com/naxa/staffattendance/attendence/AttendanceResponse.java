@@ -25,7 +25,8 @@ public class AttendanceResponse {
     @Expose
     private List<String> staffs = null;
 
-    @SerializedName("id_pass_proof")
+
+
     @Expose
     private HashMap<String,String> IDPassProofs = null;
 

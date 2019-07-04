@@ -204,7 +204,11 @@ public class AttendanceDao {
 
         contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, date);
         contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, attedance.getDataSyncStatus());
-        contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, Arrays.toString(attedance.getIDPassProofs().keySet().toArray()));
+
+        if(attedance.getIDPassProofs() != null){
+            contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, Arrays.toString(attedance.getIDPassProofs().keySet().toArray()));
+        }
+
         contentValues.put(DatabaseHelper.KEY_ID_PASS_PROOFS, attedance.getIDPassProofs().toString());
         return contentValues;
     }

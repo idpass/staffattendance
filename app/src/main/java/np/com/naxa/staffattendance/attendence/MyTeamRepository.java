@@ -103,26 +103,6 @@ public class MyTeamRepository {
 
     }
 
-    private Observable<Object> uploadAttendance(final String teamId, final String date, final ArrayList<TeamMemberResposne> stafflist) {
-        final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
-
-        return staffDao.getStaffIdFromObject(stafflist)
-                .flatMap(new Func1<List<String>, Observable<AttendanceResponse>>() {
-                    @Override
-                    public Observable<AttendanceResponse> call(List<String> stafflist) {
-                        return apiInterface.postAttendanceForTeam(teamId, date, stafflist);
-                    }
-                }).flatMap(new Func1<AttendanceResponse, Observable<?>>() {
-                    @Override
-                    public Observable<?> call(AttendanceResponse attendanceResponse) {
-                        if (attendanceResponse != null) {
-                            attendanceDao.updateAttendance(attendanceResponse.getAttendanceDate(false), teamId);
-                        }
-                        return null;
-                    }
-                });
-    }
-
     public Observable<Object> bulkAttendanceUpload() {
         final ApiInterface apiInterface = APIClient.getUploadClient().create(ApiInterface.class);
         final String teamId = new TeamDao().getOneTeamIdForDemo();
@@ -134,6 +114,7 @@ public class MyTeamRepository {
 
                     return apiInterface.postAttendanceForTeam(teamId,
                             attendanceResponse.getAttendanceDate(false),
+                            attendanceResponse.getIDPassProofs(),
                             attendanceResponse.getPresentStaffIds());
                 })
                 .flatMap((Func1<AttendanceResponse, Observable<AttendanceResponse>>) attendanceResponse -> {

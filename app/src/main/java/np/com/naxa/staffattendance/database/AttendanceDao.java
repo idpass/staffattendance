@@ -9,6 +9,10 @@ import android.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -205,11 +209,20 @@ public class AttendanceDao {
         contentValues.put(DatabaseHelper.KEY_ATTENDACE_DATE, date);
         contentValues.put(DatabaseHelper.KEY_SYNC_STATUS, attedance.getDataSyncStatus());
 
-        if(attedance.getIDPassProofs() != null){
-            contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, Arrays.toString(attedance.getIDPassProofs().keySet().toArray()));
+        try {
+            JSONArray jsonArray = new JSONObject(attedance.getIDPassProofs()).names();
+            ArrayList<Integer> ids = new ArrayList<>();
+            for (int n = 0; n < jsonArray.length(); n++) {
+                String id = jsonArray.getString(n);
+                ids.add(Integer.valueOf(id));
+            }
+
+            contentValues.put(DatabaseHelper.KEY_STAFFS_IDS, ids.toString());
+        } catch (JSONException e) {
+            Timber.e(e);
         }
 
-        contentValues.put(DatabaseHelper.KEY_ID_PASS_PROOFS, attedance.getIDPassProofs().toString());
+        contentValues.put(DatabaseHelper.KEY_ID_PASS_PROOFS, attedance.getIDPassProofs());
         return contentValues;
     }
 
@@ -263,9 +276,16 @@ public class AttendanceDao {
             String attendanceDate = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_ATTENDACE_DATE);
             attendanceResponse.setAttendanceDate(attendanceDate);
 
-            String staffIDs = DatabaseHelper.getStringFromCursor(cursor, DatabaseHelper.KEY_STAFFS_IDS);
-            String[] staffIDlist = staffIDs.replace("[", "").replace("]", "").split(",");
-            attendanceResponse.setStaffs(Arrays.asList(staffIDlist));
+
+            String idpassproofs = DatabaseHelper.getStringFromCursor(cursor,DatabaseHelper.KEY_ID_PASS_PROOFS);
+            try {
+                String arrayString = new JSONObject(idpassproofs).names().toString();
+                attendanceResponse.setStaffs(convertStaffIdsToList(arrayString));
+                attendanceResponse.setIDPassProofs(idpassproofs);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             attendanceRespons.add(attendanceResponse);
 

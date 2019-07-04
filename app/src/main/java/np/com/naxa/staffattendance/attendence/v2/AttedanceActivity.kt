@@ -12,6 +12,7 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.MenuItem
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
 import np.com.naxa.staffattendance.StaffListAdapter
@@ -125,7 +126,7 @@ class AttedanceActivity : BaseActivity(), StaffListAdapter.OnStaffItemClickListe
         val attendanceResponse = AttendanceResponse()
         attendanceResponse.setAttendanceDate(loadedDate)
         attendanceResponse.setStaffs(listOf(staff.id))
-        attendanceResponse.idPassProofs = hashMapOf(staff.id to signedAction)
+        attendanceResponse.idPassProofs = Gson().toJson(hashMapOf(staff.id.toInt() to signedAction))
         attendanceResponse.dataSyncStatus = AttendanceDao.SyncStatus.FINALIZED
         AttedanceLocalSource.instance.updateAttendance(loadedDate, attendanceResponse, staff.teamID)
 

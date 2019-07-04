@@ -112,10 +112,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 .create(ApiInterface.class)
                                 .getMyTeam()
                                 .map((Func1<ArrayList<MyTeamResponse>, Object>) myTeamResponses -> {
+
+
                                     if (myTeamResponses.isEmpty()) {
                                         TokenMananger.clearToken();
                                         throw new RuntimeException("You are not assigned to a team yet");
+                                    } else if (myTeamResponses.size() != 1) {
+                                        TokenMananger.clearToken();
+                                        throw new RuntimeException("You can only be assigned to one team");
                                     }
+
+                                    SharedPreferenceUtils.saveToPrefs(getApplicationContext(), SharedPreferenceUtils.KEY.teams, new Gson().toJson(myTeamResponses));
 
                                     return Observable.empty();
                                 });

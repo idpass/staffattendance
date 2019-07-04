@@ -11,11 +11,15 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_dashboard_attedance.*
 import np.com.naxa.staffattendance.R
+import np.com.naxa.staffattendance.SharedPreferenceUtils
 import np.com.naxa.staffattendance.TeamRemoteSource
 import np.com.naxa.staffattendance.attendence.AttendanceViewPagerActivity
 import np.com.naxa.staffattendance.common.UIConstants
+import np.com.naxa.staffattendance.data.MyTeamResponse
 import np.com.naxa.staffattendance.database.StaffDao
 import np.com.naxa.staffattendance.database.TeamDao
 import np.com.naxa.staffattendance.settings.SettingsActivity
@@ -120,15 +124,25 @@ class AttendancesDashboardActivity : AppCompatActivity() {
     private fun generateGridItems(): ArrayList<Any> {
         val teamId = TeamDao().oneTeamIdForDemo
         val list = arrayListOf<Any>()
-        var teamName: String = ""
+
         val staffs = StaffDao().getStaffByTeamId(teamId)
         list.add(getString(R.string.title_team))
         list.add("")
-        if (staffs.size > 0) {
-            teamName = staffs[0].teamName
-            val teamMembersCount = staffs.count().toString()
-            list.add(TeamStats(teamName, teamMembersCount))
+
+        var teamName: String = ""
+        var teamMembersCount = "0"
+        val type = object : TypeToken<List<MyTeamResponse>>() {}.type
+        val teams = Gson().fromJson<List<MyTeamResponse>>(SharedPreferenceUtils.getFromPrefs(this, SharedPreferenceUtils.KEY.teams, "[]"), type)
+        if (teams.isNotEmpty()) {
+            teamName = teams[0].name;
         }
+        if (staffs.size > 0) {
+            teamMembersCount = staffs.count().toString()
+        }
+
+        list.add(TeamStats(teamName, teamMembersCount))
+
+
         list.add(AddItemButton(UIConstants.UUID_GRID_ITEM_TEAM_MEMBER))
         list.add(getString(R.string.title_attedance))
         list.add("")
